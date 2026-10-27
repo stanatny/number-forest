@@ -1,6 +1,6 @@
 # 扩展章节
 
-章节由两部分组成：`NumberForestCore.registerChapter()` 注册题目规则；界面可以复用内置 `kind`，也可以通过 `NumberForestViews.register()` 注册新的场景。入口、五题一轮、提示、纠错、关联算式和本机记录由应用共用。
+章节由两部分组成：`NumberForestCore.registerChapter()` 注册题目规则；界面可以复用内置 `kind`，也可以通过 `NumberForestViews.register()` 注册新的场景。入口、每轮 10 题、提示、纠错、关联算式和本机记录由应用共用。`src/feedback.js` 单独负责解释答案，避免把每份数量、组数、数线位置和时钟时间混成同一种数量。
 
 ## 先复用现有场景
 
@@ -24,6 +24,8 @@ NumberForestCore.registerChapter({
       instruction: '可以先把两篮合起来，再数一数。',
       answer: total,
       maxAnswer: 5,
+      answerLabel: '一共有几颗？',
+      unit: '颗',
       model: { a, b },
       relations: [`${a} + ${b} = ${total}`, `${total} − ${b} = ${a}`],
       hint: `从 ${a} 开始，再往后数 ${b} 个。`,
@@ -37,6 +39,7 @@ NumberForestCore.registerChapter({
 
 ```html
 <script defer src="src/core.js"></script>
+<script defer src="src/feedback.js"></script>
 <script defer src="src/views.js"></script>
 <script defer src="src/audio.js"></script>
 <script defer src="src/chapters/picnic-add.js"></script>
@@ -50,15 +53,45 @@ NumberForestCore.registerChapter({
 | `kind` | `model` | 约束 |
 | --- | --- | --- |
 | `bonds` | `{ total, visible }` | `0 ≤ visible ≤ total`，答案为 `total − visible`。 |
+| `compare` | `{ a, b, ask }` | `a ≠ b`；`ask` 为 `more` 或 `less`，答案是较大或较小的实际数量，不是左右选项的编号。 |
+| `sequence` | `{ values, step, missingIndex }` | `values` 是四项等差数列，其中一项为 `null`；答案为缺失数字。内置步长为 `+1`、`+2`、`−1`。 |
 | `add` | `{ a, b }` | 非负整数，答案为 `a + b`。 |
 | `subtract` | `{ a, b }` | `0 ≤ b ≤ a`，答案为 `a − b`。 |
+| `numberline` | `{ start, step }` | `step` 是带正负号的非零整数，答案为落点 `start + step`，不是跳跃步数。 |
 | `groups` | `{ perGroup, groups, previousGroups }` | `previousGroups = groups − 1`，答案为 `perGroup × groups`。 |
+| `group-total` | `{ perGroup, groups, total }` | `total = perGroup × groups`，答案为松果总数，单位为“颗”。 |
+| `group-count` | `{ perGroup, groups, total }` | 同上，答案为 `groups`，单位为“篮”。 |
 | `sharing` | `{ total, groups, perGroup }` | 份数为正整数，`total = groups × perGroup`，答案为每份数量。 |
+| `pack` | `{ perGroup, groups, total }` | 答案为 `total ÷ perGroup = groups`，单位为“袋”。 |
 | `clock` | `{ hour, minute }` | 当前内置答案界面支持 `hour` 为 1–12、`minute` 为 0 或 30，答案编码为 `hour × 60 + minute`。 |
+| `clock-forward` | `{ hour, minute, advance, targetHour, targetMinute }` | 起点和终点均用 1–12 点及 0/30 分钟；`advance` 为 30 或 60，答案编码为 `targetHour × 60 + targetMinute`，需正确跨过 12 点。 |
 
-题目需提供 `kind`、`prompt`、`instruction`、`answer`、`maxAnswer`、`model`、`relations`、`hint`、`success`。`answer` 与 `maxAnswer` 必须是非负整数，且答案不能超过上限。普通数字面板会显示从 0 到 `maxAnswer` 的全部按钮，因此应使用合适的上限。
+题目需提供 `kind`、`prompt`、`instruction`、`answer`、`maxAnswer`、`model`、`relations`、`hint`、`success`。建议同时提供简短的 `answerLabel` 和 `unit`；内置题目均已提供，单位可为“颗”“篮”“袋”或空字符串。数列和数线位置不使用物品单位，时钟答案也不显示“颗”。`answer` 与 `maxAnswer` 必须是非负整数，且答案不能超过上限。普通数字面板会显示从 0 到 `maxAnswer` 的全部按钮，因此应使用合适的上限。
 
 生成器可读取 `round`（从 0 开始）、`integer(min, max)`（含两端）、`random()` 和 `challenge`。目前应用每轮传入题序，`challenge` 默认为 `false`；测试可注入随机函数以复现题目。继续探索依赖已保存的种子重新生成同一题，因此题目中的随机选择必须使用传入的 `integer()` 或 `random()`，不要直接调用 `Math.random()` 或按当前时间出题。生成器保持纯逻辑，不访问 DOM、本机存储或网络。
+
+v0.2 的内置生成器按 `round % 10` 安排题型，数量在合法范围内抽取，不做去重，也不保证所有组合等概率。松果小屋的分合仍在 10 以内，比较和数序到 20；森林补给包含和为 11–20 的加法、20 以内减法、补数和数线任务；成组与平均分的总数不超过 20，每组至多 5 颗。成组和平均分的第一个任务保留固定引导题。时钟题序 0–2 是整点、3–5 是半点、6 和 8 是随机整点或半点，7 和 9 分别推进 30 和 60 分钟。
+
+## 解释正确与错误答案
+
+`NumberForestFeedback.describe(task, selected, { bowls, changed } = {})` 返回展示数据，不计分、不写存储，也不修改题目或交互状态。常用字段包括：
+
+- `correct`：整个任务是否满足要求。平均分在操作过场景后，还要求所有松果分完且各份相等。
+- `kind`、`taskKind`：反馈呈现类型与原题型。反馈类型包括 `quantity`、`compare`、`sequence`、`numberline`、`sharing`、`clock` 和无效输入的 `input`。
+- `selected`、`target`、`direction`、`difference`：所选答案与目标。数量题的 `direction` 为 `more`、`less` 或 `equal`，`difference` 为绝对差；答错的时钟题这两项为 `null`，不能把时间编码相减后当成物品数量。
+- `unit`、`differenceUnit`：答案单位与差异单位。数线答案是位置，没有单位；纠正位置的差异以“步”表达。
+- `title`、`message`、`spoken`：简短反馈标题、解释和可用于朗读的完整文本。
+- `model`：对应题型的解释数据。分合给出已补后的总数；比较给出左右数量和成对后剩余数；数列给出规律与完整数列；数线给出起点、落点和修正方向；平均分给出未分完数量、各份差异；时钟给出目标时分及指针角度，时间推进另给起点和推进分钟数。
+
+`sharing` 的数字答案正确但摆放不完整时，`direction` 仍为 `equal`、`difference` 为 0，而 `correct` 为 `false`。此时根据 `model.reason` 的 `remaining`、`unequal` 等值解释场景，不要显示为口算答错。比较多少题应提示题目要找较多还是较少的一边，不能把它展示成“还要补几颗”。
+
+新增题型若有新的答案含义，应同时扩展反馈规则和测试；仅复用通用整数判断不会自动得到合适的单位、比较图或解释。
+
+## 记录与进度版本
+
+v0.2 每轮 10 题。已有完成数、首答正确数、辅助完成数、重试数和探索次数继续累计；旧版 5 题时长从 `bestMs`、`lastMs` 保留到 `legacyBestMs`、`legacyLastMs`，新的 10 题时长另计，使用 `timingRounds: 10` 标识。不要把两种长度的最快用时直接取最小值。
+
+未完成进度的存储键仍为 `number-forest-session-v1`，内容版本已改为 `version: 2`。旧内容版本 1 使用的题型安排和随机规则已改变，不能只凭旧种子继续生成；新版不恢复它，并在首页说明需要重新开始一轮。已完成的累计记录保留。今后修改生成规则时，也应检查相同种子和题序是否仍能重建原题。
 
 ## 添加新的操作场景
 
