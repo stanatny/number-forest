@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 580" role="img" aria-labelledby="title desc">
+  <title id="title">数感森林里的小小探险</title>
+  <desc id="desc">柔和绿树围着一间树屋，小松鼠带着松果走在蜿蜒小路上，花园里有三组小种子。</desc>
+  <defs>
+    <pattern id="grain" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r=".7" fill="#567249" opacity=".16"/><circle cx="16" cy="15" r=".6" fill="#567249" opacity=".13"/></pattern>
+    <g id="sprig" fill="none" stroke="#82956D" stroke-width="3.2" stroke-linecap="round"><path d="M0 0v-20M0-8l-7-7M0-10l7-8"/></g>
+    <g id="flower"><path d="M0 0v-20" stroke="#7D9365" stroke-width="3" stroke-linecap="round"/><path d="M0-12c-9-9-15-6-9 0 3 3 9 3 9 3" fill="#9CAA75"/><circle cy="-22" r="8" fill="#E3B65C"/><circle cy="-22" r="3" fill="#F5EAC3"/></g>
+    <g id="little-acorn"><path d="M-10-3c-1 10 2 16 10 22 8-6 11-12 10-22" fill="#C88E4F"/><path d="M-13 0c-1-10 5-14 13-14S14-10 13 0c-8 3-18 3-26 0" fill="#657847"/><path d="M1-14v-5" stroke="#657847" stroke-width="3" stroke-linecap="round"/></g>
+    <g id="leaf"><path d="M0 0C-22-3-23-23-8-29 9-26 16-9 0 0" fill="#B1BD8B"/><path d="M0 0-8-22" stroke="#849865" stroke-width="2" stroke-linecap="round"/></g>
+  </defs>
+
+  <!-- Rolling paper-cut landscape. -->
+  <path d="M56 295C19 236 61 154 139 128 177 65 259 60 312 94c44-58 144-70 204-14 90-28 163 12 179 76 81 22 123 83 103 150 38 64 4 135-83 148-76 51-148 41-216 32-70 46-154 49-215 10-98 12-200-28-209-100-41-29-44-65-19-101Z" fill="#E8EDD9"/>
+  <path d="M74 333c127-79 257-44 352 0 103-46 240-75 366-4v99c-110 77-261 66-365 55-131 43-248 29-350-61Z" fill="#D5DDBB"/>
+  <path d="M82 393c117-67 213-56 317-4 127-38 258-53 392 13-28 82-153 112-286 91-130 49-291 25-371-23-27-20-45-44-52-77Z" fill="#C7D3AA"/>
+  <path d="M565 288c-24 43-14 75 24 97 32 20 30 32-35 39-94 10-177 27-145 85 28 0 61-4 96-15-27-24 7-39 78-43 100-7 118-46 46-80-34-16-43-40-31-73Z" fill="#F5ECD0"/>
+  <path d="M578 300c-15 46 9 61 39 85 13 10 19 19 14 29" stroke="#E5D9B8" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="2 9"/>
+  <path d="M74 333c127-79 257-44 352 0 103-46 240-75 366-4v99c-110 77-261 66-365 55-131 43-248 29-350-61Z" fill="url(#grain)"/>
+
+  <!-- Distant pines. -->
+  <g fill="#A7B88A"><path d="m143 121-39 74h20l-37 65h117l-37-65h16Z"/><path d="m222 100-42 81h21l-35 61h112l-36-61h21Z"/><path d="m732 155-35 62h17l-30 57h99l-31-57h17Z"/></g>
+  <g stroke="#879B6F" stroke-width="7" stroke-linecap="round"><path d="M145 244v69M222 225v51M733 260v58"/></g>
+
+  <!-- Tall woodland tree at the left. -->
+  <path d="M236 341c11-60 15-120 8-183l-26-47-10 5 25 62c2 47-2 103-12 161Z" fill="#A1875E"/>
+  <path d="m233 237-31-39M240 208l30-34" stroke="#A1875E" stroke-width="12" stroke-linecap="round"/>
+  <path d="M172 197c-32-20-29-63 0-82-8-39 21-67 55-61 26-30 72-20 84 13 40 1 54 40 35 66 19 34-5 69-40 70-40 32-101 27-134-6Z" fill="#7F9B69"/>
+  <path d="M171 164c38 26 95 28 133 3" stroke="#6D8D59" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <g fill="#A6BB84"><ellipse cx="210" cy="100" rx="11" ry="6" transform="rotate(-38 210 100)"/><ellipse cx="282" cy="80" rx="12" ry="6" transform="rotate(28 282 80)"/><ellipse cx="317" cy="131" rx="11" ry="5" transform="rotate(-32 317 131)"/><ellipse cx="246" cy="180" rx="10" ry="5" transform="rotate(24 246 180)"/></g>
+
+  <!-- The tree house, with a real little clock. -->
+  <path d="M572 365c-2-93-8-180-26-253h-26c28 96 35 176 31 253Z" fill="#8F7955"/>
+  <path d="m548 220 45-54m-51 15-36-36" stroke="#8F7955" stroke-width="18" stroke-linecap="round"/>
+  <path d="M453 177c-25-23-17-65 15-76-2-39 31-66 66-53 36-26 83-10 88 28 45 6 62 44 39 73 7 38-28 61-63 48-42 23-101 16-145-20Z" fill="#5F805B"/>
+  <g fill="#8EA677"><ellipse cx="493" cy="92" rx="10" ry="5" transform="rotate(-35 493 92)"/><ellipse cx="578" cy="74" rx="12" ry="5" transform="rotate(27 578 74)"/><ellipse cx="632" cy="122" rx="11" ry="5" transform="rotate(32 632 122)"/></g>
+  <path d="M471 208h151v107H471Z" fill="#E6BB78"/>
+  <path d="M466 231h159M466 255h159M466 279h159M466 303h159" stroke="#D1A363" stroke-width="2"/>
+  <path d="m448 214 98-81 98 81Z" fill="#CF7953"/>
+  <path d="m448 214 98-81 98 81" fill="none" stroke="#B46445" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M513 316v-50c0-18 12-29 29-29s29 11 29 29v50" fill="#78885B"/>
+  <path d="M521 315v-47c0-13 7-21 21-21s21 8 21 21v47" fill="#5C714C"/>
+  <circle cx="552" cy="282" r="3" fill="#D8BD7B"/>
+  <rect x="483" y="236" width="20" height="29" rx="8" fill="#F7E9BB"/>
+  <path d="M493 237v27m-9-14h18" stroke="#A38454" stroke-width="2"/>
+  <rect x="583" y="236" width="23" height="29" rx="8" fill="#F7E9BB"/>
+  <path d="M594 237v27m-10-14h21" stroke="#A38454" stroke-width="2"/>
+  <circle cx="546" cy="193" r="19" fill="#FFF4D7" stroke="#B96846" stroke-width="4"/>
+  <path d="M546 181v12l8 5" stroke="#6F7752" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="546" cy="193" r="2.5" fill="#6F7752"/>
+  <path d="M458 317h177" stroke="#9B7A50" stroke-width="10" stroke-linecap="round"/>
+  <path d="M507 319 492 378m61-59 12 59M502 341h56m-61 19h65m-71 17h77" stroke="#A18858" stroke-width="5" stroke-linecap="round"/>
+  <g stroke="#A18858" stroke-width="4" stroke-linecap="round"><path d="M465 317v-27m160 27v-27M465 292h37m75 0h48"/></g>
+
+  <!-- A modest bunting line joins learning and play. -->
+  <path d="M280 220c51 39 105 42 166 9" stroke="#A19870" stroke-width="2" fill="none"/>
+  <path d="m291 227 20 9-17 18Z" fill="#DDAD59"/><path d="m328 241 22 5-12 22Z" fill="#CE7E5D"/><path d="m367 246 22-3-7 25Z" fill="#8BA17A"/><path d="m406 239 21-8-2 25Z" fill="#DEB86D"/>
+
+  <!-- Three equal growing beds. -->
+  <g transform="translate(300 374)">
+    <ellipse cy="12" rx="38" ry="16" fill="#B3C194"/>
+    <path d="M-31-10h62l-7 28h-48Z" fill="#C59667"/><path d="M-33-11h66v8h-66Z" fill="#D5AB7A"/>
+    <path d="M-14-11v-16m28 16v-16" stroke="#718C55" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-14-22c-14-2-16-12-4-12 6 0 8 6 4 12m0 0c2-12 14-17 16-8 1 6-5 10-16 10M14-22C0-24-2-34 10-34c6 0 8 6 4 12m0 0c2-12 14-17 16-8 1 6-5 10-16 10" fill="#89A567"/>
+  </g>
+  <g transform="translate(389 387)">
+    <ellipse cy="12" rx="38" ry="16" fill="#B3C194"/>
+    <path d="M-31-10h62l-7 28h-48Z" fill="#C59667"/><path d="M-33-11h66v8h-66Z" fill="#D5AB7A"/>
+    <path d="M-14-11v-16m28 16v-16" stroke="#718C55" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-14-22c-14-2-16-12-4-12 6 0 8 6 4 12m0 0c2-12 14-17 16-8 1 6-5 10-16 10M14-22C0-24-2-34 10-34c6 0 8 6 4 12m0 0c2-12 14-17 16-8 1 6-5 10-16 10" fill="#89A567"/>
+  </g>
+  <g transform="translate(478 385)">
+    <ellipse cy="12" rx="38" ry="16" fill="#B3C194"/>
+    <path d="M-31-10h62l-7 28h-48Z" fill="#C59667"/><path d="M-33-11h66v8h-66Z" fill="#D5AB7A"/>
+    <path d="M-14-11v-16m28 16v-16" stroke="#718C55" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-14-22c-14-2-16-12-4-12 6 0 8 6 4 12m0 0c2-12 14-17 16-8 1 6-5 10-16 10M14-22C0-24-2-34 10-34c6 0 8 6 4 12m0 0c2-12 14-17 16-8 1 6-5 10-16 10" fill="#89A567"/>
+  </g>
+
+  <!-- A friendly squirrel with a basket of acorns. -->
+  <ellipse cx="195" cy="425" rx="60" ry="14" fill="#AAB98E" opacity=".6"/>
+  <path d="M179 394c-67 14-92-29-77-62 11-23 39-20 44-3 4 15-9 26-14 20 0 22 32 18 45 26Z" fill="#BD8055"/>
+  <path d="M175 393c-37 7-62-5-65-24" stroke="#DCA774" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M162 369c0-29 13-43 35-43 25 0 36 20 32 45l-5 40h-55Z" fill="#C68B59"/>
+  <path d="M171 337c-9-20-10-31-2-34 7-2 16 9 21 27m13-3c2-19 8-28 16-25 6 3 3 20-2 33" fill="#C68B59"/>
+  <path d="M175 331c-5-11-7-18-4-20 3-1 8 6 11 16m24 0c2-10 6-17 9-16 3 1 0 11-2 17" fill="#E7B680"/>
+  <ellipse cx="198" cy="390" rx="20" ry="29" fill="#F0D3A6"/>
+  <path d="M184 355c4 5 9 7 15 7s13-2 17-7" fill="#F0D3A6"/>
+  <g fill="#4D4D35"><circle cx="183" cy="346" r="3"/><circle cx="208" cy="346" r="3"/><path d="m191 352 6 5 6-5Z"/></g>
+  <path d="M197 357v5m0 0c-4 3-7 3-10 0m10 0c3 3 7 3 10 0" stroke="#75513A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M165 419c5-9 15-10 23-5m19 3c10-7 21-5 25 2" stroke="#B47C51" stroke-width="11" stroke-linecap="round"/>
+  <path d="M172 379c10 7 19 9 29 9" stroke="#C68B59" stroke-width="11" stroke-linecap="round"/>
+  <path d="M207 381h42l-5 30h-32Z" fill="#AA8254"/><path d="M214 383c0-20 28-20 28 0" stroke="#AA8254" stroke-width="4" fill="none"/>
+  <path d="M214 391h30m-28 8h26" stroke="#D1AC77" stroke-width="2"/>
+  <use href="#little-acorn" transform="translate(225 381) scale(.6) rotate(-15)"/>
+
+  <!-- Tiny inhabitants and unhurried details. -->
+  <g transform="translate(686 367)">
+    <ellipse cy="36" rx="32" ry="9" fill="#ADBC90"/>
+    <path d="M-25 31c-5-18 3-35 23-35 21 0 29 14 24 35Z" fill="#D1BE95"/>
+    <path d="M-18 5c-9-8-10-18-4-20 7-2 13 4 13 15M9 0c4-12 11-16 16-12 4 5-1 14-9 18" fill="#D1BE95"/>
+    <ellipse cx="-1" cy="17" rx="15" ry="13" fill="#F1E3C6"/>
+    <circle cx="-10" cy="12" r="2.3" fill="#5E5B40"/><circle cx="9" cy="12" r="2.3" fill="#5E5B40"/><path d="m-4 18 4 3 4-3" stroke="#A08361" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <use href="#little-acorn" transform="translate(0 28) scale(.5)"/>
+  </g>
+  <path d="M720 415v-48" stroke="#967F58" stroke-width="5" stroke-linecap="round"/>
+  <path d="M694 359h51l12 13-12 13h-51Z" fill="#D8B579"/>
+  <path d="M708 373h26m-5-5 6 5-6 5" stroke="#8A7955" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <g fill="#F0E6BB"><ellipse cx="346" cy="108" rx="20" ry="6"/><ellipse cx="739" cy="114" rx="22" ry="6"/></g>
+  <circle cx="395" cy="102" r="30" fill="#EBC779"/>
+  <path d="M385 102c6-5 13-5 20 0" stroke="#D9AD5A" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <g stroke="#B5BC9F" stroke-width="2" fill="none" stroke-linecap="round"><path d="M352 157c4-5 8-5 12 0 4-5 8-5 12 0M683 82c4-5 8-5 12 0 4-5 8-5 12 0"/></g>
+  <use href="#flower" transform="translate(121 411) scale(.8)"/><use href="#flower" transform="translate(652 455) scale(.9)"/><use href="#flower" transform="translate(672 463) scale(.6)"/>
+  <use href="#sprig" transform="translate(269 455)"/><use href="#sprig" transform="translate(309 471) scale(.7)"/><use href="#sprig" transform="translate(741 433)"/><use href="#sprig" transform="translate(142 293) scale(.8)"/><use href="#sprig" transform="translate(421 313) scale(.8)"/><use href="#sprig" transform="translate(637 338) scale(.8)"/>
+  <use href="#leaf" transform="translate(98 331) rotate(-50) scale(.9)"/><use href="#leaf" transform="translate(110 335) rotate(14) scale(.75)"/>
+  <use href="#leaf" transform="translate(765 345) rotate(30) scale(.85)"/><use href="#leaf" transform="translate(756 348) rotate(-30) scale(.7)"/>
+  <g fill="#EDE5C9"><ellipse cx="376" cy="451" rx="9" ry="4"/><ellipse cx="598" cy="450" rx="7" ry="3"/><ellipse cx="608" cy="455" rx="4" ry="2"/></g>
+  <use href="#little-acorn" transform="translate(278 307) rotate(20) scale(.65)"/><use href="#little-acorn" transform="translate(305 315) rotate(-12) scale(.55)"/>
+</svg>
