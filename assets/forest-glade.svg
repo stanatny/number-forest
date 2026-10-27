@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="500" y1="0" x2="500" y2="420" gradientUnits="userSpaceOnUse"><stop stop-color="#F8FAF1"/><stop offset="1" stop-color="#EDF1DF"/></linearGradient>
+    <radialGradient id="light" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(795 10) rotate(114) scale(410 400)"><stop stop-color="#FFF4CE" stop-opacity=".68"/><stop offset="1" stop-color="#FFF8DC" stop-opacity="0"/></radialGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1000v420H0z"/>
+  <path fill="url(#light)" d="M0 0h1000v420H0z"/>
+  <!-- Decorative foliage is kept at the outer edge, away from the quantities. -->
+  <path d="M-29 293C67 271 109 301 163 303c130 8 204-28 342-15 177 17 262-37 524 2v130H-29Z" fill="#E4EBD3" opacity=".6"/>
+  <path d="M-16 350c90-16 128 19 235 9 145-15 257 22 359-1 160-36 236 6 441-4v66H-16Z" fill="#DCE5C8" opacity=".55"/>
+  <path d="M-16 404c193-38 263 8 437-2 232-14 359-15 604-5v25H-16Z" fill="#D2DFBA" opacity=".4"/>
+  <path d="M29 420C18 300 16 205-2 107" stroke="#BFCAA9" stroke-width="17" stroke-linecap="round" opacity=".35"/>
+  <path d="M17 286-8 255m26-56 23-41" stroke="#BFCAA9" stroke-width="9" stroke-linecap="round" opacity=".35"/>
+  <path d="M-36-12C10-30 56-7 58 26c34 0 44 30 29 50 27 29 10 63-18 65-3 31-39 49-68 30-24 13-48 8-61-7Z" fill="#DEE7CD"/>
+  <path d="M-25 25C3 1 39 11 46 42c32-2 42 19 30 40-26-6-43 6-51 32-36-5-45-24-50-51Z" fill="#D1DDBB" opacity=".7"/>
+  <path d="M1010 401c-9-130 7-231 18-298" stroke="#C6CFAC" stroke-width="15" stroke-linecap="round" opacity=".42"/>
+  <path d="M1012 259 981 223" stroke="#C6CFAC" stroke-width="7" stroke-linecap="round" opacity=".42"/>
+  <path d="M1051-20c-59-25-113 12-105 50-38 7-49 40-29 64-22 38-1 69 34 66 8 27 39 35 64 16l42 5Z" fill="#DEE7CD"/>
+  <path d="M1038 26c-34-18-64 2-63 31-30-1-44 23-28 46 31-7 51 6 63 31l36-28Z" fill="#D5E0BF" opacity=".75"/>
+  <path d="M-6 398c9-36 14-52 22-69m-5 24c-20-8-33-3-17 9m22-30c19-12 31-8 17 4" stroke="#BFCDA8" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+  <path d="M976 418c-4-23-5-41-1-64m0 24c-20-16-31-8-17 3m18-23c17-17 27-12 17 1" stroke="#BFCDA8" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+</svg>
