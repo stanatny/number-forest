@@ -7,6 +7,7 @@
   const ROUND_COUNT = 10;
   const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光' };
   function badgeName(id) { return badges[id] || '森林发现'; }
+  function chapterPicture(id) { return 'assets/playful/' + (badges[id] ? id : 'hero') + '.svg'; }
   function badgeImage(id) { return badges[id] ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'; }
   const state = { screen: 'home', chapter: null, round: 0, task: null, selected: null, hints: false, attempts: 0, solved: false, completed: 0, independent: 0, manip: 0, bowls: [], changed: false, feedback: '', feedbackSelected: null, sound: false };
   let storageAvailable = true;
@@ -22,6 +23,17 @@
     clock: '<circle cx="17" cy="17" r="14"/><path d="M17 7v10l7 4"/>'
   };
   function icon(id) { return '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[id] || icons.bonds) + '</svg>'; }
+  function playIcon(action) {
+    const drawings = {
+      add: '<path d="M6 17h17M14.5 8.5v17"/><path d="M26 26l3 3 5-6"/>',
+      take: '<path d="M7 18h22"/>',
+      join: '<path d="M3 11l7 7-7 7M33 11l-7 7 7 7M12 25h12l-2 6h-8z"/><path d="M14 18h8"/>',
+      basket: '<path d="M5 17h26l-4 15H9zM10 17l4-9M26 17l-4-9M15 22v5M21 22v5"/><path d="M27 5h8M31 1v8"/>',
+      jump: '<path d="M3 29h30M6 23Q18 0 30 22M23 20l7 2-1-7"/><circle cx="6" cy="23" r="2"/>',
+      pack: '<path d="M13 13l-4-8h18l-4 8M13 13C1 27 6 32 18 32s17-5 5-19zM12 14h12"/>'
+    };
+    return '<svg class="play-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (drawings[action] || drawings.add) + '</svg>';
+  }
   function readRecords() {
     try {
       const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
@@ -88,9 +100,10 @@
   }
   function home() { globalThis.NumberForestEffects?.clear(); stopVoice(); pauseTime(); persistSession(); state.screen = 'home'; renderHome(); focusMain(); }
   function renderHome() {
+    main.dataset.screen = 'home'; main.dataset.motion = 'enter'; delete main.dataset.chapter;
     const total = Object.values(records).reduce((sum, r) => sum + r.completed, 0);
-    main.innerHTML = '<section class="hero"><div class="hero-copy"><div class="eyebrow">欢迎来到 · 数感森林</div><h1>数的秘密，<br>藏在每一次发现里。</h1><p>补一补，分一分，再添一组。<br>和森林里的小伙伴，一起把数学玩明白。</p><div class="hero-note"><span class="note-dot"></span>不用抢时间，每次探索 10 个小任务</div></div><img class="hero-art" src="assets/forest.svg" alt="森林里的小松鼠、松果小屋和时钟树屋"></section>' +
-      '<section aria-labelledby="chapters-title"><div class="section-heading"><div><div class="eyebrow">选一条喜欢的小路</div><h2 id="chapters-title">今天，去哪儿探索？</h2></div><p>' + (total ? '已经完成 ' + total + ' 次小发现' : '从分与合出发，也可以自由看看') + '</p></div><div class="chapter-grid">' + Core.chapters.map((c, i) => '<button class="chapter-card" data-chapter="' + c.id + '" style="--accent:' + esc(c.accent || '#63856c') + '"><span class="chapter-number">CHAPTER 0' + (i + 1) + '</span><span class="chapter-icon">' + icon(c.id) + '</span><h3>' + esc(c.title) + '</h3><p>' + esc(c.subtitle) + '</p><span class="chapter-meta">' + esc(c.level || '') + '</span><span class="chapter-arrow" aria-hidden="true">↗</span>' + ((records[c.id]?.sessions || 0) ? '<span class="visited-mark">探索过 ' + records[c.id].sessions + ' 次</span>' : '') + '</button>').join('') + '</div></section>';
+    main.innerHTML = '<section class="hero"><div class="hero-copy"><div class="eyebrow">欢迎来到 · 数感森林</div><h1>小小探险家，<br><em>出发去森林！</em></h1><p>数松果、分点心、听时钟滴答。<br>和小松鼠一起，发现数的秘密。</p><div class="hero-note"><span class="note-dot"></span>不用抢时间，每次探索 10 个小任务</div></div><div class="hero-world"><img class="hero-art" src="assets/playful/hero.svg" alt="小松鼠和兔子邀请你探索森林里的果篮、花园和时钟树屋"><span class="world-spark" aria-hidden="true">✦</span><span class="world-spark" aria-hidden="true">✧</span><span class="world-spark" aria-hidden="true">✦</span></div></section>' +
+      '<section aria-labelledby="chapters-title"><div class="section-heading"><div><div class="eyebrow">选一条喜欢的小路</div><h2 id="chapters-title">今天，去哪儿探索？</h2></div><p>' + (total ? '已经完成 ' + total + ' 次小发现' : '从分与合出发，也可以自由看看') + '</p></div><div class="chapter-grid">' + Core.chapters.map((c, i) => '<button class="chapter-card" data-chapter="' + c.id + '" style="--accent:' + esc(c.accent || '#63856c') + '"><span class="chapter-number">0' + (i + 1) + '</span><img class="chapter-picture" src="' + chapterPicture(c.id) + '" alt=""><h3>' + esc(c.title) + '</h3><p>' + esc(c.subtitle) + '</p><span class="chapter-meta">' + esc(c.level || '') + '</span><span class="chapter-play" aria-hidden="true">去玩吧 <b>→</b></span>' + ((records[c.id]?.sessions || 0) ? '<span class="visited-mark">探索过 ' + records[c.id].sessions + ' 次</span>' : '') + '</button>').join('') + '</div></section>';
     main.insertAdjacentHTML('beforeend', '<section class="keepsake-shelf badge-shelf"><div class="section-heading"><div><div class="eyebrow">把发现带回家</div><h2>我的森林徽章</h2></div><p>完成一章，点亮一枚专属徽章</p></div><div class="keepsake-items badge-collection">' + Core.chapters.map(c => '<div class="keepsake ' + (records[c.id]?.sessions ? 'earned' : '') + '" data-badge="' + c.id + '"><img class="collection-badge" src="' + badgeImage(c.id) + '" alt="' + esc(badgeName(c.id)) + '徽章"><span class="keepsake-name">' + esc(badgeName(c.id)) + '</span><span class="keepsake-status">' + (records[c.id]?.sessions ? '已点亮 · ' + esc(c.title) : '完成' + esc(c.title) + '后点亮') + '</span></div>').join('') + '</div></section>');
     const saved = readSession();
     try { if (JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')?.version === 1) main.querySelector('.hero-copy').insertAdjacentHTML('beforeend', '<p class="upgrade-note">小路升级为每趟 10 个任务啦。旧版已完成的记录保留，请从新的一趟出发。</p>'); } catch (_) {}
@@ -105,7 +118,7 @@
     state.screen = 'game'; state.seed = Math.floor(Math.random() * 4294967296); state.task = Core.createTask(state.chapter.id, { round: state.round, random: seeded(state.seed) });
     Object.assign(state, { selected: null, hints: false, attempts: 0, solved: false, manip: 0, changed: false, feedback: '', feedbackSelected: null, custom: {} });
     state.bowls = Array(state.task.model.groups || 0).fill(0);
-    renderGame(); speak(state.task.prompt);
+    renderGame(true); speak(state.task.prompt);
   }
   function acorns(n, cls = '') { return Array.from({ length: Math.max(0, n) }, (_, i) => '<span class="acorn ' + cls + '" aria-hidden="true" style="--i:' + i + '"></span>').join(''); }
   function basket(count, label, cls = '') { return '<div class="basket ' + cls + '"><div class="group-label">' + esc(label) + '</div><div class="basket-fruit" role="img" aria-label="' + count + ' 颗松果">' + (count ? acorns(count) : '<span class="zero-mark">空空的</span>') + '</div></div>'; }
@@ -115,20 +128,20 @@
     if (custom) return custom.render(viewContext());
     if (t.kind === 'bonds') {
       const n = state.solved ? t.answer : state.manip;
-      return (m.equation ? '<div class="puzzle-equation">' + esc(m.equation) + '</div>' : '') + '<div class="scene bonds-scene"><div class="scene-note">这个篮子需要 ' + m.total + ' 颗松果</div><div class="slot-grid" role="img" aria-label="已有 ' + m.visible + ' 颗，新放了 ' + n + ' 颗">' + Array.from({ length: m.total }, (_, i) => '<span class="nut-slot ' + (i >= m.visible ? 'waiting' : '') + '">' + (i < m.visible + n ? acorns(1, i >= m.visible ? 'new' : '') : '<span class="slot-dot"></span>') + '</span>').join('') + '</div><div class="scene-legend"><span>已有 ' + m.visible + ' 颗</span><span>点按钮，试着补齐空位</span></div></div>' + (!state.solved ? '<div class="control-row"><button class="small-button" data-manip="-1" ' + (state.manip === 0 ? 'disabled' : '') + '>取回一颗</button><button class="secondary-button" data-manip="1" ' + (state.manip >= t.answer ? 'disabled' : '') + '>放入一颗 ＋</button></div>' : '');
+      return (m.equation ? '<div class="puzzle-equation">' + esc(m.equation) + '</div>' : '') + '<div class="scene bonds-scene"><div class="scene-note">这个篮子需要 ' + m.total + ' 颗松果</div><div class="slot-grid" role="img" aria-label="已有 ' + m.visible + ' 颗，新放了 ' + n + ' 颗">' + Array.from({ length: m.total }, (_, i) => '<span class="nut-slot ' + (i >= m.visible ? 'waiting' : '') + '">' + (i < m.visible + n ? acorns(1, i >= m.visible ? 'new' : '') : '<span class="slot-dot"></span>') + '</span>').join('') + '</div><div class="scene-legend"><span>已有 ' + m.visible + ' 颗</span><span>点按钮，试着补齐空位</span></div></div>' + (!state.solved ? '<div class="control-row"><button class="small-button" data-manip="-1" ' + (state.manip === 0 ? 'disabled' : '') + '>' + playIcon('take') + '取回一颗</button><button class="secondary-button" data-manip="1" ' + (state.manip >= t.answer ? 'disabled' : '') + '>' + playIcon('add') + '放入一颗</button></div>' : '');
     }
     if (t.kind === 'add') {
       const joined = state.manip > 0 || state.solved;
-      return '<div class="scene"><div class="basket-grid">' + (joined ? basket(m.a + m.b, '两篮合在一起') : basket(m.a, '原来有 ' + m.a + ' 颗') + '<span class="operator-symbol">＋</span>' + basket(m.b, '又送来 ' + m.b + ' 颗')) + '</div></div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="join">' + (joined ? '分开看看' : '把两篮合起来') + '</button></div>' : '');
+      return '<div class="scene"><div class="basket-grid">' + (joined ? basket(m.a + m.b, '两篮合在一起') : basket(m.a, '原来有 ' + m.a + ' 颗') + '<span class="operator-symbol">＋</span>' + basket(m.b, '又送来 ' + m.b + ' 颗')) + '</div></div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="join">' + playIcon('join') + (joined ? '分开看看' : '把两篮合起来') + '</button></div>' : '');
     }
     if (t.kind === 'subtract') {
       const removed = state.manip > 0 || state.solved;
-      return '<div class="scene"><div class="basket"><div class="group-label">原来有 ' + m.a + ' 颗，要送走 ' + m.b + ' 颗</div><div class="basket-fruit">' + acorns(m.a - m.b) + acorns(m.b, removed ? 'removed' : '') + '</div></div>' + (removed ? '<div class="scene-note">淡色的是送走的，数数留下了多少。</div>' : '') + '</div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="remove">' + (removed ? '放回来看看' : '送给朋友 ' + m.b + ' 颗') + '</button></div>' : '');
+      return '<div class="scene"><div class="basket"><div class="group-label">原来有 ' + m.a + ' 颗，要送走 ' + m.b + ' 颗</div><div class="basket-fruit">' + acorns(m.a - m.b) + acorns(m.b, removed ? 'removed' : '') + '</div></div>' + (removed ? '<div class="scene-note">淡色的是送走的，数数留下了多少。</div>' : '') + '</div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="remove">' + playIcon('take') + (removed ? '放回来看看' : '送给朋友 ' + m.b + ' 颗') + '</button></div>' : '');
     }
     if (t.kind === 'groups') {
       const expanded = state.manip > 0 || state.solved;
       const shown = expanded ? m.groups : m.previousGroups;
-      return '<div class="scene"><div class="scene-note">每篮始终放 ' + m.perGroup + ' 颗</div><div class="basket-grid grouped">' + Array.from({ length: shown }, (_, i) => basket(m.perGroup, '第 ' + (i + 1) + ' 篮', i >= m.previousGroups ? 'extra-group' : '')).join('') + (!expanded ? '<div class="basket empty-basket"><span>＋</span><p>再来一篮</p></div>' : '') + '</div><div class="known-fact">已经知道：' + m.perGroup + ' × ' + m.previousGroups + ' = ' + (m.perGroup * m.previousGroups) + '<span> · 再添一篮，就多 ' + m.perGroup + ' 颗</span></div></div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="group">' + (expanded ? '拿走新的一篮' : '再添一篮，看看变化') + '</button></div>' : '');
+      return '<div class="scene"><div class="scene-note">每篮始终放 ' + m.perGroup + ' 颗</div><div class="basket-grid grouped">' + Array.from({ length: shown }, (_, i) => basket(m.perGroup, '第 ' + (i + 1) + ' 篮', i >= m.previousGroups ? 'extra-group' : '')).join('') + (!expanded ? '<div class="basket empty-basket"><span>＋</span><p>再来一篮</p></div>' : '') + '</div><div class="known-fact">已经知道：' + m.perGroup + ' × ' + m.previousGroups + ' = ' + (m.perGroup * m.previousGroups) + '<span> · 再添一篮，就多 ' + m.perGroup + ' 颗</span></div></div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="group">' + playIcon('basket') + (expanded ? '拿走新的一篮' : '再添一篮，看看变化') + '</button></div>' : '');
     }
     if (t.kind === 'sharing') {
       const bowls = state.solved ? Array(m.groups).fill(m.perGroup) : state.bowls;
@@ -137,15 +150,15 @@
     }
     if (t.kind === 'compare') return '<div class="scene"><div class="compare-baskets">' + [m.a, m.b].map(n => '<button class="basket compare-basket ' + (state.selected === n ? 'selected' : '') + '" data-answer="' + n + '" aria-label="选择 ' + n + ' 颗的篮子" aria-pressed="' + (state.selected === n) + '" ' + (state.solved ? 'disabled' : '') + '><span class="basket-fruit">' + acorns(n) + '</span><strong>' + n + '</strong><span>选这篮</span></button>').join('') + '</div></div>';
     if (t.kind === 'sequence') return '<div class="scene"><div class="sequence-track">' + m.values.map((n, i) => (i ? '<span class="sequence-arrow" aria-hidden="true">→</span>' : '') + '<span class="sequence-tile ' + (n === null ? 'unknown' : '') + '">' + (n === null ? (state.solved ? t.answer : '?') : n) + '</span>').join('') + '</div>' + (state.hints || state.solved ? '<div class="scene-note">每次' + (m.step > 0 ? '增加 ' : '减少 ') + Math.abs(m.step) + '</div>' : '') + '</div>';
-    if (t.kind === 'numberline') return '<div class="scene numberline-scene"><div class="jump-caption"><strong>' + m.start + '</strong><span>' + (m.step > 0 ? '往前跳 ' : '往回跳 ') + Math.abs(m.step) + ' 格</span><strong>→ ' + (state.solved ? t.answer : '?') + '</strong></div>' + numberlineSvg(m.start, m.step, state.manip > 0 || state.solved, state.solved) + '</div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="jump">' + (state.manip ? '回到起点' : '跳一跳，看看落在哪里') + '</button></div>' : '');
+    if (t.kind === 'numberline') return '<div class="scene numberline-scene"><div class="jump-caption"><strong>' + m.start + '</strong><span>' + (m.step > 0 ? '往前跳 ' : '往回跳 ') + Math.abs(m.step) + ' 格</span><strong>→ ' + (state.solved ? t.answer : '?') + '</strong></div>' + numberlineSvg(m.start, m.step, state.manip > 0 || state.solved, state.solved) + '</div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="jump">' + playIcon('jump') + (state.manip ? '回到起点' : '跳一跳，看看落在哪里') + '</button></div>' : '');
     if (t.kind === 'group-total' || t.kind === 'group-count') return '<div class="scene"><div class="scene-note">每篮 ' + m.perGroup + ' 颗</div><div class="basket-grid grouped">' + Array.from({ length: m.groups }, () => basket(m.perGroup, '')).join('') + '</div><div class="puzzle-equation">' + (t.kind === 'group-count' ? m.perGroup + ' × ' + (state.solved ? m.groups : '?') + ' = ' + m.total : Array(m.groups).fill(m.perGroup).join(' + ') + ' = ' + (state.solved ? m.total : '?')) + '</div></div>';
-    if (t.kind === 'pack') return '<div class="scene"><div class="scene-note">每 ' + m.perGroup + ' 颗装成一袋</div><div class="basket-grid grouped">' + (state.manip || state.solved ? Array.from({ length: m.groups }, () => basket(m.perGroup, '一袋')).join('') : basket(m.total, '一共有 ' + m.total + ' 颗')) + '</div></div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="pack">' + (state.manip ? '倒出来再看看' : '每 ' + m.perGroup + ' 颗装一袋') + '</button></div>' : '');
+    if (t.kind === 'pack') return '<div class="scene"><div class="scene-note">每 ' + m.perGroup + ' 颗装成一袋</div><div class="basket-grid grouped">' + (state.manip || state.solved ? Array.from({ length: m.groups }, () => basket(m.perGroup, '一袋')).join('') : basket(m.total, '一共有 ' + m.total + ' 颗')) + '</div></div>' + (!state.solved ? '<div class="control-row"><button class="secondary-button" data-toggle="pack">' + playIcon('pack') + (state.manip ? '倒出来再看看' : '每 ' + m.perGroup + ' 颗装一袋') + '</button></div>' : '');
     if (t.kind === 'clock-forward') return '<div class="scene clock-forward-scene"><div class="clock-step"><div class="scene-note">现在</div>' + clockSvg(m.hour, m.minute, false) + '</div><div class="time-jump">＋' + (m.advance === 60 ? '1 小时' : '30 分钟') + '<span aria-hidden="true">→</span></div><div class="clock-step"><div class="scene-note">过一会儿</div>' + (state.solved ? clockSvg(m.targetHour, m.targetMinute, false) : '<div class="clock-face clock-placeholder" aria-label="需要找到过一会儿的时间">?</div>') + '</div></div>';
     if (t.kind === 'clock') return '<div class="scene clock-scene">' + clockSvg(m.hour, m.minute, state.hints) + '<div class="clock-legend"><span><i class="hand-key hour-key"></i>短的是时针</span><span><i class="hand-key minute-key"></i>长的是分针</span></div></div>';
     return '<div class="scene">请为这个章节添加操作场景。</div>';
   }
   function animalSvg(i) {
-    const colors = ['#d99b69', '#8eaa96', '#d8b95d', '#c9938b'];
+    const colors = ['#f0a054', '#81bda9', '#edc962', '#e9a1a0'];
     return '<svg viewBox="0 0 80 72" aria-hidden="true"><path d="M17 27Q4 0 28 13M53 14Q76 0 65 29" fill="' + colors[i % 4] + '" stroke="#624d3c" stroke-width="2"/><ellipse cx="40" cy="42" rx="29" ry="26" fill="' + colors[i % 4] + '"/><ellipse cx="40" cy="51" rx="17" ry="14" fill="#f7e9d6"/><circle cx="29" cy="38" r="2.8" fill="#283c32"/><circle cx="51" cy="38" r="2.8" fill="#283c32"/><path d="M36 47q4-5 8 0l-4 4z" fill="#624d3c"/><path d="M33 55q7 6 14 0" fill="none" stroke="#624d3c" stroke-width="2" stroke-linecap="round"/></svg>';
   }
   function clockSvg(hour, minute, hint) {
@@ -190,7 +203,7 @@
     const listen = 'speechSynthesis' in window ? '<button class="text-button listen-feedback" id="listen-feedback" aria-label="听一听这次的讲解">♫ 听一听</button>' : '';
     if (state.solved) {
       const displayAnswer = t.kind.startsWith('clock') ? timeLabel(t.answer) : t.answer;
-      return '<section class="feedback answer-feedback success" tabindex="-1" aria-label="答对啦"><div class="celebration-scene" aria-hidden="true"><div class="celebration-rays"></div><div class="celebration-stars">' + Array.from({ length: 8 }, (_, i) => '<span style="--i:' + i + '">✦</span>').join('') + '</div><div class="celebration-mascot">' + animalSvg(0) + '</div><span class="celebration-check">✓</span></div><div class="celebration-copy"><h2>答对啦！</h2><div class="answer-reveal"><strong>' + esc(displayAnswer) + '</strong><span>' + esc(t.unit ?? (t.kind.startsWith('clock') ? '' : '颗')) + '</span></div><p>' + esc(state.feedback) + '</p></div><div class="feedback-actions"><button class="primary-button" id="next-button">' + (state.round === ROUND_COUNT - 1 ? '领取通关徽章 →' : '下一个小发现 →') + '</button>' + listen + '</div></section>';
+      return '<section class="feedback answer-feedback success" tabindex="-1" aria-label="答对啦"><div class="celebration-scene" aria-hidden="true"><div class="celebration-rays"></div><div class="celebration-stars">' + Array.from({ length: 8 }, (_, i) => '<span style="--i:' + i + '">✦</span>').join('') + '</div><div class="celebration-mascot"><img class="buddy-celebrate" src="assets/playful/buddy-happy.svg" alt=""></div><span class="celebration-check">✓</span></div><div class="celebration-copy"><h2>答对啦！</h2><div class="answer-reveal"><strong>' + esc(displayAnswer) + '</strong><span>' + esc(t.unit ?? (t.kind.startsWith('clock') ? '' : '颗')) + '</span></div><p>' + esc(state.feedback) + '</p></div><div class="feedback-actions"><button class="primary-button" id="next-button">' + (state.round === ROUND_COUNT - 1 ? '领取通关徽章 →' : '下一个小发现 →') + '</button>' + listen + '</div></section>';
     }
     const d = globalThis.NumberForestFeedback.describe(t, state.feedbackSelected, state);
     let visual = '';
@@ -211,13 +224,53 @@
     } else if (d.kind === 'compare') {
       visual = '<div class="feedback-visual quantity-compare"><div class="compare-row"><span class="compare-label">左边</span><div class="compare-dots">' + acorns(t.model.a) + '</div><strong class="compare-number">' + t.model.a + '</strong></div><div class="compare-row"><span class="compare-label">右边</span><div class="compare-dots">' + acorns(t.model.b) + '</div><strong class="compare-number">' + t.model.b + '</strong></div></div>';
     }
-    return '<section class="feedback answer-feedback retry" tabindex="-1" aria-label="一起看看提示"><div class="feedback-heading"><span aria-hidden="true">' + animalSvg(0) + '</span><h2>' + esc(d.title) + '</h2></div>' + visual + '<p class="feedback-message">' + esc(d.message) + '</p><div class="feedback-actions">' + listen + '</div></section>';
+    return '<section class="feedback answer-feedback retry" tabindex="-1" aria-label="一起看看提示"><div class="feedback-heading"><span aria-hidden="true"><img src="assets/playful/buddy-thinking.svg" alt=""></span><h2>' + esc(d.title) + '</h2></div>' + visual + '<p class="feedback-message">' + esc(d.message) + '</p><div class="feedback-actions">' + listen + '</div></section>';
   }
-  function renderGame() {
+  function buddyState() {
+    if (state.solved) return { mood: 'happy', message: '发现啦！给你一个大大的拥抱！' };
+    if (state.feedback || state.hints) return { mood: 'thinking', message: '我们一起看看，秘密藏在哪里？' };
+    const messages = {
+      bonds: '空位在等松果呢，一起补一补！', compare: '哪一边更' + (state.task.model.ask === 'less' ? '少' : '多') + '？我也来数一数！', sequence: '数字排着队，空位里少了谁呀？',
+      add: '两篮松果碰个面，会有多少呢？', subtract: '送给朋友后，还有多少留在篮里？', numberline: '准备好了吗？跟着数字跳一跳！',
+      groups: '每篮一样多，再添一篮！', 'group-total': '每篮一样多，一篮一篮数！', 'group-count': '数数篮子，一共有几组呢？',
+      sharing: '朋友们来野餐啦，每份要一样多哦！', pack: '松果装进小袋子，出发去野餐！',
+      clock: '滴答滴答，和我一起找时针！', 'clock-forward': '过一会儿，时针会走到哪里？'
+    };
+    return { mood: 'idle', message: messages[state.task.kind] || '一起找找藏在森林里的小秘密！' };
+  }
+  function buddyHtml() {
+    const buddy = buddyState();
+    return '<div class="buddy-scene" data-mood="' + buddy.mood + '"><img class="buddy-character" src="assets/playful/buddy' + (buddy.mood === 'idle' ? '' : '-' + buddy.mood) + '.svg" alt=""><p class="buddy-speech">' + esc(buddy.message) + '</p></div>';
+  }
+  function buddyResponse(message, mood = 'idle') {
+    const buddy = main.querySelector('.buddy-scene');
+    if (!buddy) return;
+    buddy.dataset.mood = mood;
+    buddy.querySelector('.buddy-character').src = 'assets/playful/buddy' + (mood === 'idle' ? '' : '-' + mood) + '.svg';
+    buddy.querySelector('.buddy-speech').textContent = message;
+  }
+  // Repaint quantities immediately, then animate only the changed object.
+  // Focus stays on the same control so repeated keyboard/touch play is stable.
+  function renderAfterPlay(controlSelector, arrivalSelector, message) {
+    renderGame();
+    let control = main.querySelector(controlSelector);
+    if (control?.disabled) {
+      control = control.closest('.animal-place, .control-row')?.querySelector('button:not(:disabled)') || main.querySelector('[data-answer]:not(:disabled)');
+    }
+    control?.focus({ preventScroll: true });
+    main.querySelector('.scene')?.classList.add('is-playing');
+    if (arrivalSelector) main.querySelector(arrivalSelector)?.classList.add('playful-arrival');
+    buddyResponse(message);
+    main.querySelector('.buddy-scene')?.classList.add('is-reacting');
+  }
+  function renderGame(entering = false) {
+    const tipOpen = !entering && main.querySelector('.guide-tip')?.open;
+    main.dataset.screen = 'game'; main.dataset.chapter = state.chapter.id; main.dataset.motion = entering ? 'enter' : 'respond';
     globalThis.NumberForestEffects?.clear();
     const t = state.task, c = state.chapter;
-    main.innerHTML = '<div class="game-topbar"><button class="back-button" id="back-button">← 森林地图</button><div class="chapter-label">' + esc(c.title) + '</div><div class="round-dots" aria-label="第 ' + (state.round + 1) + ' 个任务，共 ' + ROUND_COUNT + ' 个">' + Array.from({ length: ROUND_COUNT }, (_, i) => '<span class="' + (i < state.round ? 'done' : i === state.round ? 'current' : '') + '"></span>').join('') + '</div></div>' +
-      '<div class="game-layout"><section class="play-panel"><div class="mission-heading"><div class="eyebrow">小发现 ' + String(state.round + 1).padStart(2, '0') + ' / 10 <button class="read-button" id="read-button" aria-label="朗读题目">♫ 听题目</button></div><h1>' + esc(t.prompt) + '</h1><p>' + esc(t.instruction || '可以先摆一摆，再选出你的答案。') + '</p></div>' + (state.solved ? feedbackHtml() : '') + sceneHtml() + (!state.solved ? feedbackHtml() : '') + (state.solved ? '<div class="relationship-card"><div class="eyebrow">原来它们是一家人</div><div class="equation-strip">' + t.relations.map(r => '<span class="equation">' + esc(r) + '</span>').join('') + '</div></div>' : answerHtml()) + '</section><aside class="guide-panel"><div class="mascot-badge">' + animalSvg(0) + '</div><div class="tip-title">小松鼠的悄悄话</div><p class="tip-copy">' + chapterTip(c.id) + '</p>' + (state.hints && !state.solved ? '<div class="hint-box"><strong>一起想一想</strong><p>' + esc(t.hint) + '</p></div>' : '') + '<div class="guide-footnote">慢慢来，可以数，可以摆。<br>每一次发现都算数。</div></aside></div>';
+    main.innerHTML = '<div class="game-topbar"><button class="back-button" id="back-button">← 森林地图</button><div class="chapter-label">' + esc(c.title) + '</div><div class="round-dots" aria-label="第 ' + (state.round + 1) + ' 个任务，共 ' + ROUND_COUNT + ' 个">' + Array.from({ length: ROUND_COUNT }, (_, i) => '<span class="' + (i < state.round || (state.solved && i === state.round) ? 'done' : i === state.round ? 'current' : '') + '"' + (i === state.round ? ' aria-current="step"' : '') + '>' + (i < state.round || (state.solved && i === state.round) ? '✓' : i + 1) + '</span>').join('') + '</div></div>' +
+      '<div class="game-layout"><section class="play-panel"><div class="mission-heading"><div class="eyebrow mission-kicker">小发现 ' + String(state.round + 1).padStart(2, '0') + ' / 10 <button class="read-button" id="read-button" aria-label="朗读题目">♫ 听题目</button></div><h1>' + esc(t.prompt) + '</h1><p>' + esc(t.instruction || '可以先摆一摆，再选出你的答案。') + '</p></div>' + (state.solved ? feedbackHtml() : '') + sceneHtml() + (!state.solved ? feedbackHtml() : '') + (state.solved ? '<div class="relationship-card"><div class="eyebrow">原来它们是一家人</div><div class="equation-strip">' + t.relations.map(r => '<span class="equation">' + esc(r) + '</span>').join('') + '</div></div>' : answerHtml()) + '</section><aside class="guide-panel" aria-label="小松鼠陪你探索">' + buddyHtml() + (state.hints && !state.solved ? '<div class="hint-box"><strong>一起想一想</strong><p>' + esc(t.hint) + '</p></div>' : '') + '<details class="guide-tip"><summary class="guide-heading">给爸爸妈妈的小提示</summary><p class="tip-copy">' + chapterTip(c.id) + '</p></details><div class="guide-footnote">可以数，可以摆，<br>慢慢来，我陪你！</div></aside></div>';
+    if (tipOpen) main.querySelector('.guide-tip').open = true;
     bindGame();
     resumeTime(); persistSession();
   }
@@ -231,12 +284,35 @@
       state.selected = Number(b.dataset.answer); clearFeedback(); main.querySelector('.answer-feedback')?.remove();
       main.querySelectorAll('[data-answer]').forEach(el => { const on = el === b; el.classList.toggle('selected', on); el.setAttribute('aria-pressed', String(on)); });
       document.getElementById('check-button').disabled = false;
+      b.classList.remove('is-tapped');
+      void b.offsetWidth;
+      b.classList.add('is-tapped');
+      buddyResponse('选好啦！点“试试看”，一起发现答案。');
       persistSession();
     });
-    main.querySelectorAll('[data-manip]').forEach(b => b.onclick = () => { state.manip = Math.max(0, Math.min(state.task.answer, state.manip + Number(b.dataset.manip))); state.changed = true; clearFeedback(); renderGame(); });
-    main.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => { state.manip = state.manip ? 0 : 1; state.changed = true; clearFeedback(); renderGame(); });
-    main.querySelectorAll('[data-bowl]').forEach(b => b.onclick = () => { if (state.bowls.reduce((a, v) => a + v, 0) < state.task.model.total) { state.bowls[Number(b.dataset.bowl)]++; state.changed = true; clearFeedback(); renderGame(); } });
-    main.querySelectorAll('[data-return]').forEach(b => b.onclick = () => { const i = Number(b.dataset.return); state.bowls[i] = Math.max(0, state.bowls[i] - 1); clearFeedback(); renderGame(); });
+    main.querySelectorAll('[data-manip]').forEach(b => b.onclick = () => {
+      const delta = Number(b.dataset.manip);
+      state.manip = Math.max(0, Math.min(state.task.answer, state.manip + delta)); state.changed = true; clearFeedback();
+      const filled = state.task.model.visible + state.manip;
+      renderAfterPlay('[data-manip="' + delta + '"]', delta > 0 ? '.nut-slot:nth-child(' + filled + ') .acorn' : null, delta > 0 ? '又放进一颗！空位变少啦。' : '取回来啦，再摆一摆也可以！');
+    });
+    main.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => {
+      const action = b.dataset.toggle;
+      state.manip = state.manip ? 0 : 1; state.changed = true; clearFeedback();
+      const targets = { join: '.scene .basket', group: '.scene .extra-group', jump: '.numberline-svg', pack: '.scene .basket' };
+      renderAfterPlay('[data-toggle="' + action + '"]', state.manip ? targets[action] : null, state.manip ? '变一变，数量有什么新发现？' : '回到刚才，再看看它们的关系！');
+    });
+    main.querySelectorAll('[data-bowl]').forEach(b => b.onclick = () => {
+      if (state.bowls.reduce((a, v) => a + v, 0) < state.task.model.total) {
+        const i = Number(b.dataset.bowl);
+        state.bowls[i]++; state.changed = true; clearFeedback();
+        renderAfterPlay('[data-bowl="' + i + '"]', '[data-bowl="' + i + '"] .animal-avatar', '朋友收到啦！看看每份一样多了吗？');
+      }
+    });
+    main.querySelectorAll('[data-return]').forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.return); state.bowls[i] = Math.max(0, state.bowls[i] - 1); clearFeedback();
+      renderAfterPlay('[data-return="' + i + '"]', null, '拿回来再分分，让每个朋友都一样多。');
+    });
     const hint = document.getElementById('hint-button');
     if (hint) hint.onclick = () => { state.hints = true; renderGame(); announce(state.task.hint); speak(state.task.hint); const box = main.querySelector('.hint-box'); if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
     const listen = document.getElementById('listen-feedback'); if (listen) listen.onclick = () => { state.sound = true; updateSound(); speak(state.solved ? '答对啦！' + state.feedback : state.feedback); };
@@ -275,7 +351,7 @@
   function finish() {
     if (state.screen === 'result') return;
     globalThis.NumberForestEffects?.clear();
-    stopVoice(); pauseTime(); state.screen = 'result';
+    stopVoice(); pauseTime(); state.screen = 'result'; main.dataset.screen = 'result'; main.dataset.motion = 'enter';
     const r = records[state.chapter.id];
     const firstBadge = !r.sessions;
     r.sessions++; r.timingRounds = ROUND_COUNT; r.lastMs = elapsedMs; r.bestMs = r.bestMs ? Math.min(r.bestMs, elapsedMs) : elapsedMs; saveRecords();
@@ -291,7 +367,7 @@
   }
   function parent() {
     globalThis.NumberForestEffects?.clear();
-    stopVoice(); pauseTime(); persistSession(); state.screen = 'parent';
+    stopVoice(); pauseTime(); persistSession(); state.screen = 'parent'; main.dataset.screen = 'parent'; main.dataset.motion = 'enter';
     main.innerHTML = '<section class="parent-panel"><div class="parent-head"><div><div class="eyebrow">观察，比排名更有帮助</div><h1>家长小记</h1><p>这些记录描述练习经历，不代表已经掌握。可以在生活中换个情境，再观察一次。</p></div><button class="back-button" id="parent-back">← 回到森林</button></div><div class="record-grid">' + Core.chapters.map(c => { const r = records[c.id] || { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 }; return '<article class="record-card"><div class="chapter-icon">' + icon(c.id) + '</div><h2>' + esc(c.title) + '</h2><p>' + esc(c.subtitle) + '</p><dl><div><dt>完成任务</dt><dd>' + r.completed + '</dd></div><div><dt>首答正确 · 未点提示</dt><dd>' + r.independent + '</dd></div><div><dt>借助提示或修正后完成</dt><dd>' + r.assisted + '</dd></div><div><dt>完整探索</dt><dd>' + r.sessions + ' 次</dd></div></dl></article>'; }).join('') + '</div><div class="parent-explainer"><strong>怎么看这些数字？</strong><p>“首答正确”也可能借助了数物体和操作场景，不等于脱离实物口算。观察他是否逐渐能接着数、借用熟悉结果，以及说明为什么。这里不把动画、阅读和操作时间算作计算速度。</p><p>所有记录只保存在当前浏览器，换设备不会同步。' + (storageAvailable ? '清除浏览器数据也会清除记录。' : '当前浏览器无法保存记录，这次浏览结束后记录可能丢失。') + '</p></div><div class="settings-row"><button class="text-button" id="reset-records">清空本机练习记录</button><span>不影响任何章节的使用</span></div></section>';
     document.getElementById('parent-back').onclick = home;
     main.querySelectorAll('.record-card').forEach((card, i) => {

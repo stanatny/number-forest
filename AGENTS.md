@@ -13,3 +13,5 @@ An offline-capable, extensible Chinese number-sense game for early learners.
 - A repository push and public website publication are distinct actions. Default new GitHub repository visibility is private.
 
 - Chapter award visuals use a distinct, high-contrast forest stage, a growing two-sided badge that visibly flips around the vertical (Y) axis, and a finite buildup / impact / settle sequence ending on the front. Flat front-only Z-axis spinning is not a substitute. Verify the actual animation in Chromium and WebKit, immediate exit controls, and a complete static reduced-motion presentation. Particle count alone is not visual acceptance.
+
+- Everyday play uses bright picture-book forest art and one consistent squirrel companion. Keep decorative objects outside countable quantities, preserve stable touch targets, and animate only a newly changed object after a manipulation. Do not replay every acorn entrance on each DOM repaint. Long parent guidance stays collapsible; mathematical hints remain immediately available. Motion is finite and respects reduced-motion preferences.

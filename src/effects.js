@@ -6,7 +6,7 @@
   // API: celebrate(anchorElement, { finale: false }) -> boolean; clear() -> void.
   var document = root.document;
   var motion = typeof root.matchMedia === 'function' ? root.matchMedia('(prefers-reduced-motion: reduce)') : null;
-  var palette = ['#315d45', '#dc7955', '#e5b957', '#9fc9b1', '#c5dbad'];
+  var palette = ['#28ad96', '#ff885c', '#ffd65c', '#61c8ed', '#b39ae5'];
   var active = null;
   var frameId = null;
 
