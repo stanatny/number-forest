@@ -426,13 +426,13 @@
     document.getElementById('reset-records').onclick = resetRecords;
     focusMain();
   }
-  function clearRecordState(screen) {
+  function clearRecordState(screen, clearSaved = true) {
     pauseTime(); stopVoice(); globalThis.NumberForestEffects?.clear();
     records = {}; elapsedMs = 0;
     // Leave the game before any render or lifecycle callback can save again.
     Object.assign(state, { screen, chapter: null, task: null, round: 0, completed: 0, independent: 0, solved: false, selected: null, feedback: '', feedbackSelected: null });
     let saved = true;
-    for (const key of [KEY, SESSION_KEY]) {
+    for (const key of clearSaved ? [KEY, SESSION_KEY] : []) {
       try { localStorage.removeItem(key); } catch (_) { saved = false; storageAvailable = false; }
     }
     return saved;
@@ -446,16 +446,19 @@
     const screen = state.screen === 'parent' ? 'parent' : 'home';
     const saved = clearRecordState(screen);
     // Notify other open game tabs so their periodic saves cannot restore old progress.
-    try { localStorage.setItem(RESET_KEY, Date.now() + ':' + Math.random()); } catch (_) { storageAvailable = false; }
+    let synchronized = true;
+    try { localStorage.setItem(RESET_KEY, Date.now() + ':' + Math.random()); } catch (_) { synchronized = false; storageAvailable = false; }
     if (screen === 'parent') parent(); else renderHome();
     document.getElementById('reset-records').focus({ preventScroll: true });
-    showResetNotice(saved ? '记录已重置，所有徽章可以重新收集啦。' : '当前页面的记录已重置，但浏览器未允许清除保存的数据；刷新后可能仍有旧记录。');
+    showResetNotice(saved ? ('记录已重置，所有徽章可以重新收集啦。' + (synchronized ? '' : '其他已打开页面尚未同步，请刷新它们。')) : '当前页面的记录已重置，但浏览器未允许清除保存的数据；刷新后可能仍有旧记录。');
   }
   window.addEventListener('storage', event => {
     if (event.key !== RESET_KEY || !event.newValue || event.storageArea !== localStorage) return;
-    const saved = clearRecordState('home');
+    // A delayed notification must not delete progress created after the reset.
+    clearRecordState('home', false);
+    records = readRecords();
     renderHome(); focusMain();
-    showResetNotice(saved ? '另一页已重置记录，回到森林重新探索吧。' : '另一页已重置记录，但这个页面未能清除保存的数据。');
+    showResetNotice('另一页已重置记录，回到森林重新探索吧。');
   });
   function updateSound() { const b = document.getElementById('sound-button'); b.textContent = state.sound ? '朗读：开' : '朗读：关'; b.setAttribute('aria-pressed', String(state.sound)); }
   function updateMusic() { const b = document.getElementById('music-button'), enabled = globalThis.NumberForestAudio.isEnabled(); b.textContent = enabled ? '音乐：开' : '音乐：关'; b.setAttribute('aria-pressed', String(enabled)); }
