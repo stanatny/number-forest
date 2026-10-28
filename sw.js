@@ -1,7 +1,7 @@
 /* Number Forest: project-scoped offline shell, illustrations and played voices. */
 'use strict';
 
-const VERSION = '0.5.0';
+const VERSION = '0.5.1';
 const SCOPE = new URL(self.registration.scope);
 const PREFIX = 'number-forest:' + SCOPE.pathname + ':';
 const CACHES = Object.freeze({

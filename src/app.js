@@ -4,6 +4,7 @@
   const main = document.getElementById('main');
   const KEY = 'number-forest-progress-v1';
   const SESSION_KEY = 'number-forest-session-v1';
+  const RESET_KEY = 'number-forest-reset-v1';
   const ROUND_COUNT = 10;
   const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光' };
   function badgeName(id) { return badges[id] || '森林发现'; }
@@ -118,7 +119,7 @@
     const total = Object.values(records).reduce((sum, r) => sum + r.completed, 0);
     main.innerHTML = '<section class="hero"><div class="hero-copy"><div class="eyebrow">欢迎来到 · 数感森林</div><h1>小小探险家，<br><em>出发去森林！</em></h1><p>数松果、分点心、听时钟滴答。<br>和小松鼠一起，发现数的秘密。</p><div class="hero-note"><span class="note-dot"></span>不用抢时间，每次探索 10 个小任务</div></div><div class="hero-world"><img class="hero-art" src="assets/playful/hero.svg" alt="小松鼠和兔子邀请你探索森林里的果篮、花园和时钟树屋"><span class="world-spark" aria-hidden="true">✦</span><span class="world-spark" aria-hidden="true">✧</span><span class="world-spark" aria-hidden="true">✦</span></div></section>' +
       '<section aria-labelledby="chapters-title"><div class="section-heading"><div><div class="eyebrow">选一条喜欢的小路</div><h2 id="chapters-title">今天，去哪儿探索？</h2></div><p>' + (total ? '已经完成 ' + total + ' 次小发现' : '从分与合出发，也可以自由看看') + '</p></div><div class="chapter-grid">' + Core.chapters.map((c, i) => '<button class="chapter-card" data-chapter="' + c.id + '" style="--accent:' + esc(c.accent || '#63856c') + '"><span class="chapter-number">0' + (i + 1) + '</span><img class="chapter-picture" src="' + chapterPicture(c.id) + '" alt=""><h3>' + esc(c.title) + '</h3><p>' + esc(c.subtitle) + '</p><span class="chapter-meta">' + esc(c.level || '') + '</span><span class="chapter-play" aria-hidden="true">去玩吧 <b>→</b></span>' + ((records[c.id]?.sessions || 0) ? '<span class="visited-mark">探索过 ' + records[c.id].sessions + ' 次</span>' : '') + '</button>').join('') + '</div></section>';
-    main.insertAdjacentHTML('beforeend', '<section class="keepsake-shelf badge-shelf"><div class="section-heading"><div><div class="eyebrow">把发现带回家</div><h2>我的森林徽章</h2></div><p>完成一章，点亮一枚专属徽章</p></div><div class="keepsake-items badge-collection">' + Core.chapters.map(c => '<div class="keepsake ' + (records[c.id]?.sessions ? 'earned' : '') + '" data-badge="' + c.id + '"><img class="collection-badge" src="' + badgeImage(c.id) + '" alt="' + esc(badgeName(c.id)) + '徽章"><span class="keepsake-name">' + esc(badgeName(c.id)) + '</span><span class="keepsake-status">' + (records[c.id]?.sessions ? '已点亮 · ' + esc(c.title) : '完成' + esc(c.title) + '后点亮') + '</span></div>').join('') + '</div></section>');
+    main.insertAdjacentHTML('beforeend', '<section class="keepsake-shelf badge-shelf"><div class="section-heading"><div><div class="eyebrow">把发现带回家</div><h2>我的森林徽章</h2><p>完成一章，点亮一枚专属徽章</p></div><button class="text-button reset-records-button" id="reset-records" title="家长操作：重置当前浏览器的通关和练习记录"><span aria-hidden="true">↺</span> 重置通关记录</button></div><div class="keepsake-items badge-collection">' + Core.chapters.map(c => '<div class="keepsake ' + (records[c.id]?.sessions ? 'earned' : '') + '" data-badge="' + c.id + '"><img class="collection-badge" src="' + badgeImage(c.id) + '" alt="' + esc(badgeName(c.id)) + '徽章"><span class="keepsake-name">' + esc(badgeName(c.id)) + '</span><span class="keepsake-status">' + (records[c.id]?.sessions ? '已点亮 · ' + esc(c.title) : '完成' + esc(c.title) + '后点亮') + '</span></div>').join('') + '</div></section>');
     const saved = readSession();
     try { if (JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')?.version === 1) main.querySelector('.hero-copy').insertAdjacentHTML('beforeend', '<p class="upgrade-note">小路升级为每趟 10 个任务啦。旧版已完成的记录保留，请从新的一趟出发。</p>'); } catch (_) {}
     if (saved) {
@@ -126,6 +127,7 @@
       document.getElementById('resume-button').onclick = resumeSession;
     }
     main.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => start(b.dataset.chapter)));
+    document.getElementById('reset-records').onclick = resetRecords;
     globalThis.NumberForestHomeMotion?.mount(main.querySelector('.hero-art'));
   }
   function start(id) { stopVoice(); pauseTime(); elapsedMs = 0; state.chapter = Core.getChapter(id); state.round = 0; state.completed = 0; state.independent = 0; nextTask(); focusMain(); }
@@ -413,7 +415,7 @@
     globalThis.NumberForestHomeMotion?.stop();
     globalThis.NumberForestEffects?.clear();
     stopVoice(); pauseTime(); persistSession(); state.screen = 'parent'; main.dataset.screen = 'parent'; main.dataset.motion = 'enter';
-    main.innerHTML = '<section class="parent-panel"><div class="parent-head"><div><div class="eyebrow">观察，比排名更有帮助</div><h1>家长小记</h1><p>这些记录描述练习经历，不代表已经掌握。可以在生活中换个情境，再观察一次。</p></div><button class="back-button" id="parent-back">← 回到森林</button></div><div class="record-grid">' + Core.chapters.map(c => { const r = records[c.id] || { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 }; return '<article class="record-card"><div class="chapter-icon">' + icon(c.id) + '</div><h2>' + esc(c.title) + '</h2><p>' + esc(c.subtitle) + '</p><dl><div><dt>完成任务</dt><dd>' + r.completed + '</dd></div><div><dt>首答正确 · 未点提示</dt><dd>' + r.independent + '</dd></div><div><dt>借助提示或修正后完成</dt><dd>' + r.assisted + '</dd></div><div><dt>完整探索</dt><dd>' + r.sessions + ' 次</dd></div></dl></article>'; }).join('') + '</div><div class="parent-explainer"><strong>怎么看这些数字？</strong><p>“首答正确”也可能借助了数物体和操作场景，不等于脱离实物口算。观察他是否逐渐能接着数、借用熟悉结果，以及说明为什么。这里不把动画、阅读和操作时间算作计算速度。</p><p>所有记录只保存在当前浏览器，换设备不会同步。' + (storageAvailable ? '清除浏览器数据也会清除记录。' : '当前浏览器无法保存记录，这次浏览结束后记录可能丢失。') + '</p></div><div class="settings-row"><button class="text-button" id="reset-records">清空本机练习记录</button><span>不影响任何章节的使用</span></div></section>';
+    main.innerHTML = '<section class="parent-panel"><div class="parent-head"><div><div class="eyebrow">观察，比排名更有帮助</div><h1>家长小记</h1><p>这些记录描述练习经历，不代表已经掌握。可以在生活中换个情境，再观察一次。</p></div><button class="back-button" id="parent-back">← 回到森林</button></div><div class="record-grid">' + Core.chapters.map(c => { const r = records[c.id] || { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 }; return '<article class="record-card"><div class="chapter-icon">' + icon(c.id) + '</div><h2>' + esc(c.title) + '</h2><p>' + esc(c.subtitle) + '</p><dl><div><dt>完成任务</dt><dd>' + r.completed + '</dd></div><div><dt>首答正确 · 未点提示</dt><dd>' + r.independent + '</dd></div><div><dt>借助提示或修正后完成</dt><dd>' + r.assisted + '</dd></div><div><dt>完整探索</dt><dd>' + r.sessions + ' 次</dd></div></dl></article>'; }).join('') + '</div><div class="parent-explainer"><strong>怎么看这些数字？</strong><p>“首答正确”也可能借助了数物体和操作场景，不等于脱离实物口算。观察他是否逐渐能接着数、借用熟悉结果，以及说明为什么。这里不把动画、阅读和操作时间算作计算速度。</p><p>所有记录只保存在当前浏览器，换设备不会同步。' + (storageAvailable ? '清除浏览器数据也会清除记录。' : '当前浏览器无法保存记录，这次浏览结束后记录可能丢失。') + '</p></div><div class="settings-row"><button class="text-button" id="reset-records">重置通关记录</button><span>不影响任何章节的使用</span></div></section>';
     document.getElementById('parent-back').onclick = home;
     main.querySelectorAll('.record-card').forEach((card, i) => {
       const r = records[Core.chapters[i].id];
@@ -421,11 +423,40 @@
       card.querySelector('dl').insertAdjacentHTML('beforeend', '<div><dt>最快一趟 · 10 个任务</dt><dd>' + (r?.bestMs ? formatTime(r.bestMs) : '还没完成一趟') + '</dd></div><div><dt>最近一趟用时</dt><dd>' + (r?.lastMs ? formatTime(r.lastMs) : '—') + '</dd></div>');
     });
     main.querySelector('.parent-explainer').insertAdjacentHTML('beforeend', '<p>“一趟用时”累计每道题作答前的前台时间，包含读题、思考、摆放和提示；答对后的讲解、返回地图、后台时间不计。随机题目难度不同，最快记录只供自己参考，不是标准化测评。</p>');
-    document.getElementById('reset-records').onclick = () => {
-      if (window.confirm('清空这个浏览器里的练习记录和未完成进度？章节仍然可以正常玩。')) { records = {}; saveRecords(); try { localStorage.removeItem(SESSION_KEY); } catch (_) {} parent(); }
-    };
+    document.getElementById('reset-records').onclick = resetRecords;
     focusMain();
   }
+  function clearRecordState(screen) {
+    pauseTime(); stopVoice(); globalThis.NumberForestEffects?.clear();
+    records = {}; elapsedMs = 0;
+    // Leave the game before any render or lifecycle callback can save again.
+    Object.assign(state, { screen, chapter: null, task: null, round: 0, completed: 0, independent: 0, solved: false, selected: null, feedback: '', feedbackSelected: null });
+    let saved = true;
+    for (const key of [KEY, SESSION_KEY]) {
+      try { localStorage.removeItem(key); } catch (_) { saved = false; storageAvailable = false; }
+    }
+    return saved;
+  }
+  function showResetNotice(message) {
+    main.querySelector('.badge-shelf, .settings-row').insertAdjacentHTML('afterend', '<p class="reset-notice" role="status">' + esc(message) + '</p>');
+    announce(message);
+  }
+  function resetRecords() {
+    if (!window.confirm('确定重置当前浏览器的所有通关记录吗？\n\n徽章、通关次数、最快用时和练习统计都会清空，未完成的探索也会清除。\n此操作不能撤销，所有章节仍可重新探索。')) return;
+    const screen = state.screen === 'parent' ? 'parent' : 'home';
+    const saved = clearRecordState(screen);
+    // Notify other open game tabs so their periodic saves cannot restore old progress.
+    try { localStorage.setItem(RESET_KEY, Date.now() + ':' + Math.random()); } catch (_) { storageAvailable = false; }
+    if (screen === 'parent') parent(); else renderHome();
+    document.getElementById('reset-records').focus({ preventScroll: true });
+    showResetNotice(saved ? '记录已重置，所有徽章可以重新收集啦。' : '当前页面的记录已重置，但浏览器未允许清除保存的数据；刷新后可能仍有旧记录。');
+  }
+  window.addEventListener('storage', event => {
+    if (event.key !== RESET_KEY || !event.newValue || event.storageArea !== localStorage) return;
+    const saved = clearRecordState('home');
+    renderHome(); focusMain();
+    showResetNotice(saved ? '另一页已重置记录，回到森林重新探索吧。' : '另一页已重置记录，但这个页面未能清除保存的数据。');
+  });
   function updateSound() { const b = document.getElementById('sound-button'); b.textContent = state.sound ? '朗读：开' : '朗读：关'; b.setAttribute('aria-pressed', String(state.sound)); }
   function updateMusic() { const b = document.getElementById('music-button'), enabled = globalThis.NumberForestAudio.isEnabled(); b.textContent = enabled ? '音乐：开' : '音乐：关'; b.setAttribute('aria-pressed', String(enabled)); }
   window.addEventListener('numberforest:music', updateMusic);

@@ -383,3 +383,13 @@
 .badge-reveal.is-loading .badge-fallback { display: flex; transform: translateY(27px) scale(.21); }
 .badge-reveal.is-loading .badge-coin { display: none; }
 .badge-reveal.is-fallback .badge-fallback { transform: none; }
+
+/* A parent-facing reset stays reachable without competing with chapter play. */
+.badge-shelf .reset-records-button { flex: 0 0 auto; min-height: 44px; color: #80664e; background: #fffaf0; border-color: #ddcfb7; }
+.badge-shelf .reset-records-button > span { font-size: 22px; line-height: 1; }
+.badge-shelf .section-heading > div > p { max-width: none; text-align: left; margin-top: 5px; }
+.reset-notice { margin: 12px 3px 0; color: #537750; font-size: 13px; line-height: 1.7; }
+@media (max-width: 600px) {
+  main[data-screen="home"] .badge-shelf .section-heading { flex-wrap: wrap; gap: 12px; }
+  .badge-shelf .reset-records-button { font-size: 12px; }
+}
