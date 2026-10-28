@@ -103,3 +103,17 @@ main[data-screen="game"] .quantity-result .group-label { color: #4b783b; backgro
 .formula-card[data-kind="sequence"] .formula-primary .formula-result .formula-label { max-width: 3em; white-space: normal; }
 
 .mission-bridge:not(:has(.formula-card)) { grid-template-columns: minmax(0, 1fr); }
+
+/* A blue pencil and dashed tile identify a proposal, never a correct answer. */
+.formula-card[data-state="preview"] { border-color: #9cc7dc; background: linear-gradient(145deg, #eff9ff, #fffef6); box-shadow: 0 4px 0 #d4e8f1; }
+.formula-card[data-state="preview"] h2 { color: #3f748e; }
+.formula-card[data-state="preview"] .formula-mark { color: #356d88; background: #d7edf9; }
+.formula-card .formula-token.is-preview strong { border: 2px dashed #5b9dbd; color: #356b88; background: #e3f3ff; }
+.formula-card[data-state="retry"] { border-color: #dbb474; background: linear-gradient(145deg, #fff5e1, #fffdf4); box-shadow: 0 4px 0 #edddbd; }
+.formula-card[data-state="retry"] .formula-token.is-preview strong { border-color: #c6954d; color: #966827; background: #fff0d3; }
+.formula-token.is-questioning { position: relative; }
+.formula-question-mark { position: absolute; top: -6px; left: calc(50% - 7px); display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: #d7edf9; color: #356b88; font-size: 11px; font-weight: 850; line-height: 1; }
+.formula-card[data-state="retry"] .formula-question-mark { color: #966827; background: #ffe7b5; }
+.formula-card[data-state="preview"] .formula-more { border-color: #bedce9; }
+.formula-card[data-state="preview"] .formula-more summary { color: #46758c; }
+.formula-card .formula-secondary .formula-token.is-preview strong { border-width: 1px; }

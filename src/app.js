@@ -281,19 +281,32 @@
     main.querySelector('.buddy-scene')?.classList.add('is-reacting');
   }
   function formulaHtml(task, solved, final = false) {
-    const formula = globalThis.NumberForestFormulas?.describe(task, { solved });
+    const formula = globalThis.NumberForestFormulas?.describe(task, { solved, selected: solved ? null : state.selected });
     if (!formula || !formula.rows.length) return '';
+    const preview = !solved && formula.rows.some(row => row.tokens.some(token => token.preview));
+    const retry = preview && state.feedbackSelected === state.selected && !!state.feedback;
+    const status = solved ? 'solved' : retry ? 'retry' : preview ? 'preview' : 'empty';
+    const heading = final ? '最后一题，你发现了' : retry ? '再试试 · 还没完成' : preview ? (task.kind === 'compare' ? '试选 · 还没检查' : '试填 · 还没检查') : formula.title;
     const roles = new Set(['a', 'b', 'result', 'operator', 'neutral']);
     const shortLabels = { '已有的颗数': '已有几颗', '还要补几颗': '还补几颗', '需要的颗数': '需要几颗', '原来的颗数': '原来几颗', '添来的颗数': '添来几颗', '拿走的颗数': '拿走几颗', '跳过的格数': '跳了几格', '添完有几篮': '现在几篮', '新一篮的颗数': '新来几颗', '一篮的颗数': '一篮几颗', '分给几个人': '几个伙伴', '一共几个人': '几个伙伴', '左篮的颗数': '左篮几颗', '右篮的颗数': '右篮几颗', '队列里的数': '已知的数', '空位里的数': '空位的数' };
     const rows = formula.rows.map((row, index) => {
       const tokens = row.tokens.map(token => {
         const role = roles.has(token.role) ? token.role : 'neutral';
-        return '<span class="formula-token formula-' + role + (token.unknown ? ' is-unknown' : '') + '"><strong>' + esc(token.text) + '</strong>' + (token.label ? '<span class="formula-label">' + esc(shortLabels[token.label] || token.label) + '</span>' : '') + '</span>';
+        const questioning = preview && token.role === 'operator' && token.text === '=';
+        return '<span class="formula-token formula-' + role + (token.unknown ? ' is-unknown' : '') + (token.preview ? ' is-preview' : '') + (questioning ? ' is-questioning' : '') + '"' + (questioning ? ' aria-label="等于这个数吗？还没有确认"' : '') + '><strong>' + esc(token.text) + '</strong>' + (questioning ? '<span class="formula-question-mark" aria-hidden="true">?</span>' : '') + (token.label ? '<span class="formula-label">' + esc(shortLabels[token.label] || token.label) + '</span>' : '') + '</span>';
       }).join('');
       return '<div class="formula-row ' + (index ? 'formula-secondary' : 'formula-primary') + '">' + (row.caption ? '<p class="formula-caption">' + esc(row.caption) + '</p>' : '') + '<div class="formula-tokens">' + tokens + '</div></div>';
     });
     const more = rows.length > 1 ? '<details class="formula-more"><summary>换个写法，看看联系</summary>' + rows.slice(1).join('') + '</details>' : '';
-    return '<section class="formula-card' + (solved ? ' is-solved' : '') + (final ? ' formula-finale' : '') + '" data-kind="' + esc(task.kind) + '" aria-label="' + esc(final ? '最后一题的数学关系' : formula.title) + '"><h2><span class="formula-mark" aria-hidden="true">' + (solved ? '✓' : '✦') + '</span>' + esc(final ? '最后一题，你发现了' : formula.title) + '</h2>' + rows[0] + (task.kind === 'compare' ? '<p class="formula-note">选松果更' + (task.model.ask === 'less' ? '少' : '多') + '的一篮</p>' : '') + more + '</section>';
+    return '<section class="formula-card' + (solved ? ' is-solved' : '') + (final ? ' formula-finale' : '') + '" data-kind="' + esc(task.kind) + '" data-state="' + status + '" aria-label="' + esc((final ? '最后一题的数学关系' : formula.title) + (preview ? '，' + heading : '')) + '"><h2><span class="formula-mark" aria-hidden="true">' + (solved ? '✓' : retry ? '↺' : preview ? '✎' : '✦') + '</span>' + esc(heading) + '</h2>' + rows[0] + (task.kind === 'compare' ? '<p class="formula-note">选松果更' + (task.model.ask === 'less' ? '少' : '多') + '的一篮</p>' : '') + more + '</section>';
+  }
+  function refreshFormula() {
+    const previous = main.querySelector('.mission-bridge .formula-card');
+    if (!previous) return;
+    const expanded = previous.querySelector('.formula-more')?.open;
+    previous.outerHTML = formulaHtml(state.task, state.solved);
+    const next = main.querySelector('.mission-bridge .formula-card');
+    if (expanded && next?.querySelector('.formula-more')) next.querySelector('.formula-more').open = true;
   }
   function renderGame(entering = false) {
     globalThis.NumberForestHomeMotion?.stop();
@@ -320,10 +333,12 @@
       state.selected = Number(b.dataset.answer); clearFeedback(); main.querySelector('.answer-feedback')?.remove();
       main.querySelectorAll('[data-answer]').forEach(el => { const on = el === b; el.classList.toggle('selected', on); el.setAttribute('aria-pressed', String(on)); });
       document.getElementById('check-button').disabled = false;
+      refreshFormula();
       b.classList.remove('is-tapped');
       void b.offsetWidth;
       b.classList.add('is-tapped');
-      buddyResponse('选好啦！点“试试看”，一起发现答案。');
+      buddyResponse('先试填这个数，再点“试试看”检查。');
+      announce('已试填，还没检查。点试试看，一起检查。');
       persistSession();
     });
     main.querySelectorAll('[data-manip]').forEach(b => b.onclick = () => {

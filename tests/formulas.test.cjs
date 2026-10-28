@@ -83,9 +83,17 @@ test('every generated kind has bounded presentation and true solved arithmetic w
         if (task.kind !== 'compare') numericEquationIsTrue(completed.rows[index]);
       });
       assert.ok(unknowns >= 1, task.kind);
-      for (const selected of [null, 0, task.answer, task.answer + 1, '999']) {
+      for (const selected of [null, -1, task.maxAnswer + 1, '999', NaN, Infinity]) {
         assert.deepEqual(Formulas.describe(task, { solved: false, selected }), unanswered);
       }
+      const preview = Formulas.describe(task, { selected: task.answer });
+      const highlighted = preview.rows.flatMap(row => row.tokens).filter(token => token.preview);
+      assert.ok(highlighted.length > 0, task.kind);
+      if (task.kind !== 'compare') {
+        assert.ok(highlighted.every(token => token.unknown === true));
+        assert.equal(highlighted.length, unknowns);
+      }
+      assert.deepEqual(Formulas.describe(task, { solved: true, selected: task.answer + 1 }), completed);
     }
   }
   assert.deepEqual([...kinds].sort(), ['add', 'bonds', 'clock', 'clock-forward', 'compare', 'group-count', 'group-total', 'groups', 'numberline', 'pack', 'sequence', 'sharing', 'subtract'].sort());
@@ -174,7 +182,7 @@ test('sequence keeps only the actual blank unknown and relates it to an adjacent
   }
 });
 
-test('clocks expose human times only after solving and wrap 12-hour advances correctly', () => {
+test('clocks hide unselected times and wrap solved 12-hour advances correctly', () => {
   const time = (hour, minute) => hour + (minute ? '点半' : '点整');
   for (let hour = 1; hour <= 12; hour++) {
     for (const minute of [0, 30]) {
@@ -192,5 +200,110 @@ test('clocks expose human times only after solving and wrap 12-hour advances cor
         assert.ok(before.rows[0].tokens.every(t => !/^\d+$/.test(t.text)), 'No encoded minute totals in a clock formula');
       }
     }
+  }
+});
+
+test('numeric selections preview zero and both right and wrong choices without confirming them', () => {
+  const task = freeze({ kind: 'subtract', model: { a: 5, b: 5 }, answer: 0, maxAnswer: 20 });
+  const before = JSON.stringify(task);
+  for (const selected of [0, 3, 20]) {
+    const options = freeze({ solved: false, selected });
+    const result = Formulas.describe(task, options).rows[0].tokens.at(-1);
+    assert.deepEqual(result, { text: String(selected), role: 'result', label: '还剩几颗', unknown: true, preview: true });
+    const confirmed = Formulas.describe(task, { solved: true, selected }).rows[0].tokens.at(-1);
+    assert.equal(confirmed.text, '0');
+    assert.equal(confirmed.unknown, false);
+    assert.equal(confirmed.preview, false);
+  }
+  assert.equal(JSON.stringify(task), before);
+  const zeroBound = { ...task, maxAnswer: 0 };
+  assert.equal(Formulas.describe(zeroBound, { selected: 0 }).rows[0].tokens.at(-1).preview, true);
+  assert.equal(Formulas.describe(zeroBound, { selected: 1 }).rows[0].tokens.at(-1).text, '?');
+});
+
+test('previews reject coerced, noninteger and out-of-range input, including malformed explicit bounds', () => {
+  const task = { kind: 'add', model: { a: 2, b: 3 }, answer: 5, maxAnswer: 8 };
+  const unselected = Formulas.describe(task);
+  for (const selected of [undefined, null, '', '5', true, false, NaN, Infinity, -Infinity, -1, 1.5, 9, Number.MAX_SAFE_INTEGER + 1, 5n, Symbol('5')]) {
+    assert.deepEqual(Formulas.describe(task, { selected }), unselected);
+  }
+  for (const maxAnswer of [null, NaN, -1, '8', 8.5]) {
+    const result = Formulas.describe({ ...task, maxAnswer }, { selected: 5 });
+    assert.equal(result.rows[0].tokens.at(-1).text, '?');
+  }
+  const { maxAnswer, ...fixture } = task;
+  assert.equal(Formulas.describe(fixture, { selected: 9 }).rows[0].tokens.at(-1).text, '9');
+  assert.equal(Formulas.describe(fixture, { selected: 21 }).rows[0].tokens.at(-1).text, '?');
+  assert.deepEqual(Formulas.describe({ kind: 'extension', model: {}, answer: 2, maxAnswer: 5 }, { selected: 3 }).rows, []);
+});
+
+test('a preview fills the actual missing addend and synchronizes related formulas', () => {
+  const bonds = { kind: 'bonds', model: { visible: 3, total: 7 }, answer: 4, maxAnswer: 10 };
+  const preview = Formulas.describe(bonds, { selected: 2 });
+  assert.deepEqual(texts(preview.rows[0]), ['3', '+', '2', '=', '7']);
+  assert.equal(preview.rows[0].tokens[2].role, 'b');
+  assert.equal(preview.rows[0].tokens[2].unknown, true);
+  assert.equal(preview.rows[0].tokens[2].preview, true);
+  const cases = [
+    [Core.createTask('groups'), 9, [['3', '×', '4', '=', '9'], ['9', '+', '3', '=', '9']]],
+    [{ kind: 'group-total', model: { perGroup: 2, groups: 3, total: 6 }, answer: 6, maxAnswer: 20 }, 7, [['2', '×', '3', '=', '7'], ['2', '+', '2', '+', '2', '=', '7']]],
+    [{ kind: 'group-count', model: { perGroup: 3, groups: 4, total: 12 }, answer: 4, maxAnswer: 5 }, 2, [['3', '×', '2', '=', '12'], ['12', '÷', '3', '=', '2']]],
+    [Core.createTask('sharing'), 2, [['12', '÷', '4', '=', '2'], ['2', '×', '4', '=', '12']]],
+    [{ kind: 'pack', model: { perGroup: 3, groups: 4, total: 12 }, answer: 4, maxAnswer: 5 }, 2, [['12', '÷', '3', '=', '2'], ['3', '×', '2', '=', '12']]],
+    [{ kind: 'sequence', model: { values: [0, null, 4, 6], step: 2, missingIndex: 1 }, answer: 2, maxAnswer: 20 }, 3, [['0', '→', '3', '→', '4', '→', '6'], ['0', '+', '2', '=', '3']]]
+  ];
+  for (const [task, selected, expected] of cases) {
+    const result = Formulas.describe(task, { selected });
+    assert.deepEqual(result.rows.map(texts), expected);
+    const targets = result.rows.flatMap(row => row.tokens).filter(token => token.unknown);
+    assert.equal(targets.length, 2);
+    assert.ok(targets.every(token => token.text === String(selected) && token.preview === true));
+    assert.ok(result.rows.flatMap(row => row.tokens).filter(token => !token.unknown).every(token => !token.preview));
+  }
+});
+
+test('comparison previews the selected basket only and never inserts a count into the comparison sign', () => {
+  for (const [a, b] of [[0, 4], [20, 3]]) {
+    for (const ask of ['more', 'less']) {
+      const task = { kind: 'compare', model: { a, b, ask }, answer: ask === 'more' ? Math.max(a, b) : Math.min(a, b), maxAnswer: 20 };
+      for (const [selected, index] of [[a, 0], [b, 2]]) {
+        const result = Formulas.describe(task, { selected }).rows[0];
+        assert.deepEqual(texts(result), [String(a), '?', String(b)]);
+        assert.deepEqual(result.tokens.map((token, position) => token.preview ? position : null).filter(i => i !== null), [index]);
+        assert.equal(result.tokens[1].unknown, true);
+        assert.equal(result.tokens[1].preview, false);
+        const solved = Formulas.describe(task, { solved: true, selected }).rows[0];
+        assert.equal(solved.tokens[1].text, a > b ? '>' : '<');
+        assert.ok(solved.tokens.every(token => !token.preview));
+      }
+      assert.ok(Formulas.describe(task, { selected: 2 }).rows[0].tokens.every(token => !token.preview));
+    }
+  }
+});
+
+test('clock previews decode selected time, respect the bound, and confirm only the target time', () => {
+  const tasks = [
+    { kind: 'clock', model: { hour: 3, minute: 30 }, answer: 210, maxAnswer: 750 },
+    { kind: 'clock-forward', model: { hour: 12, minute: 30, advance: 30, targetHour: 1, targetMinute: 0 }, answer: 60, maxAnswer: 750 }
+  ];
+  for (const task of tasks) {
+    for (const [selected, text] of [[60, '1点整'], [90, '1点半'], [210, '3点半'], [720, '12点整'], [750, '12点半']]) {
+      const result = Formulas.describe(task, { selected }).rows[0].tokens.at(-1);
+      assert.equal(result.text, text);
+      assert.equal(result.preview, true);
+      assert.equal(result.unknown, true);
+      const solved = Formulas.describe(task, { solved: true, selected }).rows[0].tokens.at(-1);
+      assert.equal(solved.text, task.kind === 'clock' ? '3点半' : '1点整');
+      assert.equal(solved.preview, false);
+      assert.equal(solved.unknown, false);
+    }
+    for (const selected of [0, 30, 59, 61, 719, 751, 780, '750', null, 750n, Symbol('750')]) {
+      const result = Formulas.describe(task, { selected }).rows[0].tokens.at(-1);
+      assert.equal(result.text, '?');
+      assert.equal(result.preview, false);
+    }
+    assert.equal(Formulas.describe({ ...task, maxAnswer: 720 }, { selected: 750 }).rows[0].tokens.at(-1).text, '?');
+    const { maxAnswer, ...fixture } = task;
+    assert.equal(Formulas.describe(fixture, { selected: 750 }).rows[0].tokens.at(-1).text, '12点半');
   }
 });
