@@ -84,7 +84,7 @@
     if (!s.solved && s.feedbackSelected != null) state.feedback = globalThis.NumberForestFeedback.describe(s.task, s.feedbackSelected, s).message;
     renderGame(); focusMain();
   }
-  function home() { stopVoice(); pauseTime(); persistSession(); state.screen = 'home'; renderHome(); focusMain(); }
+  function home() { globalThis.NumberForestEffects?.clear(); stopVoice(); pauseTime(); persistSession(); state.screen = 'home'; renderHome(); focusMain(); }
   function renderHome() {
     const total = Object.values(records).reduce((sum, r) => sum + r.completed, 0);
     main.innerHTML = '<section class="hero"><div class="hero-copy"><div class="eyebrow">欢迎来到 · 数感森林</div><h1>数的秘密，<br>藏在每一次发现里。</h1><p>补一补，分一分，再添一组。<br>和森林里的小伙伴，一起把数学玩明白。</p><div class="hero-note"><span class="note-dot"></span>不用抢时间，每次探索 10 个小任务</div></div><img class="hero-art" src="assets/forest.svg" alt="森林里的小松鼠、松果小屋和时钟树屋"></section>' +
@@ -212,6 +212,7 @@
     return '<section class="feedback answer-feedback retry" tabindex="-1" aria-label="一起看看提示"><div class="feedback-heading"><span aria-hidden="true">' + animalSvg(0) + '</span><h2>' + esc(d.title) + '</h2></div>' + visual + '<p class="feedback-message">' + esc(d.message) + '</p><div class="feedback-actions">' + listen + '</div></section>';
   }
   function renderGame() {
+    globalThis.NumberForestEffects?.clear();
     const t = state.task, c = state.chapter;
     main.innerHTML = '<div class="game-topbar"><button class="back-button" id="back-button">← 森林地图</button><div class="chapter-label">' + esc(c.title) + '</div><div class="round-dots" aria-label="第 ' + (state.round + 1) + ' 个任务，共 ' + ROUND_COUNT + ' 个">' + Array.from({ length: ROUND_COUNT }, (_, i) => '<span class="' + (i < state.round ? 'done' : i === state.round ? 'current' : '') + '"></span>').join('') + '</div></div>' +
       '<div class="game-layout"><section class="play-panel"><div class="mission-heading"><div class="eyebrow">小发现 ' + String(state.round + 1).padStart(2, '0') + ' / 10 <button class="read-button" id="read-button" aria-label="朗读题目">♫ 听题目</button></div><h1>' + esc(t.prompt) + '</h1><p>' + esc(t.instruction || '可以先摆一摆，再选出你的答案。') + '</p></div>' + (state.solved ? feedbackHtml() : '') + sceneHtml() + (!state.solved ? feedbackHtml() : '') + (state.solved ? '<div class="relationship-card"><div class="eyebrow">原来它们是一家人</div><div class="equation-strip">' + t.relations.map(r => '<span class="equation">' + esc(r) + '</span>').join('') + '</div></div>' : answerHtml()) + '</section><aside class="guide-panel"><div class="mascot-badge">' + animalSvg(0) + '</div><div class="tip-title">小松鼠的悄悄话</div><p class="tip-copy">' + chapterTip(c.id) + '</p>' + (state.hints && !state.solved ? '<div class="hint-box"><strong>一起想一想</strong><p>' + esc(t.hint) + '</p></div>' : '') + '<div class="guide-footnote">慢慢来，可以数，可以摆。<br>每一次发现都算数。</div></aside></div>';
@@ -262,9 +263,10 @@
     const r = records[state.chapter.id] ||= { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 };
     r.completed++; if (independent) r.independent++; else r.assisted++;
     r.retries += state.attempts - 1;
-    saveRecords(); renderGame(); revealFeedback(); announce('答对啦！' + state.feedback); speak('答对啦！' + state.feedback);
+    saveRecords(); renderGame(); revealFeedback(); globalThis.NumberForestEffects?.celebrate(main.querySelector('.answer-feedback.success')); announce('答对啦！' + state.feedback); speak('答对啦！' + state.feedback);
   }
   function finish() {
+    globalThis.NumberForestEffects?.clear();
     stopVoice(); pauseTime(); state.screen = 'result';
     const r = records[state.chapter.id]; r.sessions++; r.timingRounds = ROUND_COUNT; r.lastMs = elapsedMs; r.bestMs = r.bestMs ? Math.min(r.bestMs, elapsedMs) : elapsedMs; saveRecords();
     try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
@@ -272,6 +274,7 @@
     document.getElementById('result-home').onclick = home;
     document.getElementById('replay').onclick = () => start(state.chapter.id);
     main.querySelector('.stat-row').insertAdjacentHTML('beforeend', '<div class="stat-item"><strong class="time-stat">' + formatTime(elapsedMs) + '</strong><span>这趟探索用时</span></div>');
+    requestAnimationFrame(() => { if (state.screen === 'result') globalThis.NumberForestEffects?.celebrate(main.querySelector('.result-art'), { finale: true }); });
   }
   function offlineIdea(id) {
     return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
@@ -281,6 +284,7 @@
     return '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[id] || icons.bonds) + '</svg>';
   }
   function parent() {
+    globalThis.NumberForestEffects?.clear();
     stopVoice(); pauseTime(); persistSession(); state.screen = 'parent';
     main.innerHTML = '<section class="parent-panel"><div class="parent-head"><div><div class="eyebrow">观察，比排名更有帮助</div><h1>家长小记</h1><p>这些记录描述练习经历，不代表已经掌握。可以在生活中换个情境，再观察一次。</p></div><button class="back-button" id="parent-back">← 回到森林</button></div><div class="record-grid">' + Core.chapters.map(c => { const r = records[c.id] || { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 }; return '<article class="record-card"><div class="chapter-icon">' + icon(c.id) + '</div><h2>' + esc(c.title) + '</h2><p>' + esc(c.subtitle) + '</p><dl><div><dt>完成任务</dt><dd>' + r.completed + '</dd></div><div><dt>首答正确 · 未点提示</dt><dd>' + r.independent + '</dd></div><div><dt>借助提示或修正后完成</dt><dd>' + r.assisted + '</dd></div><div><dt>完整探索</dt><dd>' + r.sessions + ' 次</dd></div></dl></article>'; }).join('') + '</div><div class="parent-explainer"><strong>怎么看这些数字？</strong><p>“首答正确”也可能借助了数物体和操作场景，不等于脱离实物口算。观察他是否逐渐能接着数、借用熟悉结果，以及说明为什么。这里不把动画、阅读和操作时间算作计算速度。</p><p>所有记录只保存在当前浏览器，换设备不会同步。' + (storageAvailable ? '清除浏览器数据也会清除记录。' : '当前浏览器无法保存记录，这次浏览结束后记录可能丢失。') + '</p></div><div class="settings-row"><button class="text-button" id="reset-records">清空本机练习记录</button><span>不影响任何章节的使用</span></div></section>';
     document.getElementById('parent-back').onclick = home;
