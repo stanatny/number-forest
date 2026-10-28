@@ -5,7 +5,9 @@
   const KEY = 'number-forest-progress-v1';
   const SESSION_KEY = 'number-forest-session-v1';
   const ROUND_COUNT = 10;
-  const rewards = { bonds: '圆圆的小窗', arithmetic: '开花的小植物', groups: '暖暖的小灯', sharing: '野餐桌布', clock: '滴答小钟' };
+  const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光' };
+  function badgeName(id) { return badges[id] || '森林发现'; }
+  function badgeImage(id) { return badges[id] ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'; }
   const state = { screen: 'home', chapter: null, round: 0, task: null, selected: null, hints: false, attempts: 0, solved: false, completed: 0, independent: 0, manip: 0, bowls: [], changed: false, feedback: '', feedbackSelected: null, sound: false };
   let storageAvailable = true;
   let records = readRecords();
@@ -89,7 +91,7 @@
     const total = Object.values(records).reduce((sum, r) => sum + r.completed, 0);
     main.innerHTML = '<section class="hero"><div class="hero-copy"><div class="eyebrow">欢迎来到 · 数感森林</div><h1>数的秘密，<br>藏在每一次发现里。</h1><p>补一补，分一分，再添一组。<br>和森林里的小伙伴，一起把数学玩明白。</p><div class="hero-note"><span class="note-dot"></span>不用抢时间，每次探索 10 个小任务</div></div><img class="hero-art" src="assets/forest.svg" alt="森林里的小松鼠、松果小屋和时钟树屋"></section>' +
       '<section aria-labelledby="chapters-title"><div class="section-heading"><div><div class="eyebrow">选一条喜欢的小路</div><h2 id="chapters-title">今天，去哪儿探索？</h2></div><p>' + (total ? '已经完成 ' + total + ' 次小发现' : '从分与合出发，也可以自由看看') + '</p></div><div class="chapter-grid">' + Core.chapters.map((c, i) => '<button class="chapter-card" data-chapter="' + c.id + '" style="--accent:' + esc(c.accent || '#63856c') + '"><span class="chapter-number">CHAPTER 0' + (i + 1) + '</span><span class="chapter-icon">' + icon(c.id) + '</span><h3>' + esc(c.title) + '</h3><p>' + esc(c.subtitle) + '</p><span class="chapter-meta">' + esc(c.level || '') + '</span><span class="chapter-arrow" aria-hidden="true">↗</span>' + ((records[c.id]?.sessions || 0) ? '<span class="visited-mark">探索过 ' + records[c.id].sessions + ' 次</span>' : '') + '</button>').join('') + '</div></section>';
-    main.insertAdjacentHTML('beforeend', '<section class="keepsake-shelf"><div class="section-heading"><div><div class="eyebrow">把发现带回家</div><h2>小屋里的小收藏</h2></div><p>每完成一趟探索，就添一件小物</p></div><div class="keepsake-items">' + Core.chapters.map(c => '<div class="keepsake ' + (records[c.id]?.sessions ? 'earned' : '') + '"><span class="keepsake-icon">' + rewardIcon(c.id) + '</span><span class="keepsake-name">' + esc(rewards[c.id] || '森林纪念章') + '</span><span class="keepsake-status">' + (records[c.id]?.sessions ? '已经带回小屋' : '等你来发现') + '</span></div>').join('') + '</div></section>');
+    main.insertAdjacentHTML('beforeend', '<section class="keepsake-shelf badge-shelf"><div class="section-heading"><div><div class="eyebrow">把发现带回家</div><h2>我的森林徽章</h2></div><p>完成一章，点亮一枚专属徽章</p></div><div class="keepsake-items badge-collection">' + Core.chapters.map(c => '<div class="keepsake ' + (records[c.id]?.sessions ? 'earned' : '') + '" data-badge="' + c.id + '"><img class="collection-badge" src="' + badgeImage(c.id) + '" alt="' + esc(badgeName(c.id)) + '徽章"><span class="keepsake-name">' + esc(badgeName(c.id)) + '</span><span class="keepsake-status">' + (records[c.id]?.sessions ? '已点亮 · ' + esc(c.title) : '完成' + esc(c.title) + '后点亮') + '</span></div>').join('') + '</div></section>');
     const saved = readSession();
     try { if (JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')?.version === 1) main.querySelector('.hero-copy').insertAdjacentHTML('beforeend', '<p class="upgrade-note">小路升级为每趟 10 个任务啦。旧版已完成的记录保留，请从新的一趟出发。</p>'); } catch (_) {}
     if (saved) {
@@ -188,7 +190,7 @@
     const listen = 'speechSynthesis' in window ? '<button class="text-button listen-feedback" id="listen-feedback" aria-label="听一听这次的讲解">♫ 听一听</button>' : '';
     if (state.solved) {
       const displayAnswer = t.kind.startsWith('clock') ? timeLabel(t.answer) : t.answer;
-      return '<section class="feedback answer-feedback success" tabindex="-1" aria-label="答对啦"><div class="celebration-scene" aria-hidden="true"><div class="celebration-rays"></div><div class="celebration-stars">' + Array.from({ length: 8 }, (_, i) => '<span style="--i:' + i + '">✦</span>').join('') + '</div><div class="celebration-mascot">' + animalSvg(0) + '</div><span class="celebration-check">✓</span></div><div class="celebration-copy"><h2>答对啦！</h2><div class="answer-reveal"><strong>' + esc(displayAnswer) + '</strong><span>' + esc(t.unit ?? (t.kind.startsWith('clock') ? '' : '颗')) + '</span></div><p>' + esc(state.feedback) + '</p></div><div class="feedback-actions"><button class="primary-button" id="next-button">' + (state.round === ROUND_COUNT - 1 ? '带着发现回小屋' : '下一个小发现 →') + '</button>' + listen + '</div></section>';
+      return '<section class="feedback answer-feedback success" tabindex="-1" aria-label="答对啦"><div class="celebration-scene" aria-hidden="true"><div class="celebration-rays"></div><div class="celebration-stars">' + Array.from({ length: 8 }, (_, i) => '<span style="--i:' + i + '">✦</span>').join('') + '</div><div class="celebration-mascot">' + animalSvg(0) + '</div><span class="celebration-check">✓</span></div><div class="celebration-copy"><h2>答对啦！</h2><div class="answer-reveal"><strong>' + esc(displayAnswer) + '</strong><span>' + esc(t.unit ?? (t.kind.startsWith('clock') ? '' : '颗')) + '</span></div><p>' + esc(state.feedback) + '</p></div><div class="feedback-actions"><button class="primary-button" id="next-button">' + (state.round === ROUND_COUNT - 1 ? '领取通关徽章 →' : '下一个小发现 →') + '</button>' + listen + '</div></section>';
     }
     const d = globalThis.NumberForestFeedback.describe(t, state.feedbackSelected, state);
     let visual = '';
@@ -263,25 +265,29 @@
     const r = records[state.chapter.id] ||= { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 };
     r.completed++; if (independent) r.independent++; else r.assisted++;
     r.retries += state.attempts - 1;
-    saveRecords(); renderGame(); revealFeedback(); globalThis.NumberForestEffects?.celebrate(main.querySelector('.answer-feedback.success')); announce('答对啦！' + state.feedback); speak('答对啦！' + state.feedback);
+    saveRecords();
+    if (state.round === ROUND_COUNT - 1) {
+      finish(); focusMain(); announce('答对啦！完成十个任务，获得' + badgeName(state.chapter.id) + '徽章。');
+      speak('答对啦！这趟探索完成了。看看你的' + badgeName(state.chapter.id) + '徽章！'); return;
+    }
+    renderGame(); revealFeedback(); globalThis.NumberForestEffects?.celebrate(main.querySelector('.answer-feedback.success')); announce('答对啦！' + state.feedback); speak('答对啦！' + state.feedback);
   }
   function finish() {
+    if (state.screen === 'result') return;
     globalThis.NumberForestEffects?.clear();
     stopVoice(); pauseTime(); state.screen = 'result';
-    const r = records[state.chapter.id]; r.sessions++; r.timingRounds = ROUND_COUNT; r.lastMs = elapsedMs; r.bestMs = r.bestMs ? Math.min(r.bestMs, elapsedMs) : elapsedMs; saveRecords();
+    const r = records[state.chapter.id];
+    const firstBadge = !r.sessions;
+    r.sessions++; r.timingRounds = ROUND_COUNT; r.lastMs = elapsedMs; r.bestMs = r.bestMs ? Math.min(r.bestMs, elapsedMs) : elapsedMs; saveRecords();
     try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
-    main.innerHTML = '<section class="result-panel"><div class="result-art">' + rewardIcon(state.chapter.id) + '</div><div class="eyebrow">把今天的发现，带回小屋</div><h1>森林小屋，又添了一点温暖。</h1><p>你完成了 ' + esc(state.chapter.title) + ' 的 10 个小任务，<br>为小屋添上了' + esc(rewards[state.chapter.id] || '一枚森林纪念章') + '。</p><div class="stat-row"><div class="stat-item"><strong>10</strong><span>次小发现</span></div><div class="stat-item"><strong>' + (Object.values(records).reduce((s, x) => s + x.sessions, 0)) + '</strong><span>趟森林探索</span></div></div><div class="offline-idea"><strong>离开屏幕，也能玩</strong><p>' + offlineIdea(state.chapter.id) + '</p></div><div class="result-actions"><button class="primary-button" id="result-home">去看看别的小路 →</button><button class="secondary-button" id="replay">再探索一次</button></div><p class="result-note">今天也可以到这里，明天再来。</p></section>';
+    const id = state.chapter.id;
+    main.innerHTML = '<section class="result-panel badge-result"><section class="badge-reveal" aria-label="获得' + esc(badgeName(id)) + '徽章"><p class="eyebrow">' + (firstBadge ? '探索完成 · 点亮专属徽章' : '再次完成 · 你的徽章闪闪发光') + '</p><div class="badge-stage"><div class="badge-aura" aria-hidden="true"></div><div class="badge-stars" aria-hidden="true">' + Array.from({ length: 12 }, () => '<span>✦</span>').join('') + '</div><div class="badge-coin"><div class="badge-face badge-front"><img src="' + badgeImage(id) + '" alt="' + esc(badgeName(id)) + '徽章"></div><div class="badge-face badge-back" aria-hidden="true"><img src="assets/acorn.svg" alt=""></div></div></div><h1 class="badge-title">' + esc(badgeName(id)) + '</h1><p class="badge-description">' + esc(state.chapter.title) + '的 10 个任务，全部完成！<br>' + (firstBadge ? '这枚徽章已经放进你的森林收藏。' : '同一枚徽章，记住又一次新的发现。') + '</p></section><div class="result-actions"><button class="primary-button" id="result-home">看看我的徽章 →</button><button class="secondary-button" id="replay">再探索一次</button></div><div class="stat-row"><div class="stat-item"><strong>10</strong><span>次小发现</span></div><div class="stat-item"><strong>' + Object.values(records).filter(row => row.sessions > 0).length + '</strong><span>枚森林徽章</span></div><div class="stat-item"><strong class="time-stat">' + formatTime(elapsedMs) + '</strong><span>这趟探索用时</span></div></div><details class="last-discovery"><summary>再看看最后一题的发现</summary><p>' + esc(state.feedback) + '</p><div class="equation-strip">' + state.task.relations.map(rel => '<span class="equation">' + esc(rel) + '</span>').join('') + '</div></details><div class="offline-idea"><strong>离开屏幕，也能玩</strong><p>' + offlineIdea(id) + '</p></div><p class="result-note">今天也可以到这里，明天再来。</p></section>';
     document.getElementById('result-home').onclick = home;
-    document.getElementById('replay').onclick = () => start(state.chapter.id);
-    main.querySelector('.stat-row').insertAdjacentHTML('beforeend', '<div class="stat-item"><strong class="time-stat">' + formatTime(elapsedMs) + '</strong><span>这趟探索用时</span></div>');
-    requestAnimationFrame(() => { if (state.screen === 'result') globalThis.NumberForestEffects?.celebrate(main.querySelector('.result-art'), { finale: true }); });
+    document.getElementById('replay').onclick = () => start(id);
+    requestAnimationFrame(() => { if (state.screen === 'result') globalThis.NumberForestEffects?.celebrate(main.querySelector('.badge-stage'), { finale: true }); });
   }
   function offlineIdea(id) {
     return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
-  }
-  function rewardIcon(id) {
-    const paths = { bonds: '<circle cx="18" cy="18" r="13"/><path d="M18 5v26M5 18h26"/>', arithmetic: '<path d="M9 24h18l-3 9H12zM18 24V11M18 18C4 18 5 5 18 12M18 16C30 16 30 4 18 10"/>', groups: '<path d="M2 8q16 10 32 0M8 11v8M18 14v8M28 11v8"/><path d="M5 19h6v7H5zM15 22h6v7h-6zM25 19h6v7h-6z"/>', sharing: '<path d="M6 10h24v21H6zM6 17h24M6 24h24M14 10v21M23 10v21"/>', clock: icons.clock };
-    return '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[id] || icons.bonds) + '</svg>';
   }
   function parent() {
     globalThis.NumberForestEffects?.clear();

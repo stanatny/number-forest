@@ -1,0 +1,328 @@
+/* Load after main.css. Badge artwork and state come from the application. */
+.result-panel.badge-result {
+  max-width: 680px;
+  margin: 22px auto 30px;
+  padding: 25px 34px 26px;
+  background: linear-gradient(170deg, #fffef9 0%, #fffaf0 72%, #f5f6e9 100%);
+  border-color: #e3d7b9;
+  box-shadow: 0 16px 45px #5c613111, inset 0 1px 0 #fff;
+}
+
+.badge-reveal {
+  --badge-size: 250px;
+  position: relative;
+  text-align: center;
+}
+
+.badge-reveal > .eyebrow {
+  justify-content: center;
+  margin-bottom: 0;
+  color: #927335;
+  font-size: 11px;
+  letter-spacing: .12em;
+}
+
+.badge-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(360px, 100%);
+  height: 286px;
+  margin: 5px auto 8px;
+  perspective: 900px;
+  perspective-origin: 50% 46%;
+}
+
+.badge-aura {
+  position: absolute;
+  inset: 0 -6%;
+  border-radius: 50%;
+  opacity: .88;
+  background: radial-gradient(ellipse at center, #f4d77670 0%, #ecd69e35 40%, #cbdcbb1a 59%, transparent 72%);
+  pointer-events: none;
+}
+
+.badge-aura::before,
+.badge-aura::after {
+  content: "";
+  position: absolute;
+  inset: 10% 14%;
+  border: 1px solid #d9bd754d;
+  border-radius: 50%;
+}
+
+.badge-aura::after {
+  inset: 3% 8%;
+  border: 1px dashed #d9bd7540;
+  transform: rotate(-15deg);
+}
+
+.badge-coin {
+  position: relative;
+  z-index: 1;
+  width: var(--badge-size);
+  height: var(--badge-size);
+  flex: none;
+  transform: rotateY(0deg) scale(1);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform-origin: center;
+}
+
+.badge-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.badge-front {
+  transform: translateZ(2px);
+  box-shadow: 0 14px 23px #6b582521;
+}
+
+.badge-front img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.badge-back {
+  /* Some WebKit compositors paint this face even when backface-visibility is
+     hidden. Keep it out of the settled image explicitly; the flip animation
+     makes it visible only while the coin is turning. */
+  visibility: hidden;
+  transform: rotateY(180deg) translateZ(2px);
+  background: radial-gradient(circle at 34% 27%, #557e50 0%, #315d45 58%, #244c3c 100%);
+  border: 10px solid #dbb85f;
+  box-shadow: inset 0 0 0 3px #f4dd98, inset 0 0 0 9px #c39a4733, 0 12px 22px #6b582525;
+}
+
+.badge-back::before {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  border: 1px dashed #e8ce8f9c;
+  border-radius: 50%;
+}
+
+.badge-back img {
+  width: 43%;
+  height: 57%;
+  object-fit: contain;
+  transform: rotate(-8deg);
+}
+
+.badge-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+
+.badge-stars > span {
+  --star-x: 0%;
+  --star-y: 0%;
+  --star-turn: 0deg;
+  --star-delay: 0ms;
+  position: absolute;
+  left: calc(50% + var(--star-x));
+  top: calc(50% + var(--star-y));
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  color: #cca34c;
+  font-size: 20px;
+  line-height: 1;
+  opacity: .78;
+  transform: translate(-50%, -50%) rotate(var(--star-turn));
+  text-shadow: 0 2px 0 #fff9e1;
+}
+
+.badge-stars > span > svg { width: 1em; height: 1em; }
+.badge-stars > span:nth-child(3n) { color: #83a77e; font-size: 16px; }
+.badge-stars > span:nth-child(4n) { color: #d28259; font-size: 13px; }
+.badge-stars > span:nth-child(1) { --star-x: -43%; --star-y: -17%; --star-turn: -12deg; }
+.badge-stars > span:nth-child(2) { --star-x: -34%; --star-y: -38%; --star-turn: 8deg; --star-delay: 70ms; }
+.badge-stars > span:nth-child(3) { --star-x: -18%; --star-y: -47%; --star-turn: -9deg; --star-delay: 30ms; }
+.badge-stars > span:nth-child(4) { --star-x: 5%; --star-y: -47%; --star-turn: 12deg; --star-delay: 110ms; }
+.badge-stars > span:nth-child(5) { --star-x: 27%; --star-y: -40%; --star-turn: -7deg; --star-delay: 45ms; }
+.badge-stars > span:nth-child(6) { --star-x: 42%; --star-y: -23%; --star-turn: 13deg; --star-delay: 140ms; }
+.badge-stars > span:nth-child(7) { --star-x: 45%; --star-y: 4%; --star-turn: -10deg; --star-delay: 80ms; }
+.badge-stars > span:nth-child(8) { --star-x: 35%; --star-y: 33%; --star-turn: 9deg; --star-delay: 170ms; }
+.badge-stars > span:nth-child(9) { --star-x: 18%; --star-y: 46%; --star-turn: -14deg; --star-delay: 100ms; }
+.badge-stars > span:nth-child(10) { --star-x: -6%; --star-y: 47%; --star-turn: 7deg; --star-delay: 40ms; }
+.badge-stars > span:nth-child(11) { --star-x: -28%; --star-y: 39%; --star-turn: -8deg; --star-delay: 130ms; }
+.badge-stars > span:nth-child(12) { --star-x: -43%; --star-y: 22%; --star-turn: 14deg; --star-delay: 60ms; }
+
+.badge-result .badge-title {
+  margin: 0;
+  color: var(--pine-dark, #254735);
+  font-size: clamp(25px, 3.4vw, 31px);
+  font-weight: 850;
+  line-height: 1.4;
+  letter-spacing: .035em;
+}
+
+.badge-description {
+  max-width: 450px;
+  margin: 9px auto 0;
+  color: #7c866f;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.badge-result .result-actions { margin-top: 19px; gap: 12px; }
+.badge-result .result-actions button { min-height: 46px; }
+.badge-result .stat-row { margin-top: 19px; padding-block: 15px; gap: 22px; }
+.badge-result .offline-idea { margin-top: 16px; padding: 13px 17px; }
+.badge-result .offline-idea p { margin-top: 5px; }
+.badge-result > .result-note { margin-top: 15px; }
+.badge-result .last-discovery {
+  margin-top: 15px;
+  padding: 0 15px;
+  border: 1px solid #e3e6d3;
+  border-radius: 14px;
+  background: #fafbf2;
+  text-align: left;
+}
+.badge-result .last-discovery > summary {
+  min-height: 44px;
+  padding-block: 12px;
+  color: #6d8059;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.65;
+  cursor: pointer;
+}
+.badge-result .last-discovery > summary::marker { color: #b59a59; }
+.badge-result .last-discovery > summary:focus-visible { outline: 2px solid var(--coral, #dc7955); outline-offset: 3px; border-radius: 6px; }
+.badge-result .last-discovery > p { padding-bottom: 7px; color: #818b72; font-size: 12px; line-height: 1.85; }
+.badge-result .last-discovery .equation-strip { justify-content: center; gap: 9px; padding: 2px 0 14px; }
+.badge-result .last-discovery .equation { font-size: 18px; }
+
+/* Collection badges remain visible before they are earned; they are invitations,
+   not locked chapters. No perpetual animation runs on the forest map. */
+.badge-shelf {
+  margin-top: 28px;
+  padding: 22px 24px 24px;
+  border: 1px solid #e2dfca;
+  border-radius: 22px;
+  background: linear-gradient(125deg, #f0f2e7, #f8f4e5);
+}
+
+.badge-shelf .section-heading { padding-bottom: 9px; }
+.badge-shelf .section-heading h2 { font-size: 18px; }
+.badge-shelf .badge-collection { margin-top: 15px; gap: 12px; }
+.badge-shelf .keepsake { min-height: 163px; padding: 15px 9px 13px; gap: 6px; }
+.badge-shelf .keepsake.earned { background: #fffbee; border-color: #deca8f; box-shadow: 0 4px 0 #dfd6b544, inset 0 1px 0 #fff; }
+.badge-shelf .keepsake-icon { width: 90px; height: 90px; background: none; margin-bottom: 0; }
+.badge-shelf .collection-badge {
+  display: block;
+  width: 86px;
+  height: 86px;
+  max-width: 100%;
+  margin: 0 auto 2px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: .4;
+}
+.badge-shelf .keepsake.earned .collection-badge { filter: drop-shadow(0 4px 4px #7a683519); opacity: 1; }
+.badge-shelf .keepsake-name { color: #7b8570; font-size: 12px; font-weight: 700; line-height: 1.6; }
+.badge-shelf .keepsake.earned .keepsake-name { color: #80662d; }
+.badge-shelf .keepsake-status { color: #8f9982; font-size: 10px; line-height: 1.6; }
+.badge-shelf .keepsake.earned .keepsake-status { color: #998051; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .badge-coin { animation: badge-coin-arrive 2300ms cubic-bezier(.22, .68, .28, 1) both; }
+  .badge-back { animation: badge-back-during-flip 2300ms linear both; }
+  .badge-aura { animation: badge-aura-arrive 2400ms ease-out both; }
+  .badge-stars > span { animation: badge-star-arrive 2250ms cubic-bezier(.2, .65, .3, 1) var(--star-delay) both; }
+}
+
+@keyframes badge-back-during-flip {
+  0%, 99.99% { visibility: visible; }
+  100% { visibility: hidden; }
+}
+
+@keyframes badge-coin-arrive {
+  0% { transform: translateY(24px) rotateY(-540deg) rotateZ(-10deg) scale(.18); }
+  30% { transform: translateY(3px) rotateY(-310deg) rotateZ(-5deg) scale(.72); }
+  61% { transform: translateY(-6px) rotateY(-135deg) rotateZ(3deg) scale(1.065); }
+  82% { transform: translateY(0) rotateY(15deg) rotateZ(-1.5deg) scale(1.025); }
+  93% { transform: translateY(1px) rotateY(-5deg) rotateZ(.4deg) scale(.99); }
+  100% { transform: translateY(0) rotateY(0deg) rotateZ(0deg) scale(1); }
+}
+
+@keyframes badge-aura-arrive {
+  0% { opacity: 0; transform: scale(.35); }
+  55% { opacity: .55; transform: scale(.85); }
+  85% { opacity: .95; transform: scale(1.04); }
+  100% { opacity: .88; transform: scale(1); }
+}
+
+@keyframes badge-star-arrive {
+  0%, 12% { left: 50%; top: 50%; opacity: 0; transform: translate(-50%, -50%) rotate(-25deg) scale(.15); }
+  65% { left: calc(50% + var(--star-x)); top: calc(50% + var(--star-y)); opacity: 1; transform: translate(-50%, -50%) rotate(var(--star-turn)) scale(1.14); }
+  100% { left: calc(50% + var(--star-x)); top: calc(50% + var(--star-y)); opacity: .78; transform: translate(-50%, -50%) rotate(var(--star-turn)) scale(1); }
+}
+
+@media (min-width: 760px) and (max-height: 850px) {
+  .result-panel.badge-result { margin-top: 17px; padding: 19px 30px 22px; }
+  .badge-stage { height: 270px; margin-top: 2px; margin-bottom: 3px; }
+  .badge-result .badge-title { font-size: 28px; }
+  .badge-description { margin-top: 6px; font-size: 12px; line-height: 1.75; }
+  .badge-result .result-actions { margin-top: 15px; }
+  .badge-result .stat-row { margin-top: 15px; padding-block: 12px; }
+}
+
+@media (max-width: 580px) {
+  .result-panel.badge-result { margin: 20px auto 25px; padding: 23px 17px 22px; border-radius: 24px; }
+  .badge-reveal { --badge-size: 220px; }
+  .badge-reveal > .eyebrow { font-size: 10px; letter-spacing: .08em; }
+  .badge-stage { height: 255px; width: min(310px, 100%); margin: 6px auto 7px; }
+  .badge-back { border-width: 8px; }
+  .badge-back::before { inset: 12px; }
+  .badge-result .badge-title { font-size: 25px; }
+  .badge-description { max-width: 280px; font-size: 12px; }
+  .badge-stars > span { font-size: 17px; }
+  .badge-stars > span:nth-child(3n) { font-size: 13px; }
+  .badge-stars > span:nth-child(4n) { font-size: 11px; }
+  .badge-result .result-actions { gap: 9px; margin-top: 17px; }
+  .badge-result .result-actions button { padding-inline: 15px; }
+  .badge-result .stat-row { gap: 13px; }
+  .badge-shelf { margin-top: 22px; padding: 19px 15px 17px; border-radius: 19px; }
+  .badge-shelf .section-heading h2 { font-size: 16px; }
+  .badge-shelf .badge-collection { grid-template-columns: repeat(5, minmax(112px, 1fr)); gap: 9px; margin-top: 12px; padding-bottom: 9px; overflow-x: auto; scroll-snap-type: x proximity; }
+  .badge-shelf .keepsake { min-height: 153px; padding: 12px 8px 11px; }
+  .badge-shelf .collection-badge { width: 80px; height: 80px; }
+  .badge-shelf .keepsake-icon { width: 84px; height: 84px; }
+  .badge-shelf .keepsake-name { font-size: 11px; }
+  .badge-shelf .keepsake-status { font-size: 9px; }
+}
+
+@media (max-width: 360px) {
+  .badge-reveal { --badge-size: 200px; }
+  .badge-stage { height: 237px; }
+  .badge-result .badge-title { font-size: 23px; }
+  .badge-result .result-actions button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-coin { animation: none !important; transform: rotateY(0deg) scale(1) !important; }
+  .badge-back { animation: none !important; visibility: hidden !important; }
+  .badge-aura { animation: none !important; transform: none !important; opacity: .88; }
+  .badge-stars > span {
+    animation: none !important;
+    left: calc(50% + var(--star-x));
+    top: calc(50% + var(--star-y));
+    transform: translate(-50%, -50%) rotate(var(--star-turn));
+    opacity: .65;
+  }
+}

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="nf-sharing-title nf-sharing-desc">
+  <title id="nf-sharing-title">野餐草地 · 一起分享徽章</title>
+  <desc id="nf-sharing-desc">小松鼠和小兔并肩坐在格纹野餐布旁，一起托起盛着果实的小盘子。</desc>
+  <defs>
+    <linearGradient id="nf-sharing-gold" x1="44" y1="23" x2="262" y2="291" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF0AC"/><stop offset=".22" stop-color="#E6BC62"/><stop offset=".47" stop-color="#BD8B38"/><stop offset=".69" stop-color="#F6D98E"/><stop offset="1" stop-color="#A96F2D"/></linearGradient>
+    <linearGradient id="nf-sharing-enamel" x1="160" y1="43" x2="160" y2="257" gradientUnits="userSpaceOnUse"><stop stop-color="#F9ECD8"/><stop offset="1" stop-color="#D7CFB0"/></linearGradient>
+    <linearGradient id="nf-sharing-shine" x1="89" y1="52" x2="220" y2="238" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF9DF"/><stop offset="1" stop-color="#E7C576"/></linearGradient>
+    <filter id="nf-sharing-shadow" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#76562D" flood-opacity=".18"/></filter>
+    <clipPath id="nf-sharing-inside"><circle cx="160" cy="150" r="107"/></clipPath>
+    <pattern id="nf-sharing-checks" width="24" height="24" patternUnits="userSpaceOnUse"><path fill="#F4DABD" d="M0 0h24v24H0z"/><path fill="#DCA184" d="M0 0h12v12H0zM12 12h12v12H12z"/><path fill="#E8B89B" d="M12 0h12v12H12zM0 12h12v12H0z"/></pattern>
+  </defs>
+  <!-- Original vector enamel medal; the outer canvas remains transparent. -->
+  <path d="m121 240-16 59 27-10 16 19 15-62" fill="#CE927D" stroke="#BC8A44" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m199 240 16 59-27-10-16 19-15-62" fill="#CE927D" stroke="#BC8A44" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m127 250-9 35m76-35 9 35" stroke="#FFF4CD" stroke-width="3" stroke-linecap="round" opacity=".48"/>
+  <g filter="url(#nf-sharing-shadow)">
+    <circle cx="160" cy="150" r="128" fill="url(#nf-sharing-gold)" stroke="#B98737" stroke-width="2"/>
+    <circle cx="160" cy="150" r="121" fill="none" stroke="#FFF1B7" stroke-width="3"/>
+    <circle cx="160" cy="150" r="116" fill="#D2A34E" stroke="#AF7B30" stroke-width="2"/>
+    <circle cx="160" cy="150" r="110" fill="url(#nf-sharing-enamel)" stroke="#FFF3CB" stroke-width="3"/>
+    <g clip-path="url(#nf-sharing-inside)">
+      <path d="M45 220c59-36 92-20 124-23 47-19 85-1 107 16v55H45Z" fill="#7D9B68" opacity=".13"/>
+      <ellipse cx="120" cy="80" rx="76" ry="31" fill="#FFFFFF" opacity=".13" transform="rotate(-25 120 80)"/>
+
+      <path d="M87 203h146l18 39H69Z" fill="url(#nf-sharing-checks)" stroke="#CA9573" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M99 205c-15-27-10-50 12-56 21-5 40 12 40 39v24" fill="#C28D60" stroke="#A9784F" stroke-width="2.5"/>
+      <path d="M223 205c14-28 7-49-14-55-23-6-39 14-38 40v23" fill="#8BA695" stroke="#6E8E7E" stroke-width="2.5"/>
+      <path d="M97 119c-16-25-9-43 5-35 12 6 16 22 16 29m13-3c5-25 18-33 25-22 5 10-5 28-13 34" fill="#D39B6B" stroke="#B27C51" stroke-width="2.5"/>
+      <path d="m101 110-4-17m40 15 10-15" stroke="#EDC399" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="121" cy="139" rx="35" ry="34" fill="#DCA475" stroke="#B77E53" stroke-width="2.5"/>
+      <ellipse cx="122" cy="152" rx="23" ry="17" fill="#F5DAB3"/>
+      <circle cx="109" cy="136" r="3.5" fill="#46533B"/><circle cx="134" cy="136" r="3.5" fill="#46533B"/>
+      <path d="m116 145 6 5 6-5Z" fill="#806044"/>
+      <path d="M114 156q8 6 16 0" fill="none" stroke="#856348" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M185 114c-18-28-15-57-3-57 13 0 16 28 14 52m11 0c2-33 12-51 22-42 9 8 1 34-11 52" fill="#9EB7A5" stroke="#7E9D8A" stroke-width="2.5"/>
+      <path d="M185 101c-7-15-8-28-5-32m33 33c4-16 9-25 12-27" stroke="#D3DABF" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="202" cy="140" rx="34" ry="33" fill="#A7BEAC" stroke="#7F9E8B" stroke-width="2.5"/>
+      <ellipse cx="201" cy="152" rx="22" ry="16" fill="#F4E8C9"/>
+      <circle cx="189" cy="137" r="3.5" fill="#465B48"/><circle cx="214" cy="137" r="3.5" fill="#465B48"/>
+      <path d="m196 146 5 4 5-4Z" fill="#88745B"/>
+      <path d="M194 156q7 6 14 0" fill="none" stroke="#7E7760" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="160" cy="211" rx="41" ry="12" fill="#BD8C58"/>
+      <ellipse cx="160" cy="207" rx="43" ry="12" fill="#F4DEAA" stroke="#C8A76C" stroke-width="2.5"/>
+      <path d="M154 176c-14-5-26 6-22 20 4 16 17 20 27 17 14 3 25-7 25-20 0-14-13-23-30-17Z" fill="#DA8C66" stroke="#B8724F" stroke-width="2.5"/>
+      <path d="m157 179 2-14" stroke="#71834B" stroke-width="4" stroke-linecap="round"/>
+      <path d="M160 172c4-13 18-17 23-9-3 9-12 12-23 9Z" fill="#8DA567"/>
+      <path d="M142 185c-4 4-4 9-2 12" stroke="#F2BE91" stroke-width="4" stroke-linecap="round"/>
+      <path d="M111 182c7 14 15 18 25 18" stroke="#D49A69" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <path d="M212 182c-6 14-13 18-23 18" stroke="#9BB6A0" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <path d="M142 236c11 4 25 4 36 0" fill="none" stroke="#FFF1D7" stroke-width="3" stroke-linecap="round"/>
+
+    </g>
+    <circle cx="160" cy="150" r="108" fill="none" stroke="#A68140" stroke-width="2" opacity=".48"/>
+    <path d="M57 97a118 118 0 0 1 137-61" fill="none" stroke="#FFF8D9" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+    <path d="M269 194a119 119 0 0 1-78 70" fill="none" stroke="#90632D" stroke-width="3" stroke-linecap="round" opacity=".38"/>
+  </g>
+  <!-- Small metal laurels, an enamel cabochon, and a star clasp. -->
+  <g fill="url(#nf-sharing-shine)" stroke="#BD944B" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M112 268c-20-6-35-19-43-39" fill="none" stroke-width="3" stroke-linecap="round"/>
+    <path d="M75 239c-16 0-24-10-20-16 13 1 19 7 20 16Z"/><path d="M82 249c-15 4-25-2-25-10 12-3 21 1 25 10Z"/><path d="M93 259c-14 8-26 4-28-3 10-6 20-6 28 3Z"/><path d="M105 266c-10 12-23 12-28 6 8-9 17-13 28-6Z"/>
+    <path d="M77 241c10-10 9-22 1-25-7 7-8 16-1 25Z"/><path d="M88 253c9-11 7-23-1-25-7 9-6 17 1 25Z"/>
+    <g transform="translate(320 0) scale(-1 1)"><path d="M112 268c-20-6-35-19-43-39" fill="none" stroke-width="3" stroke-linecap="round"/><path d="M75 239c-16 0-24-10-20-16 13 1 19 7 20 16Z"/><path d="M82 249c-15 4-25-2-25-10 12-3 21 1 25 10Z"/><path d="M93 259c-14 8-26 4-28-3 10-6 20-6 28 3Z"/><path d="M105 266c-10 12-23 12-28 6 8-9 17-13 28-6Z"/><path d="M77 241c10-10 9-22 1-25-7 7-8 16-1 25Z"/><path d="M88 253c9-11 7-23-1-25-7 9-6 17 1 25Z"/></g>
+  </g>
+  <circle cx="160" cy="24" r="13" fill="url(#nf-sharing-gold)" stroke="#BB8738" stroke-width="2"/>
+  <circle cx="160" cy="24" r="8" fill="#CE927D" stroke="#FFF3CE" stroke-width="2"/>
+  <ellipse cx="157" cy="21" rx="3" ry="2" fill="#FFFFFF" opacity=".65" transform="rotate(-30 157 21)"/>
+  <path d="m160 258 7 12 14 3-10 10 1 14-12-7-12 7 1-14-10-10 14-3Z" fill="url(#nf-sharing-shine)" stroke="#BB8B3F" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="m160 266 4 8 9 1-7 6 1 8-7-4-7 4 1-8-7-6 9-1Z" fill="#F8E6AA"/>
+  <g fill="#F3D68A" stroke="#B98B3C" stroke-width="1.5" stroke-linejoin="round"><path d="m48 65 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m275 78 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="nf-bonds-title nf-bonds-desc">
+  <title id="nf-bonds-title">松果小屋 · 合在一起的徽章</title>
+  <desc id="nf-bonds-desc">金边徽章中，一座松果形的小屋亮着圆窗，门前两块珐琅拼片恰好合在一起。</desc>
+  <defs>
+    <linearGradient id="nf-bonds-gold" x1="44" y1="23" x2="262" y2="291" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF0AC"/><stop offset=".22" stop-color="#E6BC62"/><stop offset=".47" stop-color="#BD8B38"/><stop offset=".69" stop-color="#F6D98E"/><stop offset="1" stop-color="#A96F2D"/></linearGradient>
+    <linearGradient id="nf-bonds-enamel" x1="160" y1="43" x2="160" y2="257" gradientUnits="userSpaceOnUse"><stop stop-color="#F7EFCF"/><stop offset="1" stop-color="#BCD09B"/></linearGradient>
+    <linearGradient id="nf-bonds-shine" x1="89" y1="52" x2="220" y2="238" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF9DF"/><stop offset="1" stop-color="#E7C576"/></linearGradient>
+    <filter id="nf-bonds-shadow" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#76562D" flood-opacity=".18"/></filter>
+    <clipPath id="nf-bonds-inside"><circle cx="160" cy="150" r="107"/></clipPath>
+    <linearGradient id="nf-bonds-nut" x1="112" y1="139" x2="207" y2="241" gradientUnits="userSpaceOnUse"><stop stop-color="#EAC184"/><stop offset="1" stop-color="#C99353"/></linearGradient><linearGradient id="nf-bonds-roof" x1="123" y1="84" x2="193" y2="146" gradientUnits="userSpaceOnUse"><stop stop-color="#8AA169"/><stop offset="1" stop-color="#657C48"/></linearGradient>
+  </defs>
+  <!-- Original vector enamel medal; the outer canvas remains transparent. -->
+  <path d="m121 240-16 59 27-10 16 19 15-62" fill="#D58E67" stroke="#BC8A44" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m199 240 16 59-27-10-16 19-15-62" fill="#D58E67" stroke="#BC8A44" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m127 250-9 35m76-35 9 35" stroke="#FFF4CD" stroke-width="3" stroke-linecap="round" opacity=".48"/>
+  <g filter="url(#nf-bonds-shadow)">
+    <circle cx="160" cy="150" r="128" fill="url(#nf-bonds-gold)" stroke="#B98737" stroke-width="2"/>
+    <circle cx="160" cy="150" r="121" fill="none" stroke="#FFF1B7" stroke-width="3"/>
+    <circle cx="160" cy="150" r="116" fill="#D2A34E" stroke="#AF7B30" stroke-width="2"/>
+    <circle cx="160" cy="150" r="110" fill="url(#nf-bonds-enamel)" stroke="#FFF3CB" stroke-width="3"/>
+    <g clip-path="url(#nf-bonds-inside)">
+      <path d="M45 220c59-36 92-20 124-23 47-19 85-1 107 16v55H45Z" fill="#7D9B68" opacity=".13"/>
+      <ellipse cx="120" cy="80" rx="76" ry="31" fill="#FFFFFF" opacity=".13" transform="rotate(-25 120 80)"/>
+
+      <ellipse cx="160" cy="237" rx="73" ry="13" fill="#768B50" opacity=".15"/>
+      <path d="M164 91c-4-17 2-29 14-37" stroke="#65784A" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <path d="M171 70c10-22 32-22 37-9-9 13-22 16-37 9Z" fill="#83975D" stroke="#617845" stroke-width="2.5"/>
+      <path d="M109 129h102v43c0 35-17 58-51 74-34-16-51-39-51-74Z" fill="url(#nf-bonds-nut)" stroke="#B88B4E" stroke-width="3"/>
+      <path d="M120 151v26c0 22 9 39 24 50" stroke="#F3D39D" stroke-width="6" stroke-linecap="round" fill="none" opacity=".8"/>
+      <path d="M92 140c-4-38 22-62 68-62s72 24 68 62c-44 15-92 15-136 0Z" fill="url(#nf-bonds-roof)" stroke="#526B3E" stroke-width="3.5"/>
+      <path d="m111 118 8-12m13 15 8-16m15 17 8-17m15 14 8-14m12 13 7-11" stroke="#A4B67C" stroke-width="5" stroke-linecap="round"/>
+      <path d="M95 141c43 12 88 12 130 0" fill="none" stroke="#4D643B" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="129" cy="169" r="12" fill="#FFF1BF" stroke="#B38A4E" stroke-width="3"/>
+      <path d="M129 158v22m-10-11h20" stroke="#D2AB69" stroke-width="2"/>
+      <circle cx="195" cy="168" r="8" fill="#FFF1BF" stroke="#B38A4E" stroke-width="2.5"/>
+      <path d="M147 221v-34c0-11 8-19 18-19s18 8 18 19v34" fill="#647B48" stroke="#50653D" stroke-width="3"/>
+      <path d="M155 218v-30c0-7 4-12 10-12" fill="none" stroke="#879B5E" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="176" cy="196" r="3" fill="#F6DA91"/>
+      <g transform="translate(0 1)">
+        <path d="M115 220h38v10c10-8 20-5 20 3 0 9-10 11-20 4v17h-38Z" fill="#D98B68" stroke="#B66F50" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M153 220h42v34h-42v-17c10 7 20 5 20-4 0-8-10-11-20-3Z" fill="#E8C56E" stroke="#B69746" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M121 225h25m34 0h9" stroke="#FFF0C6" stroke-width="3" stroke-linecap="round" opacity=".75"/>
+      </g>
+
+    </g>
+    <circle cx="160" cy="150" r="108" fill="none" stroke="#A68140" stroke-width="2" opacity=".48"/>
+    <path d="M57 97a118 118 0 0 1 137-61" fill="none" stroke="#FFF8D9" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+    <path d="M269 194a119 119 0 0 1-78 70" fill="none" stroke="#90632D" stroke-width="3" stroke-linecap="round" opacity=".38"/>
+  </g>
+  <!-- Small metal laurels, an enamel cabochon, and a star clasp. -->
+  <g fill="url(#nf-bonds-shine)" stroke="#BD944B" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M112 268c-20-6-35-19-43-39" fill="none" stroke-width="3" stroke-linecap="round"/>
+    <path d="M75 239c-16 0-24-10-20-16 13 1 19 7 20 16Z"/><path d="M82 249c-15 4-25-2-25-10 12-3 21 1 25 10Z"/><path d="M93 259c-14 8-26 4-28-3 10-6 20-6 28 3Z"/><path d="M105 266c-10 12-23 12-28 6 8-9 17-13 28-6Z"/>
+    <path d="M77 241c10-10 9-22 1-25-7 7-8 16-1 25Z"/><path d="M88 253c9-11 7-23-1-25-7 9-6 17 1 25Z"/>
+    <g transform="translate(320 0) scale(-1 1)"><path d="M112 268c-20-6-35-19-43-39" fill="none" stroke-width="3" stroke-linecap="round"/><path d="M75 239c-16 0-24-10-20-16 13 1 19 7 20 16Z"/><path d="M82 249c-15 4-25-2-25-10 12-3 21 1 25 10Z"/><path d="M93 259c-14 8-26 4-28-3 10-6 20-6 28 3Z"/><path d="M105 266c-10 12-23 12-28 6 8-9 17-13 28-6Z"/><path d="M77 241c10-10 9-22 1-25-7 7-8 16-1 25Z"/><path d="M88 253c9-11 7-23-1-25-7 9-6 17 1 25Z"/></g>
+  </g>
+  <circle cx="160" cy="24" r="13" fill="url(#nf-bonds-gold)" stroke="#BB8738" stroke-width="2"/>
+  <circle cx="160" cy="24" r="8" fill="#D58E67" stroke="#FFF3CE" stroke-width="2"/>
+  <ellipse cx="157" cy="21" rx="3" ry="2" fill="#FFFFFF" opacity=".65" transform="rotate(-30 157 21)"/>
+  <path d="m160 258 7 12 14 3-10 10 1 14-12-7-12 7 1-14-10-10 14-3Z" fill="url(#nf-bonds-shine)" stroke="#BB8B3F" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="m160 266 4 8 9 1-7 6 1 8-7-4-7 4 1-8-7-6 9-1Z" fill="#F8E6AA"/>
+  <g fill="#F3D68A" stroke="#B98B3C" stroke-width="1.5" stroke-linejoin="round"><path d="m48 65 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m275 78 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g>
+</svg>
