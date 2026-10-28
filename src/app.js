@@ -307,20 +307,19 @@
     const preview = !solved && formula.rows.some(row => row.tokens.some(token => token.preview));
     const retry = preview && state.feedbackSelected === state.selected && !!state.feedback;
     const status = reference ? 'reference' : solved ? 'solved' : retry ? 'retry' : preview ? 'preview' : 'empty';
-    const heading = reference ? '最后一题的正确关系 · 参考' : final ? '最后一题，你发现了' : retry ? '看看哪里需要改一改' : preview ? (task.kind === 'compare' ? '试选 · 待检查' : '试填 · 待检查') : formula.title;
+    const heading = reference ? '最后一题的正确关系 · 参考' : final ? '最后一题，你发现了' : retry ? '看看哪里需要改一改' : preview ? (task.kind === 'compare' ? '这是试选，还没检查' : '这是试填，还没检查') : formula.title;
     const roles = new Set(['a', 'b', 'result', 'operator', 'neutral']);
     const shortLabels = { '已有的颗数': '已有几颗', '还要补几颗': '还补几颗', '需要的颗数': '需要几颗', '原来的颗数': '原来几颗', '添来的颗数': '添来几颗', '拿走的颗数': '拿走几颗', '跳过的格数': '跳了几格', '添完有几篮': '现在几篮', '新一篮的颗数': '新来几颗', '一篮的颗数': '一篮几颗', '分给几个人': '几个伙伴', '一共几个人': '几个伙伴', '左篮的颗数': '左篮几颗', '右篮的颗数': '右篮几颗', '队列里的数': '已知的数', '空位里的数': '空位的数' };
     const rows = formula.rows.map((row, index) => {
       const tokens = row.tokens.map(token => {
         const role = roles.has(token.role) ? token.role : 'neutral';
         const questioning = preview && token.role === 'operator' && token.text === '=';
-        return '<span class="formula-token formula-' + role + (token.unknown ? ' is-unknown' : '') + (token.preview ? ' is-preview' : '') + (questioning ? ' is-questioning' : '') + '"' + (questioning ? ' aria-label="等于这个数吗？还没有确认"' : '') + '><strong>' + esc(token.text) + '</strong>' + (token.preview ? '<span class="formula-draft-tag">' + (task.kind === 'compare' ? '试选' : '试填') + '</span>' : '') + (questioning ? '<span class="formula-question-mark" aria-hidden="true">?</span>' : '') + (token.label ? '<span class="formula-label">' + esc(shortLabels[token.label] || token.label) + '</span>' : '') + '</span>';
+        return '<span class="formula-token formula-' + role + (token.unknown ? ' is-unknown' : '') + (token.preview ? ' is-preview' : '') + (questioning ? ' is-questioning' : '') + '"' + (questioning ? ' aria-label="等于这个数吗？还没有确认"' : '') + '><strong>' + esc(token.text) + '</strong>' + (token.preview ? '<span class="formula-draft-tag">' + (retry ? '待订正' : '待检查') + '</span>' : '') + (questioning ? '<span class="formula-question-mark" aria-hidden="true">?</span>' : '') + (token.label ? '<span class="formula-label">' + esc(shortLabels[token.label] || token.label) + '</span>' : '') + '</span>';
       }).join('');
       return '<div class="formula-row ' + (index ? 'formula-secondary' : 'formula-primary') + '">' + (row.caption ? '<p class="formula-caption">' + esc(row.caption) + '</p>' : '') + '<div class="formula-tokens">' + tokens + '</div></div>';
     });
     const more = rows.length > 1 ? '<details class="formula-more"><summary>换个写法，看看联系</summary>' + rows.slice(1).join('') + '</details>' : '';
-    const banner = !solved ? '<div class="formula-status-banner"><span class="formula-status-icon" aria-hidden="true">' + (retry ? '↺' : '?') + '</span><div><strong>' + (retry ? '还没通过，一起看看原因' : preview ? '这是你选的，还没检查' : '先选答案，再检查') + '</strong><small>' + (retry ? '可以订正，也可以去下一题' : '点“检查答案”后，才知道对不对') + '</small></div></div>' : '';
-    return '<section class="formula-card' + (solved && !reference ? ' is-solved' : '') + (final ? ' formula-finale' : '') + '" data-kind="' + esc(task.kind) + '" data-state="' + status + '" aria-label="' + esc((final ? '最后一题的数学关系' : formula.title) + (preview ? '，' + heading : '')) + '"><h2><span class="formula-mark" aria-hidden="true">' + (reference ? '▤' : solved ? '✓' : retry ? '↺' : preview ? '✎' : '✦') + '</span>' + esc(heading) + '</h2>' + banner + rows[0] + (task.kind === 'compare' ? '<p class="formula-note">选松果更' + (task.model.ask === 'less' ? '少' : '多') + '的一篮</p>' : '') + more + '</section>';
+    return '<section class="formula-card' + (solved && !reference ? ' is-solved' : '') + (final ? ' formula-finale' : '') + '" data-kind="' + esc(task.kind) + '" data-state="' + status + '" aria-label="' + esc((final ? '最后一题的数学关系' : formula.title) + (preview ? '，' + heading : '')) + '"><h2><span class="formula-mark" aria-hidden="true">' + (reference ? '▤' : solved ? '✓' : retry ? '↺' : preview ? '?' : '✦') + '</span>' + esc(heading) + '</h2>' + rows[0] + (task.kind === 'compare' ? '<p class="formula-note">选松果更' + (task.model.ask === 'less' ? '少' : '多') + '的一篮</p>' : '') + more + '</section>';
   }
   function refreshFormula() {
     const previous = main.querySelector('.mission-bridge .formula-card');

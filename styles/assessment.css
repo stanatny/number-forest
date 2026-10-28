@@ -144,5 +144,5 @@ main[data-screen="game"] .answer-feedback.retry .feedback-actions .listen-feedba
   main[data-screen="game"] .compare-basket.selected > span:last-child::after { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .formula-status-banner, .formula-draft-tag, .assessment-note, .result-score { animation: none !important; transition: none !important; }
+  .formula-draft-tag, .assessment-note, .result-score { animation: none !important; transition: none !important; }
 }
