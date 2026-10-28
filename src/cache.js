@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 
-  var version = '0.6.0';
+  var version = '0.6.1';
   var script = document.currentScript;
   var local = /^(localhost|127(?:\.\d{1,3}){3}|\[::1\])$/.test(location.hostname);
   var supported = 'serviceWorker' in navigator &&

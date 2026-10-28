@@ -29,9 +29,21 @@
     return hour + (minute === 0 ? '点整' : minute === 30 ? '点半' : '点' + minute + '分');
   }
 
-  // selected is intentionally unused: an unverified choice must never become
-  // part of a mathematical assertion. Only the caller's solved === true state
-  // reveals target tokens. This module neither validates nor changes game state.
+  function selectionLimit(task) {
+    if (task.maxAnswer !== undefined) {
+      return Number.isSafeInteger(task.maxAnswer) && task.maxAnswer >= 0 ? task.maxAnswer : -1;
+    }
+    // Generated tasks always supply maxAnswer. Standalone examples can omit it;
+    // use the existing lesson's keypad range while retaining larger extensions.
+    var limit = task.kind === 'clock' || task.kind === 'clock-forward' ? 750 :
+      task.kind === 'sharing' || task.kind === 'pack' || task.kind === 'group-count' ? 5 :
+      task.kind === 'bonds' && task.model.total <= 10 ? 10 : 20;
+    return Math.max(limit, task.answer);
+  }
+
+  // A selection is a preview, not a correctness decision. Preview targets keep
+  // unknown=true; the caller must distinguish them visually from solved facts.
+  // Only solved === true reveals the answer, regardless of the selected value.
   function describe(task, options) {
     if (!task || typeof task.kind !== 'string' || !task.model ||
         !Number.isSafeInteger(task.answer) || task.answer < 0) {
@@ -39,9 +51,19 @@
     }
     var m = task.model;
     var solved = !!options && options.solved === true;
+    var selected = options && options.selected;
+    var canPreview = !solved && Number.isSafeInteger(selected) && selected >= 0 && selected <= selectionLimit(task);
+    var clock = task.kind === 'clock' || task.kind === 'clock-forward';
+    if (clock && canPreview) {
+      var hour = Math.floor(selected / 60), minute = selected % 60;
+      canPreview = canPreview && hour >= 1 && hour <= 12 && (minute === 0 || minute === 30);
+    }
+    var previewText = canPreview ? (clock ? clockText(hour, minute) : String(selected)) : '?';
     function target(role, label, value) {
-      var result = token(solved ? (value === undefined ? task.answer : value) : '?', role, label);
+      var preview = canPreview && task.kind !== 'compare';
+      var result = token(solved ? (value === undefined ? task.answer : value) : preview ? previewText : '?', role, label);
       result.unknown = !solved;
+      result.preview = preview;
       return result;
     }
     var a, b, result, rows;
@@ -103,8 +125,12 @@
     }
 
     if (task.kind === 'compare') {
+      var left = token(m.a, 'a', '左篮的颗数');
+      var right = token(m.b, 'b', '右篮的颗数');
+      if (canPreview && selected === m.a) left.preview = true;
+      if (canPreview && selected === m.b) right.preview = true;
       return { title: '看看两边的大小', rows: [row([
-        token(m.a, 'a', '左篮的颗数'), target('operator', '比较关系', m.a > m.b ? '>' : m.a < m.b ? '<' : '='), token(m.b, 'b', '右篮的颗数')
+        left, target('operator', '比较关系', m.a > m.b ? '>' : m.a < m.b ? '<' : '='), right
       ], '大口朝着较大的数，尖尖朝着较小的数。')], note: '题目要选松果更' + (m.ask === 'less' ? '少' : '多') + '的一篮，比较符号帮我们看两边的关系。' };
     }
 
