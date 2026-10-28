@@ -1,0 +1,148 @@
+/* Selection is an unverified draft. The first submitted outcome is a separate
+   record; it must not make a newly selected number look correct. Load last. */
+main[data-screen="game"] .number-pad button.selected,
+main[data-screen="game"] .time-choice.selected {
+  color: #344e88;
+  background: #e5ecff;
+  border: 2px dashed #667fbc;
+  box-shadow: 0 4px 0 #b6c3e5, inset 0 2px 0 #fff;
+}
+main[data-screen="game"] .time-choice.selected span { color: #516a9a; }
+main[data-screen="game"] .compare-basket.selected {
+  outline: 3px dashed #7187bf;
+  outline-offset: 3px;
+  border-color: #9aaed2;
+  background: #edf1ff;
+  box-shadow: inset 0 3px 0 #fff, 0 4px 0 #bec9e5;
+}
+main[data-screen="game"] .compare-basket.selected > strong { color: #3c568e; background: #fff; }
+main[data-screen="game"] .compare-basket.selected > span:last-child { color: #485f94; font-weight: 800; }
+main[data-screen="game"] .compare-basket.selected > span:last-child::before { content: "? "; font-size: 15px; font-weight: 900; }
+main[data-screen="game"] .compare-basket.selected > span:last-child::after { content: " · 待检查"; font-size: 11px; font-weight: 700; }
+
+/* Only a validated equation may confirm disabled answer controls. A corrected
+   equation may be green while the persistent first-answer record remains ×. */
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .number-pad button.selected:disabled,
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .time-choice.selected:disabled {
+  color: #fff;
+  background: #459b7d;
+  border-style: solid;
+  border-color: #32826a;
+  box-shadow: 0 4px 0 #256a54, inset 0 2px 0 #79c3a4;
+}
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .time-choice.selected:disabled span { color: #e8fff4; }
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .compare-basket.selected:disabled { outline-style: solid; outline-color: #4f9c79; border-color: #8bbb78; background: #e1efbf; box-shadow: inset 0 3px 0 #f8fce9, 0 4px 0 #a8bd8b66; }
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .compare-basket.selected:disabled > strong { color: #4e7438; background: #fbfff0; }
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .compare-basket.selected:disabled > span:last-child { color: #537747; }
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .compare-basket.selected:disabled > span:last-child::before { content: "✓ "; }
+main[data-screen="game"]:has(.mission-bridge .formula-card.is-solved) .compare-basket.selected:disabled > span:last-child::after { content: ""; }
+
+main[data-screen="game"] .round-dots span.incorrect {
+  color: #9b5735;
+  background: #fff0dd;
+  border-color: #ce9b72;
+  box-shadow: 0 2px 0 #dfb994;
+  font-size: 19px;
+  font-weight: 850;
+  transform: none;
+}
+main[data-screen="game"] .round-dots span.legacy {
+  color: #6d7b7f;
+  background: #f1f4f1;
+  border-style: dashed;
+  border-color: #aebbbc;
+  box-shadow: 0 2px 0 #d8dfdb;
+  transform: none;
+}
+.assessment-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 9px;
+  padding: 10px 13px;
+  border: 1px solid #d9b88d;
+  border-left: 4px solid #c99661;
+  border-radius: 13px;
+  color: #805b35;
+  background: #fff5e5;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.65;
+}
+.assessment-note > span { display: grid; place-items: center; flex: 0 0 25px; width: 25px; height: 25px; border: 1px solid #d3ad7b; border-radius: 8px; color: #986039; background: #ffeaca; font-size: 22px; font-weight: 800; line-height: 1; }
+.assessment-note > p { min-width: 0; margin: 0; }
+.assessment-note strong { display: block; font-size: 12px; font-weight: 800; }
+.assessment-note small { display: block; margin-top: 1px; font-size: 11px; font-weight: 500; }
+main[data-outcome="legacy"] .assessment-note { color: #687779; background: #f1f4ee; border-color: #b6c2b9; }
+main[data-outcome="legacy"] .assessment-note > span { color: #6f7d7d; border-color: #bcc7bf; background: #e6ece6; font-size: 16px; }
+
+.result-score { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 530px; margin: 18px auto 14px; text-align: center; }
+.result-score > div { min-width: 0; padding: 12px 15px; border: 2px solid #d9e2d6; border-radius: 18px; background: #fafcf3; box-shadow: 0 3px 0 #e2e8d7; }
+.result-score > h2 { grid-column: 1 / -1; margin: 0; color: #49645b; font-size: 16px; font-weight: 800; line-height: 1.5; }
+.result-score > p { grid-column: 1 / -1; margin: 0; color: #798176; font-size: 11px; line-height: 1.65; }
+.result-score strong { display: block; color: #446b55; font-size: 34px; font-weight: 900; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.result-score span { display: block; margin-top: 5px; color: #627a62; font-size: 12px; font-weight: 750; line-height: 1.6; }
+.result-score .score-correct { border-color: #b6d5a3; background: #f0f9e4; box-shadow: 0 3px 0 #d2e4c4; }
+.result-score .score-correct strong { color: #477b48; }
+.result-score .score-incorrect { border-color: #d8ba91; background: #fff3e4; box-shadow: 0 3px 0 #e9d4b9; }
+.result-score .score-incorrect strong { color: #966039; }
+.result-score .score-incorrect span { color: #886b48; }
+.result-score .score-legacy { padding: 9px 12px; color: #74817e; border: 1px dashed #b9c5ba; border-radius: 12px; background: #f4f6ee; }
+.result-score .score-legacy strong, .result-score .score-legacy span { color: #74817e; }
+main[data-screen="game"] .answer-feedback.retry .feedback-actions { align-items: center; gap: 10px; margin-top: 13px; }
+main[data-screen="game"] .answer-feedback.retry .feedback-actions .primary-button { min-height: 46px; padding: 9px 15px; font-size: 13px; white-space: normal; }
+main[data-screen="game"] .answer-feedback.retry .feedback-actions .listen-feedback { min-height: 44px; }
+.answer-feedback.retry .feedback-verdict { margin: 10px 0 12px; padding: 9px 12px; border: 1px solid #dfbe8b; border-radius: 12px; color: #83592e; background: #fff8e9; font-size: 15px; font-weight: 800; line-height: 1.7; }
+.answer-feedback.retry .feedback-record-note { margin: 10px 0 0; color: #857459; font-size: 11px; line-height: 1.7; }
+
+@media (hover: hover) {
+  main[data-screen="game"] .number-pad button.selected:hover:not(:disabled),
+  main[data-screen="game"] .time-choice.selected:hover:not(:disabled) { color: #30477d; background: #dbe5ff; border-color: #536eac; box-shadow: 0 4px 0 #a8b8df, inset 0 2px 0 #fff; }
+  main[data-screen="game"] .compare-basket.selected:hover:not(:disabled) { background: #e6edff; border-color: #8ba0ca; }
+}
+@media (min-width: 801px) and (max-height: 900px) {
+  .assessment-note { margin-block: 9px 7px; padding: 7px 11px; font-size: 11px; }
+  .result-score { margin-block: 14px 11px; gap: 10px; }
+  .result-score > div { padding: 10px 12px; }
+  .result-score strong { font-size: 30px; }
+}
+/* The clearer draft card uses more room than a plain equation. Keep the
+   picture, choices and check action together without reducing touch targets. */
+@media (min-width: 1000px) and (max-height: 900px) {
+  main[data-screen="game"] .number-pad:has(button:nth-child(21)) { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+  main[data-screen="game"] .scene:has(.basket-grid.grouped) { padding: 9px 13px; gap: 6px; }
+  main[data-screen="game"] .grouped .basket { min-height: 92px; padding-block: 7px 8px; }
+  main[data-screen="game"] .grouped .basket-fruit { max-width: 110px; gap: 3px; }
+  main[data-screen="game"] .scene:has(.known-fact) { display: grid; grid-template-columns: auto minmax(0, 1fr); justify-items: center; align-content: center; }
+  main[data-screen="game"] .scene:has(.known-fact) > .scene-note { grid-column: 1; grid-row: 1; margin: 0; }
+  main[data-screen="game"] .scene:has(.known-fact) > .known-fact { grid-column: 2; grid-row: 1; margin: 0; padding: 3px 8px; font-size: 11px; }
+  main[data-screen="game"] .scene:has(.known-fact) > .basket-grid { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  main[data-screen="game"] .scene:has(.known-fact) .known-fact span { font-size: 10px; }
+  main[data-screen="game"] .control-row { margin-top: 8px; }
+  main[data-screen="game"] .answer-panel { margin-top: 10px; padding-top: 9px; }
+  main[data-screen="game"] .answer-actions { margin-top: 10px; }
+}
+@media (min-width: 1000px) and (max-height: 800px) {
+  .app-shell:has(main[data-screen="game"]) .site-header { min-height: 60px; }
+  main[data-screen="game"] .game-topbar { min-height: 52px; padding-block: 3px; }
+  main[data-screen="game"] .play-panel { padding-top: 10px; padding-bottom: 14px; }
+  main[data-screen="game"] .scene { margin-top: 10px; }
+  main[data-screen="game"] .answer-actions { margin-top: 8px; }
+  main[data-screen="game"][data-chapter="clock"] .scene { padding-block: 6px; }
+  main[data-screen="game"][data-chapter="clock"] .time-choice { min-height: 60px; font-size: 22px; line-height: 1.25; }
+  main[data-screen="game"][data-chapter="clock"] .clock-scene { flex-direction: row; gap: 22px; }
+  main[data-screen="game"][data-chapter="clock"] .clock-legend { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px; }
+}
+@media (max-width: 600px) {
+  .assessment-note { align-items: flex-start; padding: 9px 10px; font-size: 11px; }
+  .assessment-note > span { margin-top: 1px; }
+  .result-score { gap: 9px; margin-block: 14px 11px; }
+  .result-score > div { padding: 10px 8px; border-radius: 15px; }
+  .result-score strong { font-size: 29px; }
+  .result-score span { font-size: 11px; }
+  main[data-screen="game"] .answer-feedback.retry .feedback-actions { justify-content: flex-start; }
+  main[data-screen="game"] .compare-basket.selected > span:last-child::after { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .formula-status-banner, .formula-draft-tag, .assessment-note, .result-score { animation: none !important; transition: none !important; }
+}
