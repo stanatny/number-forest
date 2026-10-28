@@ -107,14 +107,14 @@ main[data-screen="game"] .quantity-result .group-label { color: #4b783b; backgro
 /* A proposed number is a removable paper tile, not a confirmed equation.
    Reserve both the heading and tag rows so choosing a value cannot move play. */
 .formula-card { --formula-number-height: 47px; }
-.formula-card > h2 { min-height: 32px; margin-bottom: 10px; }
+.formula-card > h2 { width: fit-content; max-width: 100%; min-height: 32px; margin: 0 auto 10px; padding: 2px 10px; border: 2px solid transparent; border-radius: 11px; }
 .formula-primary .formula-tokens { padding-top: 7px; }
 .formula-primary .formula-token { position: relative; display: grid; grid-template-rows: var(--formula-number-height) 18px auto; justify-items: center; align-content: start; }
 .formula-primary .formula-token strong { grid-row: 1; min-height: var(--formula-number-height); }
 .formula-primary .formula-label { grid-row: 3; margin-top: 5px; }
 .formula-draft-tag { display: inline-block; align-self: start; grid-row: 2; padding: 0 6px; border-radius: 0 0 6px 6px; color: #fffdf8; background: #503b4c; font-size: 10px; font-weight: 850; line-height: 18px; white-space: nowrap; }
 .formula-card[data-state="preview"] { border-color: #c6b598; background: linear-gradient(145deg, #fffefb, #fffaf0); box-shadow: 0 4px 0 #e0d3bc; }
-.formula-card[data-state="preview"] h2 { color: #503b4c; font-weight: 850; }
+.formula-card[data-state="preview"] > h2 { color: #62411d; background: linear-gradient(155deg, #ffe998, #ffdc72); border-color: #c68e30; box-shadow: 0 3px 0 #d9b25a, inset 0 1px 0 #fff6d6; font-size: 13px; font-weight: 850; }
 .formula-card[data-state="preview"] .formula-mark { color: #fffdf8; background: #503b4c; }
 .formula-card .formula-token.is-preview strong { border: 3px dashed #614957; border-radius: 12px 12px 7px 7px; color: #342a34; background: #fffefb; box-shadow: 0 4px 0 #ccb8bd, inset 0 0 0 2px #fff, 0 5px 8px #5f415015; }
 .formula-card .formula-primary .formula-token.is-preview strong { min-width: 50px; font-weight: 900; }
@@ -123,6 +123,8 @@ main[data-screen="game"] .quantity-result .group-label { color: #4b783b; backgro
 .formula-card[data-state="preview"] .formula-more { border-color: #ddcfba; }
 .formula-card[data-state="preview"] .formula-more summary { color: #6d5c60; }
 .formula-card[data-state="retry"] { border-color: #c8aa80; background: linear-gradient(145deg, #fffdf7, #fff8ed); box-shadow: 0 4px 0 #e4d3b8; }
+.formula-card[data-state="retry"] > h2 { color: #684025; background: linear-gradient(155deg, #ffe8c8, #ffdaab); border-color: #b7834a; box-shadow: 0 3px 0 #d8b287, inset 0 1px 0 #fff5e7; font-size: 13px; font-weight: 850; }
+.formula-card[data-state="retry"] > h2 .formula-mark { color: #fffdf8; background: #795034; }
 .formula-card[data-state="retry"] .formula-token.is-preview strong { border-color: #895b37; color: #5b3825; background: #fffaf0; box-shadow: 0 4px 0 #d7bea5, inset 0 0 0 2px #fff, 0 5px 8px #704a2c15; }
 .formula-card[data-state="retry"] .formula-draft-tag { background: #795034; }
 .formula-card[data-state="retry"] .formula-question-mark { background: #795034; box-shadow: 0 2px 0 #d7bea5; }
