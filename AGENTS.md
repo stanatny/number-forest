@@ -11,3 +11,5 @@ An offline-capable, extensible Chinese number-sense game for early learners.
 - Check arithmetic generators and progression with node --test. Visually play all affected chapters at desktop and narrow/mobile sizes before claiming they work.
 - Keep screenshots, logs, preview process records and downloadable snapshots in ignored .local/. Do not commit those.
 - A repository push and public website publication are distinct actions. Default new GitHub repository visibility is private.
+
+- Chapter award visuals use a distinct, high-contrast forest stage, a recognizable front-facing badge, and a finite buildup / impact / settle sequence. Verify the actual animation in Chromium and WebKit, immediate exit controls, and a complete static reduced-motion presentation. Particle count alone is not visual acceptance.
