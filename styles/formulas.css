@@ -1,0 +1,105 @@
+/* A picture and its number relationship stay together, before and after solving. */
+.mission-bridge { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 38%); align-items: center; gap: 19px; }
+.mission-bridge > .mission-heading { min-width: 0; }
+.formula-card { --formula-a: #347b72; --formula-b: #9a6131; --formula-result: #4b783b; min-width: 0; padding: 13px 12px 12px; border: 2px solid #e4c97f; border-radius: 22px; background: linear-gradient(150deg, #fff9df, #fffdf5); box-shadow: 0 4px 0 #efdfaa; color: #4f6353; text-align: center; }
+.formula-card h2 { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 0 0 9px; color: #8b6b32; font-size: 13px; font-weight: 800; line-height: 1.4; }
+.formula-mark { display: inline-grid; place-items: center; width: 21px; height: 21px; flex: 0 0 auto; color: #aa7730; background: #ffedb0; border-radius: 50%; font-size: 14px; }
+.formula-tokens { display: flex; align-items: start; justify-content: center; gap: 5px; font-variant-numeric: tabular-nums; }
+.formula-token { display: flex; flex-direction: column; align-items: center; min-width: 0; flex: 0 1 auto; }
+.formula-token strong { display: grid; place-items: center; min-width: 41px; min-height: 49px; padding: 1px 3px; color: #526b5a; border: 2px solid transparent; border-radius: 12px; font-size: 36px; font-weight: 850; line-height: 1.2; white-space: nowrap; }
+.formula-label { display: block; margin-top: 4px; color: #6e7c68; font-size: 11px; font-weight: 650; line-height: 1.4; white-space: nowrap; }
+.formula-a strong { color: var(--formula-a); background: #e3f3ed; }
+.formula-b strong { color: var(--formula-b); background: #fff0dc; }
+.formula-result strong { color: var(--formula-result); background: #edf3d6; }
+.formula-operator strong { min-width: 14px; padding-inline: 0; color: #9b9b79; font-size: 27px; }
+.formula-neutral strong { min-width: 0; font-size: 22px; }
+.formula-token.is-unknown strong { min-width: 43px; color: #9e6827; background: #ffedb7; border: 2px dashed #cd9b42; }
+.formula-caption, .formula-note { margin: 6px 0 0; font-size: 11px; line-height: 1.55; color: #82754f; }
+.formula-caption { margin: 0 0 4px; }
+.formula-secondary { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2d5a8; }
+.formula-secondary .formula-tokens { flex-wrap: wrap; gap: 4px; }
+.formula-secondary .formula-token strong { min-width: 19px; min-height: 26px; padding: 0 2px; border-radius: 7px; font-size: 19px; background: transparent; }
+.formula-secondary .formula-operator strong { min-width: 9px; font-size: 17px; }
+.formula-secondary .formula-token.is-unknown strong { min-width: 25px; background: #fff0bf; }
+.formula-secondary .formula-label { font-size: 10px; margin-top: 2px; }
+.formula-card.is-solved { background: linear-gradient(140deg, #f3fadf, #fffef2); border-color: #b8d095; box-shadow: 0 4px 0 #d6e5bc; }
+.formula-card.is-solved h2 { color: #56804d; }
+.formula-card.is-solved .formula-mark { color: #fff; background: #75a95c; }
+.formula-finale { margin: 18px 0 12px; padding: 14px 20px; }
+.formula-finale .formula-tokens { gap: 10px; }
+.formula-finale .formula-token strong { font-size: 38px; min-height: 50px; min-width: 50px; }
+.formula-finale .formula-secondary .formula-token strong { font-size: 23px; min-height: 30px; min-width: 23px; }
+.formula-finale .formula-secondary { margin-top: 9px; }
+.formula-card[data-kind="clock-forward"] .formula-primary .formula-token strong { font-size: 22px; min-width: 22px; }
+.formula-card[data-kind="clock"] .formula-primary .formula-token strong { font-size: 28px; }
+.formula-card[data-kind="sequence"] .formula-primary .formula-token strong { min-width: 30px; font-size: 29px; }
+.formula-card[data-kind="sequence"] .formula-primary .formula-operator strong { min-width: 8px; font-size: 17px; }
+main[data-screen="game"] .quantity-a .group-label, main[data-screen="game"] span.quantity-a { color: #347b72; background: #e3f3ed; border-radius: 7px; padding: 3px 7px; }
+main[data-screen="game"] .quantity-b .group-label { color: #9a6131; background: #fff0dc; border-radius: 7px; padding: 3px 7px; }
+main[data-screen="game"] .quantity-result .group-label { color: #4b783b; background: #edf3d6; border-radius: 7px; padding: 3px 7px; }
+@media (min-width: 801px) and (max-height: 900px) {
+  .mission-bridge { grid-template-columns: minmax(0, 1fr) minmax(215px, 37%); gap: 15px; }
+  .formula-card { padding: 10px 9px; border-radius: 18px; }
+  .formula-card h2 { margin-bottom: 6px; font-size: 12px; }
+  .formula-token strong { font-size: 32px; min-height: 43px; min-width: 36px; }
+  .formula-token.is-unknown strong { min-width: 39px; }
+  .formula-label { font-size: 10px; }
+  .formula-secondary { margin-top: 7px; padding-top: 6px; }
+  .formula-secondary .formula-token strong { font-size: 17px; min-height: 24px; }
+  .formula-card[data-kind="sequence"] .formula-primary .formula-token strong { min-width: 26px; font-size: 25px; }
+  .formula-card[data-kind="sequence"] .formula-primary .formula-operator strong { min-width: 7px; font-size: 15px; }
+}
+@media (max-width: 1000px) and (min-width: 801px) {
+  .mission-bridge { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .formula-card .formula-tokens { gap: 9px; }
+}
+@media (max-width: 800px) {
+  .mission-bridge { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .formula-card { padding: 12px 14px; }
+  .formula-token strong { font-size: 37px; }
+  .formula-secondary .formula-token strong { font-size: 21px; }
+  .formula-tokens { gap: 9px; }
+}
+@media (max-width: 420px) {
+  .formula-card { padding: 11px 9px; border-radius: 17px; }
+  .formula-tokens { gap: 4px; }
+  .formula-token strong { font-size: 32px; min-width: 34px; }
+  .formula-label { font-size: 10px; }
+  .formula-card[data-kind="clock-forward"] .formula-primary .formula-token strong { font-size: 20px; }
+  .formula-finale .formula-tokens { gap: 4px; }
+  .formula-finale .formula-token strong { font-size: 29px; min-width: 32px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .formula-card.is-solved .formula-result strong { animation: formula-discovered 450ms ease-out both; }
+  @keyframes formula-discovered { 0% { transform: scale(.92); } 55% { transform: scale(1.08); } 100% { transform: scale(1); } }
+}
+/* Short labels name the quantities without squeezing the numeric row. */
+.formula-label { max-width: 4em; min-height: 2.8em; white-space: normal; text-wrap: balance; }
+.formula-operator .formula-label { max-width: 2em; }
+.formula-card[data-kind="sequence"] .formula-primary .formula-neutral .formula-label,
+.formula-card[data-kind="sequence"] .formula-primary .formula-operator .formula-label,
+.formula-card[data-kind="group-total"] .formula-secondary .formula-label { display: none; }
+.formula-card[data-kind="clock-forward"] .formula-tokens { flex-wrap: wrap; }
+.mission-bridge:has(.formula-card[data-kind^="clock"]) { grid-template-columns: minmax(0, 1fr); gap: 11px; }
+.formula-card[data-kind^="clock"] .formula-label { max-width: 7em; min-height: 1.4em; }
+.formula-card[data-kind="clock-forward"] .formula-primary .formula-tokens { gap: 12px; }
+@media (max-width: 420px) {
+  .formula-card[data-kind="clock-forward"] .formula-primary .formula-tokens { gap: 5px; }
+  .formula-card[data-kind="clock-forward"] .formula-primary .formula-token strong { font-size: 18px; }
+}
+.formula-label { min-height: 1.4em; }
+.formula-operator .formula-label { display: none; }
+.formula-more { margin-top: 9px; border-top: 1px dashed #e2d5a8; }
+.formula-more summary { padding: 9px 0 0; min-height: 34px; cursor: pointer; color: #89774b; font-size: 11px; line-height: 1.6; font-weight: 650; }
+.formula-more .formula-secondary { border: 0; margin-top: 0; padding-top: 8px; }
+.formula-secondary .formula-label { display: none; }
+@media (min-width: 801px) and (max-height: 900px) {
+  .formula-more { margin-top: 6px; }
+  .formula-more summary { min-height: 30px; padding-top: 7px; }
+  main[data-screen="game"] .mission-bridge .mission-heading h1 { font-size: 23px; }
+}
+.formula-label { max-width: none; white-space: nowrap; }
+.formula-more summary { min-height: 44px; padding-top: 10px; }
+.formula-card[data-kind="sequence"] .formula-primary .formula-result .formula-label { max-width: 3em; white-space: normal; }
+
+.mission-bridge:not(:has(.formula-card)) { grid-template-columns: minmax(0, 1fr); }
