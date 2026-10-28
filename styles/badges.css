@@ -202,23 +202,23 @@
 
 /* 0–.35 s charge; .35–1.8 s arrival; 1.8 s impact; 2 s shine; settle by 4.6 s. */
 @media (prefers-reduced-motion: no-preference) {
-  .badge-coin { animation: badge-coin-arrive 4600ms linear both; }
-  .badge-front { animation: badge-front-turn 4600ms steps(1, end) both; }
-  .badge-back { animation: badge-back-turn 4600ms steps(1, end) both; }
-  .badge-edge { animation: badge-edge-turn 4600ms steps(1, end) both; }
-  .badge-charge { animation: badge-charge-arrive 4600ms linear both; }
-  .badge-shockwave { animation: badge-impact 4600ms ease-out both; }
-  .badge-aura { animation: badge-aura-arrive 4600ms ease-out both; }
-  .badge-beams { animation: badge-beams-arrive 4600ms ease-out both; }
-  .badge-orbits { animation: badge-orbits-arrive 4600ms ease-out both; }
-  .badge-floor { animation: badge-floor-arrive 4600ms ease-out both; }
-  .badge-front::after { animation: badge-metal-shine 4600ms linear both; }
-  .badge-stars > span { animation: badge-star-arrive 4600ms cubic-bezier(.2,.65,.3,1) both; }
+  .badge-reveal.is-animating .badge-coin { animation: badge-coin-arrive 4600ms linear both; }
+  .badge-reveal.is-animating .badge-front { animation: badge-front-turn 4600ms steps(1, end) both; }
+  .badge-reveal.is-animating .badge-back { animation: badge-back-turn 4600ms steps(1, end) both; }
+  .badge-reveal.is-animating .badge-edge { animation: badge-edge-turn 4600ms steps(1, end) both; }
+  .badge-reveal.is-animating .badge-charge { animation: badge-charge-arrive 4600ms linear both; }
+  .badge-reveal.is-animating .badge-shockwave { animation: badge-impact 4600ms ease-out both; }
+  .badge-reveal.is-animating .badge-aura { animation: badge-aura-arrive 4600ms ease-out both; }
+  .badge-reveal.is-animating .badge-beams { animation: badge-beams-arrive 4600ms ease-out both; }
+  .badge-reveal.is-animating .badge-orbits { animation: badge-orbits-arrive 4600ms ease-out both; }
+  .badge-reveal.is-animating .badge-floor { animation: badge-floor-arrive 4600ms ease-out both; }
+  .badge-reveal.is-animating .badge-front::after { animation: badge-metal-shine 4600ms linear both; }
+  .badge-reveal.is-animating .badge-stars > span { animation: badge-star-arrive 4600ms cubic-bezier(.2,.65,.3,1) both; }
 }
 
 @keyframes badge-coin-arrive {
-  0%, 7% { transform: translateY(27px) rotateZ(0deg) rotateY(-540deg) scale(.06); }
-  8% { transform: translateY(25px) rotateZ(0deg) rotateY(-540deg) scale(.08); }
+  0%, 7% { transform: translateY(27px) rotateZ(0deg) rotateY(-540deg) scale(.15); }
+  8% { transform: translateY(25px) rotateZ(0deg) rotateY(-540deg) scale(.18); }
   18% { transform: translateY(10px) rotateZ(0deg) rotateY(-360deg) scale(.42); }
   29% { transform: translateY(-13px) rotateZ(0deg) rotateY(-180deg) scale(.83); }
   39.13% { transform: translateY(-7px) rotateZ(0deg) rotateY(0deg) scale(1.13); }
@@ -235,15 +235,13 @@
   34.065%, 100% { visibility: visible; }
 }
 @keyframes badge-back-turn {
-  0% { visibility: hidden; }
-  8% { visibility: visible; }
+  0%, 8% { visibility: visible; }
   13% { visibility: hidden; }
   23.5% { visibility: visible; }
   34.065%, 100% { visibility: hidden; }
 }
 @keyframes badge-edge-turn {
-  0% { visibility: hidden; }
-  8%, 100% { visibility: visible; }
+  0%, 100% { visibility: visible; }
 }
 @keyframes badge-charge-arrive {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
@@ -379,3 +377,9 @@
   .badge-floor { opacity: 1; transform: translateX(-50%); }
   .badge-stars > span { left: calc(50% + var(--star-x)); top: calc(50% + var(--star-y)); transform: translate(-50%, -50%) rotate(var(--star-turn)); opacity: .82; }
 }
+
+/* Always paint an award, even before SVG decoding or when an image fails. */
+.badge-fallback { display: none; position: absolute; z-index: 4; width: calc(var(--badge-size) * .72); height: calc(var(--badge-size) * .72); align-items: center; justify-content: center; border: 8px solid #f6d47e; border-radius: 50%; background: radial-gradient(circle at 34% 25%, #fff5c3, #f3bd4f 55%, #ad6e20); color: #fff8d2; font-size: calc(var(--badge-size) * .37); box-shadow: 0 0 30px #f6d48766, inset 0 0 0 5px #ca8f32; text-shadow: 0 3px 0 #b57a28; }
+.badge-reveal.is-loading .badge-fallback { display: flex; transform: translateY(27px) scale(.21); }
+.badge-reveal.is-loading .badge-coin { display: none; }
+.badge-reveal.is-fallback .badge-fallback { transform: none; }

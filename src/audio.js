@@ -1,22 +1,39 @@
 (function (root) {
   'use strict';
 
-  // Original, procedurally synthesized D-major pentatonic miniature for this
-  // game. All sound comes from Web Audio oscillators: no recordings, borrowed
-  // tunes, downloads or external services. Loading this file stays silent.
-  var melody = [
-    62, null, 66, 69, null, 66, 64, null,
-    62, 64, null, 66, 69, null, 66, null,
-    71, null, 69, 66, null, 64, 62, null,
-    64, null, 66, 64, 62, null, null, null
+  // Original D-major woodland walk, composed for Number Forest: 112 BPM,
+  // eight short call/answer bars, with a second-pass variation (about 34 s).
+  // Soft mallets, plucked chords and a small bass/percussion pulse are all
+  // synthesized locally. No recordings, borrowed tunes or external services.
+  // Loading the module stays silent; only the explicit music switch starts it.
+  var phrases = [
+    [74, null, 78, 81, 78, null, 76, null],
+    [74, 78, 76, null, 74, null, 69, null],
+    [71, null, 74, 78, 76, 74, 71, null],
+    [74, null, 76, 78, 81, null, 78, null],
+    [78, 81, 83, null, 81, 78, 76, null],
+    [76, 78, 81, 78, 76, null, 73, null],
+    [74, null, 78, 76, 74, 71, 69, null],
+    [76, 78, 76, null, 74, null, null, null]
   ];
-  var bass = [50, 57, 59, 50];
-  var beatLength = 0.84;
+  var replies = {
+    3: [74, 76, 78, null, 81, 78, 76, null],
+    7: [78, null, 76, 73, 74, null, null, null]
+  };
+  var bass = [50, 50, 43, 43, 47, 45, 50, 50];
+  var chords = [
+    [62, 66, 69], [62, 66, 69], [59, 62, 67], [59, 62, 67],
+    [59, 62, 66], [61, 64, 69], [62, 66, 69], [62, 66, 69]
+  ];
+  var tempo = 112;
+  var stepLength = 60 / tempo / 2;
   var context = null;
   var master = null;
   var toneFilter = null;
+  var shakerBuffer = null;
   var enabled = false;
   var paused = false;
+  var voiceActive = false;
   var revision = 0;
   var scheduler = null;
   var suspendTimer = null;
@@ -102,33 +119,76 @@
     master.gain.value = 0;
     toneFilter = context.createBiquadFilter();
     toneFilter.type = 'lowpass';
-    toneFilter.frequency.value = 1800;
+    toneFilter.frequency.value = 3000;
     toneFilter.Q.value = 0.3;
     toneFilter.connect(master);
     master.connect(context.destination);
+    // A fixed short noise grain gives a soft brush sound, not a sharp hi-hat.
+    shakerBuffer = context.createBuffer(1, Math.ceil(context.sampleRate * 0.065), context.sampleRate);
+    var samples = shakerBuffer.getChannelData(0);
+    var seed = 73421;
+    var previous = 0;
+    for (var i = 0; i < samples.length; i += 1) {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      var white = seed / 2147483648 - 1;
+      samples[i] = (white - previous) * 0.5;
+      previous = white;
+    }
     return true;
   }
 
-  function playNote(midi, time, duration, strength, waveform) {
+  function trackVoice(source, envelope) {
+    var voice = { oscillator: source, envelope: envelope };
+    voices.add(voice);
+    source.onended = function () {
+      voices.delete(voice);
+      source.disconnect();
+      envelope.disconnect();
+    };
+  }
+
+  function playTone(frequency, time, duration, strength, waveform, slideTo) {
     var oscillator = context.createOscillator();
     var envelope = context.createGain();
     oscillator.type = waveform;
-    oscillator.frequency.value = 440 * Math.pow(2, (midi - 69) / 12);
+    oscillator.frequency.setValueAtTime(frequency, time);
+    if (slideTo) oscillator.frequency.exponentialRampToValueAtTime(slideTo, time + duration * 0.65);
     envelope.gain.setValueAtTime(0, time);
-    envelope.gain.linearRampToValueAtTime(strength, time + 0.035);
-    envelope.gain.exponentialRampToValueAtTime(0.001, time + duration);
-    envelope.gain.linearRampToValueAtTime(0, time + duration + 0.04);
+    envelope.gain.linearRampToValueAtTime(strength, time + 0.008);
+    envelope.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+    envelope.gain.linearRampToValueAtTime(0, time + duration + 0.025);
     oscillator.connect(envelope);
     envelope.connect(toneFilter);
-    var voice = { oscillator: oscillator, envelope: envelope };
-    voices.add(voice);
-    oscillator.onended = function () {
-      voices.delete(voice);
-      oscillator.disconnect();
-      envelope.disconnect();
-    };
+    trackVoice(oscillator, envelope);
     oscillator.start(time);
-    oscillator.stop(time + duration + 0.06);
+    oscillator.stop(time + duration + 0.04);
+  }
+
+  function playNote(midi, time, duration, strength, waveform) {
+    playTone(440 * Math.pow(2, (midi - 69) / 12), time, duration, strength, waveform);
+  }
+
+  function playMallet(midi, time, accented) {
+    // A rounded fundamental and quickly fading octave make a wooden/plucked
+    // attack. Short tails leave space for the next note and spoken questions.
+    playNote(midi, time, accented ? 0.39 : 0.29, accented ? 0.50 : 0.39, 'sine');
+    playNote(midi + 12, time, 0.12, accented ? 0.085 : 0.06, 'sine');
+    playNote(midi, time, 0.19, 0.055, 'triangle');
+  }
+
+  function playBrush(time, strength) {
+    var source = context.createBufferSource();
+    var envelope = context.createGain();
+    source.buffer = shakerBuffer;
+    envelope.gain.setValueAtTime(0, time);
+    envelope.gain.linearRampToValueAtTime(strength, time + 0.006);
+    envelope.gain.exponentialRampToValueAtTime(0.0001, time + 0.05);
+    envelope.gain.linearRampToValueAtTime(0, time + 0.06);
+    source.connect(envelope);
+    envelope.connect(toneFilter);
+    trackVoice(source, envelope);
+    source.start(time);
+    source.stop(time + 0.065);
   }
 
   function schedule() {
@@ -138,15 +198,25 @@
     // beats together. The timer only queues a short window ahead of time.
     if (nextBeatTime < now) nextBeatTime = now + 0.06;
     while (nextBeatTime < now + 0.2) {
-      var position = beat % melody.length;
-      var note = melody[position];
-      if (note !== null) playNote(note, nextBeatTime, 1.35, 0.46, 'triangle');
-      if (position % 8 === 0) {
-        var low = bass[Math.floor(position / 8)];
-        playNote(low, nextBeatTime, 3.8, 0.20, 'sine');
-        playNote(low + 7, nextBeatTime + 0.045, 3.4, 0.10, 'sine');
+      var position = beat % 8;
+      var bar = Math.floor(beat / 8) % phrases.length;
+      var secondPass = Math.floor(beat / 64) % 2 === 1;
+      var phrase = secondPass && replies[bar] ? replies[bar] : phrases[bar];
+      var note = phrase[position];
+      var time = nextBeatTime + (position % 2 ? 0.018 : 0);
+      if (note !== null) playMallet(note, time, position === 0 || position === 4);
+      if (position === 0 || position === 4) {
+        playNote(bass[bar] + (position === 4 && bar % 2 ? 7 : 0), time, 0.36, 0.24, 'sine');
+        playTone(125, time, 0.09, 0.07, 'sine', 62);
       }
-      nextBeatTime += beatLength;
+      if ((position === 2 || position === 6) && !(bar === 7 && position === 6)) {
+        chords[bar].forEach(function (midi, index) {
+          playNote(midi, time + index * 0.008, 0.20, 0.065, 'triangle');
+        });
+        playTone(780, time, 0.055, 0.025, 'sine', 420);
+      }
+      if (position % 2 && bar !== 7) playBrush(time, position === 3 || position === 7 ? 0.045 : 0.028);
+      nextBeatTime += stepLength;
       beat += 1;
     }
   }
@@ -154,9 +224,9 @@
   function beginScheduling() {
     stopScheduling();
     nextBeatTime = context.currentTime + 0.08;
-    fadeMaster(0.04, 0.25);
+    fadeMaster(voiceActive ? 0.08 * 0.28 : 0.08, 0.18);
     schedule();
-    scheduler = root.setInterval(schedule, 100);
+    scheduler = root.setInterval(schedule, 50);
   }
 
   async function startWhenVisible(ticket) {
@@ -226,6 +296,15 @@
     });
   }
   if (typeof root.addEventListener === 'function') {
+    // Speech keeps its own switch. Duck only the background mix while the
+    // voice module plays; an event never enables or resumes music by itself.
+    root.addEventListener('numberforest:voice', function (event) {
+      if (!event.detail || typeof event.detail.active !== 'boolean') return;
+      voiceActive = event.detail.active;
+      if (enabled && !paused && !isHidden() && context && context.state === 'running') {
+        fadeMaster(voiceActive ? 0.08 * 0.28 : 0.08, voiceActive ? 0.12 : 0.28);
+      }
+    });
     root.addEventListener('pagehide', pauseForHidden);
     root.addEventListener('pageshow', function () {
       if (enabled && !isHidden()) resumeOnVisible();

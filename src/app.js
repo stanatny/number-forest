@@ -8,7 +8,7 @@
   const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光' };
   function badgeName(id) { return badges[id] || '森林发现'; }
   function chapterPicture(id) { return 'assets/playful/' + (badges[id] ? id : 'hero') + '.svg'; }
-  function badgeImage(id) { return badges[id] ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'; }
+  function badgeImage(id) { return globalThis.NumberForestBadgeArt?.sources[id] || (badges[id] || id === 'reverse' ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'); }
   const state = { screen: 'home', chapter: null, round: 0, task: null, selected: null, hints: false, attempts: 0, solved: false, completed: 0, independent: 0, manip: 0, bowls: [], changed: false, feedback: '', feedbackSelected: null, sound: false };
   let storageAvailable = true;
   let records = readRecords();
@@ -54,17 +54,30 @@
     try { localStorage.setItem(KEY, JSON.stringify(records)); } catch (_) { storageAvailable = false; }
   }
   function announce(message) { document.getElementById('announcer').textContent = message; }
+  const voiceHints = {
+    bonds: '数一数空位，再放入松果，把篮子补满。',
+    add: '把两篮松果合起来，数一数一共有多少。',
+    subtract: '把送给朋友的松果拿走，数一数还剩多少。',
+    'missing-addend': '想一想，还要添上多少，才能和右边一样多。',
+    numberline: '看看跳动的方向，再数一数跳了几格。',
+    compare: '一颗对一颗，看看哪一边更多。也要留意题目问的是多的还是少的。',
+    sequence: '先找两个挨着、没有空位的数字，看看每次变多还是变少，再找空位里的数。',
+    groups: '每篮的数量不变，多添一篮，就多了这么一篮的松果。',
+    'group-total': '先数每篮有几颗，再数一共有几篮。',
+    'group-count': '先看看每篮的数量，再数一数一共有几篮。',
+    sharing: '每个小伙伴轮流分一颗，分得一样多，才是平均分哦。',
+    pack: '每袋装同样多的松果，数一数能装几袋。',
+    clock: '先看短短的时针，再看长长的分针。',
+    'clock-forward': '让分针往前走，再看看时针走到了哪里。'
+  };
+  function hintSpeech() { return voiceHints[state.task.kind === 'bonds' && state.task.model.equation ? 'missing-addend' : state.task.kind] || '一起看看提示，动手摆一摆吧。'; }
   function speak(text) {
-    if (!state.sound || !('speechSynthesis' in window)) return;
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text.replace(/[×]/g, '乘').replace(/[÷]/g, '除以'));
-    utterance.lang = 'zh-CN'; utterance.rate = 0.85;
-    const voice = speechSynthesis.getVoices().find(v => /^zh[-_]/.test(v.lang));
-    if (voice) utterance.voice = voice;
-    speechSynthesis.speak(utterance);
+    if (!state.sound) return;
+    globalThis.NumberForestSpeech?.speak(text);
   }
+  function speakFeedback() { speak(state.solved ? '答对啦！你发现了数的秘密。' : hintSpeech()); }
   function focusMain() { main.focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'instant' }); }
-  function stopVoice() { if ('speechSynthesis' in window) speechSynthesis.cancel(); }
+  function stopVoice() { globalThis.NumberForestSpeech?.stop(); }
   function formatTime(ms) { const sec = Math.max(1, Math.round(ms / 1000)); return Math.floor(sec / 60) + ' 分 ' + String(sec % 60).padStart(2, '0') + ' 秒'; }
   function tickTime() { if (timerStarted !== null) { const now = performance.now(); elapsedMs += Math.max(0, now - timerStarted); timerStarted = now; } }
   function pauseTime() { tickTime(); timerStarted = null; }
@@ -92,6 +105,7 @@
     } catch (_) { return null; }
   }
   function resumeSession() {
+    stopVoice();
     const s = readSession(); if (!s) { home(); return; }
     pauseTime(); elapsedMs = s.elapsedMs;
     Object.assign(state, s, { screen: 'game', chapter: Core.getChapter(s.chapterId), custom: {}, feedback: s.solved ? s.task.success : '' });
@@ -112,6 +126,7 @@
       document.getElementById('resume-button').onclick = resumeSession;
     }
     main.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => start(b.dataset.chapter)));
+    globalThis.NumberForestHomeMotion?.mount(main.querySelector('.hero-art'));
   }
   function start(id) { stopVoice(); pauseTime(); elapsedMs = 0; state.chapter = Core.getChapter(id); state.round = 0; state.completed = 0; state.independent = 0; nextTask(); focusMain(); }
   function nextTask() {
@@ -200,7 +215,7 @@
   function feedbackHtml() {
     if (!state.feedback) return '';
     const t = state.task;
-    const listen = 'speechSynthesis' in window ? '<button class="text-button listen-feedback" id="listen-feedback" aria-label="听一听这次的讲解">♫ 听一听</button>' : '';
+    const listen = globalThis.NumberForestSpeech ? '<button class="text-button listen-feedback" id="listen-feedback" aria-label="听小松鼠的鼓励和方法提示">♫ 听小松鼠</button>' : '';
     if (state.solved) {
       const displayAnswer = t.kind.startsWith('clock') ? timeLabel(t.answer) : t.answer;
       return '<section class="feedback answer-feedback success" tabindex="-1" aria-label="答对啦"><div class="celebration-scene" aria-hidden="true"><div class="celebration-rays"></div><div class="celebration-stars">' + Array.from({ length: 8 }, (_, i) => '<span style="--i:' + i + '">✦</span>').join('') + '</div><div class="celebration-mascot"><img class="buddy-celebrate" src="assets/playful/buddy-happy.svg" alt=""></div><span class="celebration-check">✓</span></div><div class="celebration-copy"><h2>答对啦！</h2><div class="answer-reveal"><strong>' + esc(displayAnswer) + '</strong><span>' + esc(t.unit ?? (t.kind.startsWith('clock') ? '' : '颗')) + '</span></div><p>' + esc(state.feedback) + '</p></div><div class="feedback-actions"><button class="primary-button" id="next-button">' + (state.round === ROUND_COUNT - 1 ? '领取通关徽章 →' : '下一个小发现 →') + '</button>' + listen + '</div></section>';
@@ -264,6 +279,7 @@
     main.querySelector('.buddy-scene')?.classList.add('is-reacting');
   }
   function renderGame(entering = false) {
+    globalThis.NumberForestHomeMotion?.stop();
     const tipOpen = !entering && main.querySelector('.guide-tip')?.open;
     main.dataset.screen = 'game'; main.dataset.chapter = state.chapter.id; main.dataset.motion = entering ? 'enter' : 'respond';
     globalThis.NumberForestEffects?.clear();
@@ -273,13 +289,14 @@
     if (tipOpen) main.querySelector('.guide-tip').open = true;
     bindGame();
     resumeTime(); persistSession();
+    if (state.sound) { globalThis.NumberForestSpeech?.prepare(t.prompt); globalThis.NumberForestSpeech?.prepare(hintSpeech()); }
   }
   function chapterTip(id) {
     return ({ bonds: '一个数可以分成两部分。知道全部和一部分，就能找出另一部分。', arithmetic: '加法把两部分合起来；减法看拿走后还剩多少。同一篮松果，能帮我们发现加法和减法的联系。', groups: '每一篮都一样多。再添一篮，增加的就是这一篮的数量。', sharing: '平均分，就是每个小伙伴分到的一样多。分完以后，再合起来看看。', clock: '短短的时针告诉我们几点，长长的分针告诉我们过了多少分钟。时针也会慢慢往前走。' })[id] || '试试看，你能发现什么？';
   }
   function bindGame() {
     document.getElementById('back-button').onclick = home;
-    document.getElementById('read-button').onclick = () => { state.sound = true; updateSound(); speak(state.task.prompt + '。' + state.task.instruction); };
+    document.getElementById('read-button').onclick = () => { state.sound = true; updateSound(); speak(state.task.prompt); };
     main.querySelectorAll('[data-answer]').forEach(b => b.onclick = () => {
       state.selected = Number(b.dataset.answer); clearFeedback(); main.querySelector('.answer-feedback')?.remove();
       main.querySelectorAll('[data-answer]').forEach(el => { const on = el === b; el.classList.toggle('selected', on); el.setAttribute('aria-pressed', String(on)); });
@@ -314,8 +331,8 @@
       renderAfterPlay('[data-return="' + i + '"]', null, '拿回来再分分，让每个朋友都一样多。');
     });
     const hint = document.getElementById('hint-button');
-    if (hint) hint.onclick = () => { state.hints = true; renderGame(); announce(state.task.hint); speak(state.task.hint); const box = main.querySelector('.hint-box'); if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
-    const listen = document.getElementById('listen-feedback'); if (listen) listen.onclick = () => { state.sound = true; updateSound(); speak(state.solved ? '答对啦！' + state.feedback : state.feedback); };
+    if (hint) hint.onclick = () => { state.hints = true; renderGame(); announce(state.task.hint); speak(hintSpeech()); const box = main.querySelector('.hint-box'); if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+    const listen = document.getElementById('listen-feedback'); if (listen) listen.onclick = () => { state.sound = true; updateSound(); speakFeedback(); };
     const check = document.getElementById('check-button'); if (check) check.onclick = checkAnswer;
     const next = document.getElementById('next-button'); if (next) next.onclick = () => { state.round++; if (state.round >= ROUND_COUNT) finish(); else nextTask(); focusMain(); };
     globalThis.NumberForestViews.get(state.task.kind)?.bind?.(main, viewContext());
@@ -332,7 +349,7 @@
     const diagnosis = globalThis.NumberForestFeedback.describe(state.task, state.selected, state);
     if (!diagnosis.correct) {
       state.feedback = diagnosis.message;
-      renderGame(); revealFeedback(); announce(state.feedback); speak(state.feedback); return;
+      renderGame(); revealFeedback(); announce(state.feedback); speakFeedback(); return;
     }
     pauseTime(); state.solved = true; state.completed++;
     const independent = !state.hints && state.attempts === 1;
@@ -346,7 +363,7 @@
       finish(); focusMain(); announce('答对啦！完成十个任务，获得' + badgeName(state.chapter.id) + '徽章。');
       speak('答对啦！这趟探索完成了。看看你的' + badgeName(state.chapter.id) + '徽章！'); return;
     }
-    renderGame(); revealFeedback(); globalThis.NumberForestEffects?.celebrate(main.querySelector('.answer-feedback.success')); announce('答对啦！' + state.feedback); speak('答对啦！' + state.feedback);
+    renderGame(); revealFeedback(); globalThis.NumberForestEffects?.celebrate(main.querySelector('.answer-feedback.success')); announce('答对啦！' + state.feedback); speakFeedback();
   }
   function finish() {
     if (state.screen === 'result') return;
@@ -357,15 +374,43 @@
     r.sessions++; r.timingRounds = ROUND_COUNT; r.lastMs = elapsedMs; r.bestMs = r.bestMs ? Math.min(r.bestMs, elapsedMs) : elapsedMs; saveRecords();
     try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
     const id = state.chapter.id;
-    main.innerHTML = '<section class="result-panel badge-result"><section class="badge-reveal" aria-label="获得' + esc(badgeName(id)) + '徽章"><p class="eyebrow">' + (firstBadge ? '探索完成 · 点亮专属徽章' : '再次完成 · 你的徽章闪闪发光') + '</p><div class="badge-stage"><div class="badge-beams" aria-hidden="true"></div><div class="badge-orbits" aria-hidden="true"><i></i><i></i></div><div class="badge-charge" aria-hidden="true"></div><div class="badge-shockwave" aria-hidden="true"></div><div class="badge-floor" aria-hidden="true"></div><div class="badge-aura" aria-hidden="true"></div><div class="badge-stars" aria-hidden="true">' + Array.from({ length: 12 }, () => '<span>✦</span>').join('') + '</div><div class="badge-coin"><div class="badge-edge" aria-hidden="true"></div><div class="badge-face badge-front"><img src="' + badgeImage(id) + '" alt="' + esc(badgeName(id)) + '徽章"></div><div class="badge-face badge-back" aria-hidden="true"><img src="assets/badges/reverse.svg" alt=""></div></div></div><h1 class="badge-title">' + esc(badgeName(id)) + '</h1><p class="badge-description">' + esc(state.chapter.title) + '的 10 个任务，全部完成！<br>' + (firstBadge ? '这枚徽章已经放进你的森林收藏。' : '同一枚徽章，记住又一次新的发现。') + '</p></section><div class="result-actions"><button class="primary-button" id="result-home">看看我的徽章 →</button><button class="secondary-button" id="replay">再探索一次</button></div><div class="stat-row"><div class="stat-item"><strong>10</strong><span>次小发现</span></div><div class="stat-item"><strong>' + Object.values(records).filter(row => row.sessions > 0).length + '</strong><span>枚森林徽章</span></div><div class="stat-item"><strong class="time-stat">' + formatTime(elapsedMs) + '</strong><span>这趟探索用时</span></div></div><details class="last-discovery"><summary>再看看最后一题的发现</summary><p>' + esc(state.feedback) + '</p><div class="equation-strip">' + state.task.relations.map(rel => '<span class="equation">' + esc(rel) + '</span>').join('') + '</div></details><div class="offline-idea"><strong>离开屏幕，也能玩</strong><p>' + offlineIdea(id) + '</p></div><p class="result-note">今天也可以到这里，明天再来。</p></section>';
+    main.innerHTML = '<section class="result-panel badge-result"><section class="badge-reveal is-loading" aria-label="获得' + esc(badgeName(id)) + '徽章"><p class="eyebrow">' + (firstBadge ? '探索完成 · 点亮专属徽章' : '再次完成 · 你的徽章闪闪发光') + '</p><div class="badge-stage"><div class="badge-beams" aria-hidden="true"></div><div class="badge-orbits" aria-hidden="true"><i></i><i></i></div><div class="badge-charge" aria-hidden="true"></div><div class="badge-shockwave" aria-hidden="true"></div><div class="badge-floor" aria-hidden="true"></div><div class="badge-aura" aria-hidden="true"></div><div class="badge-stars" aria-hidden="true">' + Array.from({ length: 12 }, () => '<span>✦</span>').join('') + '</div><span class="badge-fallback" aria-hidden="true">✦</span><div class="badge-coin"><div class="badge-edge" aria-hidden="true"></div><div class="badge-face badge-front"><img src="' + badgeImage(id) + '" alt="' + esc(badgeName(id)) + '徽章"></div><div class="badge-face badge-back" aria-hidden="true"><img src="' + badgeImage('reverse') + '" alt=""></div></div></div><h1 class="badge-title">' + esc(badgeName(id)) + '</h1><p class="badge-description">' + esc(state.chapter.title) + '的 10 个任务，全部完成！<br>' + (firstBadge ? '这枚徽章已经放进你的森林收藏。' : '同一枚徽章，记住又一次新的发现。') + '</p></section><div class="result-actions"><button class="primary-button" id="result-home">看看我的徽章 →</button><button class="secondary-button" id="replay">再探索一次</button></div><div class="stat-row"><div class="stat-item"><strong>10</strong><span>次小发现</span></div><div class="stat-item"><strong>' + Object.values(records).filter(row => row.sessions > 0).length + '</strong><span>枚森林徽章</span></div><div class="stat-item"><strong class="time-stat">' + formatTime(elapsedMs) + '</strong><span>这趟探索用时</span></div></div><details class="last-discovery"><summary>再看看最后一题的发现</summary><p>' + esc(state.feedback) + '</p><div class="equation-strip">' + state.task.relations.map(rel => '<span class="equation">' + esc(rel) + '</span>').join('') + '</div></details><div class="offline-idea"><strong>离开屏幕，也能玩</strong><p>' + offlineIdea(id) + '</p></div><p class="result-note">今天也可以到这里，明天再来。</p></section>';
     document.getElementById('result-home').onclick = home;
     document.getElementById('replay').onclick = () => start(id);
-    requestAnimationFrame(() => { if (state.screen === 'result') globalThis.NumberForestEffects?.celebrate(main.querySelector('.badge-stage'), { finale: true }); });
+    revealBadge(main.querySelector('.badge-reveal'));
+  }
+  function revealBadge(reveal) {
+    // Start the entire reveal from one clock, after the actual DOM images decode.
+    // A small gold medal is visible immediately, including a failed-image case.
+    const pictures = [...reveal.querySelectorAll('.badge-face img')];
+    const loaded = pictures.map(image => image.decode ? image.decode() : new Promise((resolve, reject) => {
+      if (image.complete) return image.naturalWidth ? resolve() : reject();
+      image.onload = resolve; image.onerror = reject;
+    }));
+    Promise.all(loaded).then(() => {
+      if (!reveal.isConnected || state.screen !== 'result') return;
+      requestAnimationFrame(() => {
+        if (!reveal.isConnected || state.screen !== 'result') return;
+        reveal.classList.remove('is-loading');
+        reveal.dataset.artReady = 'true';
+        if (document.hidden || reveal.classList.contains('is-settled') || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          reveal.classList.add('is-settled');
+        } else {
+          reveal.classList.add('is-animating');
+          globalThis.NumberForestEffects?.celebrate(reveal.querySelector('.badge-stage'), { finale: true });
+        }
+      });
+    }).catch(() => {
+      if (!reveal.isConnected) return;
+      reveal.classList.add('is-fallback', 'is-settled');
+      reveal.dataset.artReady = 'fallback';
+    });
   }
   function offlineIdea(id) {
     return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
   }
   function parent() {
+    globalThis.NumberForestHomeMotion?.stop();
     globalThis.NumberForestEffects?.clear();
     stopVoice(); pauseTime(); persistSession(); state.screen = 'parent'; main.dataset.screen = 'parent'; main.dataset.motion = 'enter';
     main.innerHTML = '<section class="parent-panel"><div class="parent-head"><div><div class="eyebrow">观察，比排名更有帮助</div><h1>家长小记</h1><p>这些记录描述练习经历，不代表已经掌握。可以在生活中换个情境，再观察一次。</p></div><button class="back-button" id="parent-back">← 回到森林</button></div><div class="record-grid">' + Core.chapters.map(c => { const r = records[c.id] || { completed: 0, independent: 0, assisted: 0, retries: 0, sessions: 0 }; return '<article class="record-card"><div class="chapter-icon">' + icon(c.id) + '</div><h2>' + esc(c.title) + '</h2><p>' + esc(c.subtitle) + '</p><dl><div><dt>完成任务</dt><dd>' + r.completed + '</dd></div><div><dt>首答正确 · 未点提示</dt><dd>' + r.independent + '</dd></div><div><dt>借助提示或修正后完成</dt><dd>' + r.assisted + '</dd></div><div><dt>完整探索</dt><dd>' + r.sessions + ' 次</dd></div></dl></article>'; }).join('') + '</div><div class="parent-explainer"><strong>怎么看这些数字？</strong><p>“首答正确”也可能借助了数物体和操作场景，不等于脱离实物口算。观察他是否逐渐能接着数、借用熟悉结果，以及说明为什么。这里不把动画、阅读和操作时间算作计算速度。</p><p>所有记录只保存在当前浏览器，换设备不会同步。' + (storageAvailable ? '清除浏览器数据也会清除记录。' : '当前浏览器无法保存记录，这次浏览结束后记录可能丢失。') + '</p></div><div class="settings-row"><button class="text-button" id="reset-records">清空本机练习记录</button><span>不影响任何章节的使用</span></div></section>';
@@ -384,10 +429,19 @@
   function updateSound() { const b = document.getElementById('sound-button'); b.textContent = state.sound ? '朗读：开' : '朗读：关'; b.setAttribute('aria-pressed', String(state.sound)); }
   function updateMusic() { const b = document.getElementById('music-button'), enabled = globalThis.NumberForestAudio.isEnabled(); b.textContent = enabled ? '音乐：开' : '音乐：关'; b.setAttribute('aria-pressed', String(enabled)); }
   window.addEventListener('numberforest:music', updateMusic);
+  window.addEventListener('numberforest:speech', event => {
+    const value = event.detail.status;
+    const read = document.getElementById('read-button');
+    if (read) {
+      read.textContent = value === 'loading' ? '♫ 准备声音…' : value === 'playing' ? '♫ 正在朗读' : value === 'unavailable' ? '♫ 再听一次' : '♫ 听题目';
+      read.setAttribute('aria-busy', String(value === 'loading'));
+    }
+    if (value === 'unavailable') announce('这段语音暂时无法播放，可以再点一次，或者请家长一起读题。');
+  });
   document.getElementById('home-button').onclick = home;
   document.getElementById('parent-button').onclick = parent;
   document.getElementById('sound-button').onclick = () => {
-    if (!('speechSynthesis' in window)) { announce('这个浏览器不支持朗读，仍然可以正常探索。'); return; }
+    if (!globalThis.NumberForestSpeech) { announce('这个浏览器不支持朗读，仍然可以正常探索。'); return; }
     state.sound = !state.sound; updateSound(); if (state.sound) speak('欢迎来到数感森林。慢慢来，一起发现数的秘密。'); else stopVoice();
   };
   document.getElementById('music-button').onclick = async () => {
