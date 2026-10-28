@@ -104,79 +104,49 @@ main[data-screen="game"] .quantity-result .group-label { color: #4b783b; backgro
 
 .mission-bridge:not(:has(.formula-card)) { grid-template-columns: minmax(0, 1fr); }
 
-/* A draft is a question, even when the chosen number happens to be right.
-   Reserve the status and tag rows so selecting a number does not move the scene. */
+/* A proposed number is a removable paper tile, not a confirmed equation.
+   Reserve both the heading and tag rows so choosing a value cannot move play. */
 .formula-card { --formula-number-height: 47px; }
-.formula-card > h2 { min-height: 48px; margin-bottom: 8px; }
-.formula-card:has(.formula-status-banner) > h2 { position: absolute; width: 1px; height: 1px; min-height: 0; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.formula-status-banner { display: flex; align-items: center; gap: 8px; min-height: 48px; margin: 0 0 8px; padding: 5px 7px; border: 2px solid #8a91cb; border-radius: 13px; background: #e7eafd; color: #384875; text-align: left; }
-.formula-status-icon { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; border: 2px solid #fff; border-radius: 50%; color: #fff; background: #6575ba; box-shadow: 0 2px 0 #a7b2df; font-size: 27px; font-weight: 900; line-height: 1; }
-.formula-status-banner > div { min-width: 0; }
-.formula-status-banner strong { display: block; color: #354572; font-size: 13px; font-weight: 850; line-height: 1.45; }
-.formula-status-banner small { display: block; margin-top: 2px; color: #58638b; font-size: 10px; font-weight: 600; line-height: 1.45; }
+.formula-card > h2 { min-height: 32px; margin-bottom: 10px; }
 .formula-primary .formula-tokens { padding-top: 7px; }
-.formula-primary .formula-token { position: relative; display: grid; grid-template-rows: var(--formula-number-height) 16px auto; justify-items: center; align-content: start; }
+.formula-primary .formula-token { position: relative; display: grid; grid-template-rows: var(--formula-number-height) 18px auto; justify-items: center; align-content: start; }
 .formula-primary .formula-token strong { grid-row: 1; min-height: var(--formula-number-height); }
-.formula-primary .formula-label { grid-row: 3; margin-top: 3px; }
-.formula-draft-tag { display: inline-block; align-self: start; grid-row: 2; padding: 0 6px; border-radius: 0 0 6px 6px; color: #fff; background: #6575ba; font-size: 10px; font-weight: 800; line-height: 16px; white-space: nowrap; }
-.formula-card[data-state="preview"] { border: 2px dashed #8995cf; background: linear-gradient(145deg, #f0f3ff, #fbfcff); box-shadow: 0 4px 0 #c6d0ed; }
-.formula-card[data-state="preview"] h2 { color: #46558d; }
-.formula-card[data-state="preview"] .formula-mark { color: #46558d; background: #e0e6fc; }
-.formula-card .formula-token.is-preview strong { border: 2px dashed #6379bb; border-radius: 12px 12px 7px 7px; color: #304c86; background: #e3ecff; box-shadow: inset 0 2px 0 #fff; }
-.formula-card .formula-primary .formula-token.is-preview strong { min-width: 46px; font-weight: 900; }
-.formula-token.is-questioning { position: relative; min-width: 25px; }
-.formula-question-mark { position: absolute; z-index: 1; top: -9px; left: calc(50% - 11px); display: grid; place-items: center; width: 22px; height: 22px; border: 2px solid #fff; border-radius: 50%; background: #6575ba; color: #fff; box-shadow: 0 1px 0 #acb9df; font-size: 17px; font-weight: 900; line-height: 1; }
-.formula-card[data-state="preview"] .formula-more { border-color: #c4cceb; }
-.formula-card[data-state="preview"] .formula-more summary { color: #52618e; }
-.formula-card[data-state="retry"] { border-color: #d4aa76; background: linear-gradient(145deg, #fff6e7, #fffcf5); box-shadow: 0 4px 0 #ead7b8; }
-.formula-card[data-state="retry"] .formula-token.is-preview strong { border-color: #aa7b40; color: #855b25; background: #fff0d8; }
-.formula-card[data-state="retry"] .formula-draft-tag { background: #a17947; }
-.formula-card[data-state="retry"] .formula-status-banner { border-color: #d0ae7e; color: #805b31; background: #fff0d7; }
-.formula-card[data-state="retry"] .formula-status-banner strong { color: #805b31; }
-.formula-card[data-state="retry"] .formula-status-banner small { color: #876e50; }
-.formula-card[data-state="retry"] .formula-status-icon,
-.formula-card[data-state="retry"] .formula-question-mark { background: #a67b42; box-shadow: 0 2px 0 #dec59f; }
-.formula-card .formula-secondary .formula-token.is-preview strong { border-width: 1px; }
-.formula-secondary .formula-draft-tag { margin-top: 1px; padding-inline: 4px; font-size: 9px; line-height: 13px; }
-.formula-secondary .formula-question-mark { top: -7px; width: 17px; height: 17px; left: calc(50% - 8.5px); font-size: 12px; border-width: 1px; }
-.formula-secondary .formula-token.is-questioning { min-width: 18px; }
-.formula-card.is-solved .formula-primary .formula-token { grid-template-rows: var(--formula-number-height) 16px auto; }
-.formula-card.is-solved .formula-primary .formula-token.is-preview strong { border-style: solid; }
+.formula-primary .formula-label { grid-row: 3; margin-top: 5px; }
+.formula-draft-tag { display: inline-block; align-self: start; grid-row: 2; padding: 0 6px; border-radius: 0 0 6px 6px; color: #fffdf8; background: #503b4c; font-size: 10px; font-weight: 850; line-height: 18px; white-space: nowrap; }
+.formula-card[data-state="preview"] { border-color: #c6b598; background: linear-gradient(145deg, #fffefb, #fffaf0); box-shadow: 0 4px 0 #e0d3bc; }
+.formula-card[data-state="preview"] h2 { color: #503b4c; font-weight: 850; }
+.formula-card[data-state="preview"] .formula-mark { color: #fffdf8; background: #503b4c; }
+.formula-card .formula-token.is-preview strong { border: 3px dashed #614957; border-radius: 12px 12px 7px 7px; color: #342a34; background: #fffefb; box-shadow: 0 4px 0 #ccb8bd, inset 0 0 0 2px #fff, 0 5px 8px #5f415015; }
+.formula-card .formula-primary .formula-token.is-preview strong { min-width: 50px; font-weight: 900; }
+.formula-token.is-questioning { position: relative; min-width: 27px; }
+.formula-question-mark { position: absolute; z-index: 1; top: -10px; left: calc(50% - 12px); display: grid; place-items: center; width: 24px; height: 24px; border: 2px solid #fffdf8; border-radius: 50%; background: #503b4c; color: #fffdf8; box-shadow: 0 2px 0 #c7b5bc; font-size: 18px; font-weight: 900; line-height: 1; }
+.formula-card[data-state="preview"] .formula-more { border-color: #ddcfba; }
+.formula-card[data-state="preview"] .formula-more summary { color: #6d5c60; }
+.formula-card[data-state="retry"] { border-color: #c8aa80; background: linear-gradient(145deg, #fffdf7, #fff8ed); box-shadow: 0 4px 0 #e4d3b8; }
+.formula-card[data-state="retry"] .formula-token.is-preview strong { border-color: #895b37; color: #5b3825; background: #fffaf0; box-shadow: 0 4px 0 #d7bea5, inset 0 0 0 2px #fff, 0 5px 8px #704a2c15; }
+.formula-card[data-state="retry"] .formula-draft-tag { background: #795034; }
+.formula-card[data-state="retry"] .formula-question-mark { background: #795034; box-shadow: 0 2px 0 #d7bea5; }
+.formula-card .formula-secondary .formula-token.is-preview strong { border-width: 2px; border-radius: 7px 7px 4px 4px; box-shadow: 0 2px 0 #ccb8bd; }
+.formula-secondary .formula-draft-tag { margin-top: 1px; padding-inline: 4px; font-size: 9px; line-height: 15px; }
+.formula-secondary .formula-question-mark { top: -8px; width: 19px; height: 19px; left: calc(50% - 9.5px); font-size: 13px; border-width: 1px; }
+.formula-secondary .formula-token.is-questioning { min-width: 20px; }
 .formula-card[data-kind="sequence"] .formula-primary .formula-tokens { gap: 4px; }
-.formula-card[data-kind="sequence"] .formula-primary .formula-token.is-preview strong { min-width: 36px; }
+.formula-card[data-kind="sequence"] .formula-primary .formula-token.is-preview strong { min-width: 38px; }
 
 @media (min-width: 1001px) {
   .mission-bridge { grid-template-columns: minmax(0, 1fr) minmax(280px, 43%); }
 }
 @media (min-width: 801px) and (max-height: 900px) {
   .formula-card { --formula-number-height: 43px; }
-  .formula-card > h2 { min-height: 48px; margin-bottom: 7px; }
-  .formula-status-banner { margin-bottom: 7px; }
-  .formula-status-banner strong { font-size: 12px; }
-  .formula-status-banner small { font-size: 9px; }
+  .formula-card > h2 { min-height: 32px; margin-bottom: 9px; }
   .formula-primary .formula-tokens { padding-top: 5px; }
 }
-/* Keep the extra draft explanation readable on a short landscape display. */
 @media (min-width: 1000px) and (max-height: 900px) {
   .mission-bridge .formula-card { padding-block: 8px; }
-  .mission-bridge .formula-status-banner { min-height: 42px; padding-block: 3px; margin-bottom: 5px; }
-  .mission-bridge .formula-card > h2 { min-height: 42px; margin-bottom: 5px; }
-  .mission-bridge .formula-status-icon { width: 30px; height: 30px; flex-basis: 30px; font-size: 25px; }
-  .mission-bridge .formula-primary .formula-token { grid-template-rows: 43px 14px auto; }
-  .mission-bridge .formula-draft-tag { font-size: 9px; line-height: 14px; }
   .mission-bridge .formula-more { margin-top: 4px; }
-}
-@media (max-width: 800px) {
-  .formula-status-banner { gap: 10px; padding-inline: 10px; }
-  .formula-status-banner strong { font-size: 14px; }
-  .formula-status-banner small { font-size: 11px; }
 }
 @media (max-width: 420px) {
   .formula-card { --formula-number-height: 43px; }
-  .formula-status-banner { gap: 7px; padding-inline: 7px; }
-  .formula-status-icon { flex-basis: 30px; width: 30px; height: 30px; font-size: 25px; }
-  .formula-status-banner strong { font-size: 12px; }
-  .formula-status-banner small { font-size: 9px; }
-  .formula-token.is-questioning { min-width: 23px; }
-  .formula-card[data-kind="sequence"] .formula-primary .formula-token.is-preview strong { min-width: 32px; }
+  .formula-token.is-questioning { min-width: 25px; }
+  .formula-card[data-kind="sequence"] .formula-primary .formula-token.is-preview strong { min-width: 36px; }
 }
