@@ -13,5 +13,5 @@ await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 for (const entry of runtime) await cp(path.join(root, entry), path.join(output, entry), { recursive: true });
 await writeFile(path.join(output, '.nojekyll'), '');
-await writeFile(path.join(output, 'version.json'), JSON.stringify({ version: '0.2.1', sourceCommit: commit }, null, 2) + '\n');
+await writeFile(path.join(output, 'version.json'), JSON.stringify({ version: '0.3.0', sourceCommit: commit }, null, 2) + '\n');
 console.log(`Static site prepared in ${output}\nSource commit: ${commit}`);

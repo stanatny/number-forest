@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="nf-arithmetic-title nf-arithmetic-desc">
+  <title id="nf-arithmetic-title">森林补给 · 丰收果篮徽章</title>
+  <desc id="nf-arithmetic-desc">一只带有编织纹路的金色果篮装着暖红、金黄和绿色果实，篮把上方伸出一株嫩芽。</desc>
+  <defs>
+    <linearGradient id="nf-arithmetic-gold" x1="44" y1="23" x2="262" y2="291" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF0AC"/><stop offset=".22" stop-color="#E6BC62"/><stop offset=".47" stop-color="#BD8B38"/><stop offset=".69" stop-color="#F6D98E"/><stop offset="1" stop-color="#A96F2D"/></linearGradient>
+    <linearGradient id="nf-arithmetic-enamel" x1="160" y1="43" x2="160" y2="257" gradientUnits="userSpaceOnUse"><stop stop-color="#EEF4DA"/><stop offset="1" stop-color="#AFC9A6"/></linearGradient>
+    <linearGradient id="nf-arithmetic-shine" x1="89" y1="52" x2="220" y2="238" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF9DF"/><stop offset="1" stop-color="#E7C576"/></linearGradient>
+    <filter id="nf-arithmetic-shadow" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#76562D" flood-opacity=".18"/></filter>
+    <clipPath id="nf-arithmetic-inside"><circle cx="160" cy="150" r="107"/></clipPath>
+    <linearGradient id="nf-arithmetic-apple" x1="94" y1="127" x2="143" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="#E9A07A"/><stop offset="1" stop-color="#D37F5E"/></linearGradient><linearGradient id="nf-arithmetic-wicker" x1="158" y1="164" x2="158" y2="230" gradientUnits="userSpaceOnUse"><stop stop-color="#E6C28A"/><stop offset="1" stop-color="#C99D61"/></linearGradient><clipPath id="nf-arithmetic-basket"><path d="M90 165h140l-15 57c-2 8-109 8-111 0Z"/></clipPath>
+  </defs>
+  <!-- Original vector enamel medal; the outer canvas remains transparent. -->
+  <path d="m121 240-16 59 27-10 16 19 15-62" fill="#7EAA8B" stroke="#BC8A44" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m199 240 16 59-27-10-16 19-15-62" fill="#7EAA8B" stroke="#BC8A44" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m127 250-9 35m76-35 9 35" stroke="#FFF4CD" stroke-width="3" stroke-linecap="round" opacity=".48"/>
+  <g filter="url(#nf-arithmetic-shadow)">
+    <circle cx="160" cy="150" r="128" fill="url(#nf-arithmetic-gold)" stroke="#B98737" stroke-width="2"/>
+    <circle cx="160" cy="150" r="121" fill="none" stroke="#FFF1B7" stroke-width="3"/>
+    <circle cx="160" cy="150" r="116" fill="#D2A34E" stroke="#AF7B30" stroke-width="2"/>
+    <circle cx="160" cy="150" r="110" fill="url(#nf-arithmetic-enamel)" stroke="#FFF3CB" stroke-width="3"/>
+    <g clip-path="url(#nf-arithmetic-inside)">
+      <path d="M45 220c59-36 92-20 124-23 47-19 85-1 107 16v55H45Z" fill="#7D9B68" opacity=".13"/>
+      <ellipse cx="120" cy="80" rx="76" ry="31" fill="#FFFFFF" opacity=".13" transform="rotate(-25 120 80)"/>
+
+      <ellipse cx="160" cy="232" rx="74" ry="12" fill="#5F8464" opacity=".14"/>
+      <path d="M112 161v-35c0-68 96-68 96 0v35" fill="none" stroke="#A47B43" stroke-width="13" stroke-linecap="round"/>
+      <path d="M111 130c0-57 98-63 98-4" fill="none" stroke="#E7C488" stroke-width="4" stroke-linecap="round"/>
+      <path d="M160 113V73" stroke="#5C8050" stroke-width="6" stroke-linecap="round"/>
+      <path d="M159 91c-30 2-44-17-33-28 20-4 33 10 33 28Z" fill="#7EA064" stroke="#66874F" stroke-width="2.5"/>
+      <path d="M162 82c2-25 24-39 36-27 2 20-14 31-36 27Z" fill="#93AF72" stroke="#66874F" stroke-width="2.5"/>
+      <path d="m131 70 24 17m12-9 23-17" stroke="#B5CB8C" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M116 124c-20-7-34 8-29 28 5 23 19 29 31 24 16 5 31-6 32-27 2-19-15-33-34-25Z" fill="url(#nf-arithmetic-apple)" stroke="#B96E4E" stroke-width="3"/>
+      <path d="M117 126c-2-8-1-15 4-22" stroke="#7C7044" stroke-width="5" stroke-linecap="round"/>
+      <path d="M101 139c-4 5-5 12-3 17" stroke="#F1B895" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M201 117c-23-5-35 14-29 34 5 17 22 26 36 22 20-5 27-21 22-36-4-14-14-22-29-20Z" fill="#E3B75D" stroke="#BD9545" stroke-width="3"/>
+      <path d="M204 119c3-9 10-14 19-14-1 10-9 16-19 14Z" fill="#819C5D"/>
+      <path d="M192 129c-6 4-9 10-9 16" stroke="#F6DA94" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M159 137c-19-6-32 10-26 28 6 17 17 22 29 18 17 3 29-11 27-27-1-15-15-25-30-19Z" fill="#96AD6C" stroke="#748E52" stroke-width="3"/>
+      <path d="m161 140-2-12" stroke="#657847" stroke-width="4" stroke-linecap="round"/>
+      <path d="M90 165h140l-15 57c-2 8-109 8-111 0Z" fill="url(#nf-arithmetic-wicker)" stroke="#B28A4F" stroke-width="3" stroke-linejoin="round"/>
+      <g clip-path="url(#nf-arithmetic-basket)" fill="none" stroke="#B7955D" stroke-width="2.5" opacity=".7"><path d="M93 181h134M97 195h126M101 209h118M115 164l10 64m13-64 4 65m19-65v65m22-65-4 65m27-65-10 65"/></g>
+      <path d="M90 166h140" stroke="#F3D6A1" stroke-width="9" stroke-linecap="round"/>
+      <path d="M90 171h140" stroke="#BB9559" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="160" cy="197" rx="25" ry="20" fill="#F2D8A2" stroke="#C09B5B" stroke-width="2"/>
+      <path d="M161 210v-24m0 12c-16-1-21-12-14-15 9 0 15 8 14 15m0-3c1-13 13-20 19-12 0 9-8 13-19 12" fill="#8BA167" stroke="#768A52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+    </g>
+    <circle cx="160" cy="150" r="108" fill="none" stroke="#A68140" stroke-width="2" opacity=".48"/>
+    <path d="M57 97a118 118 0 0 1 137-61" fill="none" stroke="#FFF8D9" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+    <path d="M269 194a119 119 0 0 1-78 70" fill="none" stroke="#90632D" stroke-width="3" stroke-linecap="round" opacity=".38"/>
+  </g>
+  <!-- Small metal laurels, an enamel cabochon, and a star clasp. -->
+  <g fill="url(#nf-arithmetic-shine)" stroke="#BD944B" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M112 268c-20-6-35-19-43-39" fill="none" stroke-width="3" stroke-linecap="round"/>
+    <path d="M75 239c-16 0-24-10-20-16 13 1 19 7 20 16Z"/><path d="M82 249c-15 4-25-2-25-10 12-3 21 1 25 10Z"/><path d="M93 259c-14 8-26 4-28-3 10-6 20-6 28 3Z"/><path d="M105 266c-10 12-23 12-28 6 8-9 17-13 28-6Z"/>
+    <path d="M77 241c10-10 9-22 1-25-7 7-8 16-1 25Z"/><path d="M88 253c9-11 7-23-1-25-7 9-6 17 1 25Z"/>
+    <g transform="translate(320 0) scale(-1 1)"><path d="M112 268c-20-6-35-19-43-39" fill="none" stroke-width="3" stroke-linecap="round"/><path d="M75 239c-16 0-24-10-20-16 13 1 19 7 20 16Z"/><path d="M82 249c-15 4-25-2-25-10 12-3 21 1 25 10Z"/><path d="M93 259c-14 8-26 4-28-3 10-6 20-6 28 3Z"/><path d="M105 266c-10 12-23 12-28 6 8-9 17-13 28-6Z"/><path d="M77 241c10-10 9-22 1-25-7 7-8 16-1 25Z"/><path d="M88 253c9-11 7-23-1-25-7 9-6 17 1 25Z"/></g>
+  </g>
+  <circle cx="160" cy="24" r="13" fill="url(#nf-arithmetic-gold)" stroke="#BB8738" stroke-width="2"/>
+  <circle cx="160" cy="24" r="8" fill="#7EAA8B" stroke="#FFF3CE" stroke-width="2"/>
+  <ellipse cx="157" cy="21" rx="3" ry="2" fill="#FFFFFF" opacity=".65" transform="rotate(-30 157 21)"/>
+  <path d="m160 258 7 12 14 3-10 10 1 14-12-7-12 7 1-14-10-10 14-3Z" fill="url(#nf-arithmetic-shine)" stroke="#BB8B3F" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="m160 266 4 8 9 1-7 6 1 8-7-4-7 4 1-8-7-6 9-1Z" fill="#F8E6AA"/>
+  <g fill="#F3D68A" stroke="#B98B3C" stroke-width="1.5" stroke-linejoin="round"><path d="m48 65 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m275 78 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g>
+</svg>
