@@ -117,18 +117,20 @@
   height: var(--badge-size);
   flex: none;
   transform: translateY(0) rotateZ(0) rotateY(0) scale(1);
-  transform-style: flat;
-  -webkit-transform-style: flat;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   transform-origin: 50% 47%;
   opacity: 1;
 }
 .badge-coin::before { content: ""; position: absolute; left: 10%; top: 7%; width: 80%; height: 80%; border-radius: 50%; box-shadow: 0 0 30px #f6d4873b, 0 0 65px #e9c16e1f; pointer-events: none; }
 .badge-face { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 0; backface-visibility: visible; -webkit-backface-visibility: visible; }
-.badge-front { transform: none; }
+.badge-front { visibility: visible; transform: translateZ(3px); }
 .badge-front img { display: block; width: 100%; height: 100%; object-fit: contain; filter: saturate(1.22) contrast(1.07) brightness(1.055) drop-shadow(0 10px 7px #020f2373) drop-shadow(0 0 3px #f7d88c70); }
 .badge-front::after { content: ""; position: absolute; inset: 0; opacity: 0; background: linear-gradient(112deg, transparent 0%, transparent 40%, #fff4b52b 45%, #fffdf1ed 49%, #fff5ca8a 52%, transparent 59%, transparent 100%); background-size: 240% 100%; background-position: 100% 0; clip-path: circle(40% at 50% 47%); -webkit-clip-path: circle(40% at 50% 47%); mix-blend-mode: screen; pointer-events: none; }
-/* Always show the actual chapter illustration, including on WebKit. */
-.badge-back { display: none !important; visibility: hidden !important; animation: none !important; }
+/* Explicit visibility follows the Y angle, independently of engine backface culling. */
+.badge-back { visibility: hidden; transform: rotateY(180deg) translateZ(3px); }
+.badge-back img { display: block; width: 100%; height: 100%; object-fit: contain; filter: saturate(1.12) contrast(1.03) drop-shadow(0 8px 6px #020f2359); }
+.badge-edge { position: absolute; left: calc(50% - 3px); top: 7%; width: 6px; height: 80%; border-radius: 50%; background: linear-gradient(90deg, #9d662a, #fff1ac 36%, #e2b452 60%, #b17c31); transform: rotateY(90deg); backface-visibility: visible; -webkit-backface-visibility: visible; pointer-events: none; }
 
 .badge-stars { position: absolute; inset: 0; z-index: 3; pointer-events: none; user-select: none; }
 .badge-stars > span { --star-x: 0%; --star-y: 0%; --star-turn: 0deg; --star-delay: 0ms; position: absolute; left: calc(50% + var(--star-x)); top: calc(50% + var(--star-y)); display: grid; place-items: center; width: 28px; height: 28px; color: #f4d88c; font-size: 23px; line-height: 1; opacity: .82; transform: translate(-50%, -50%) rotate(var(--star-turn)); text-shadow: 0 0 10px #ffe4a25c, 0 0 3px #fff1bd80; }
@@ -201,6 +203,9 @@
 /* 0–.35 s charge; .35–1.8 s arrival; 1.8 s impact; 2 s shine; settle by 4.6 s. */
 @media (prefers-reduced-motion: no-preference) {
   .badge-coin { animation: badge-coin-arrive 4600ms linear both; }
+  .badge-front { animation: badge-front-turn 4600ms steps(1, end) both; }
+  .badge-back { animation: badge-back-turn 4600ms steps(1, end) both; }
+  .badge-edge { animation: badge-edge-turn 4600ms steps(1, end) both; }
   .badge-charge { animation: badge-charge-arrive 4600ms linear both; }
   .badge-shockwave { animation: badge-impact 4600ms ease-out both; }
   .badge-aura { animation: badge-aura-arrive 4600ms ease-out both; }
@@ -212,14 +217,33 @@
 }
 
 @keyframes badge-coin-arrive {
-  0%, 7% { opacity: 0; transform: translateY(27px) rotateZ(-740deg) rotateY(-8deg) scale(.06); }
-  8% { opacity: 1; transform: translateY(25px) rotateZ(-735deg) rotateY(-8deg) scale(.08); }
-  18% { opacity: 1; transform: translateY(10px) rotateZ(-470deg) rotateY(14deg) scale(.42); }
-  29% { transform: translateY(-13px) rotateZ(-130deg) rotateY(-12deg) scale(.83); }
-  39.13% { transform: translateY(-7px) rotateZ(7deg) rotateY(5deg) scale(1.13); }
-  45% { transform: translateY(3px) rotateZ(-3deg) rotateY(-3deg) scale(.97); }
-  53% { transform: translateY(-2px) rotateZ(1deg) rotateY(1deg) scale(1.025); }
-  68%, 100% { opacity: 1; transform: translateY(0) rotateZ(0) rotateY(0) scale(1); }
+  0%, 7% { transform: translateY(27px) rotateZ(0deg) rotateY(-540deg) scale(.06); }
+  8% { transform: translateY(25px) rotateZ(0deg) rotateY(-540deg) scale(.08); }
+  18% { transform: translateY(10px) rotateZ(0deg) rotateY(-360deg) scale(.42); }
+  29% { transform: translateY(-13px) rotateZ(0deg) rotateY(-180deg) scale(.83); }
+  39.13% { transform: translateY(-7px) rotateZ(0deg) rotateY(0deg) scale(1.13); }
+  45% { transform: translateY(3px) rotateZ(0deg) rotateY(-5deg) scale(.97); }
+  53% { transform: translateY(-2px) rotateZ(0deg) rotateY(2deg) scale(1.025); }
+  68%, 100% { transform: translateY(0) rotateZ(0deg) rotateY(0deg) scale(1); }
+}
+/* Midpoints of the three half turns: -450°, -270°, -90°. Keep opacity
+   off the 3D parent: animating it can flatten even fully opaque frames. */
+@keyframes badge-front-turn {
+  0% { visibility: hidden; }
+  13% { visibility: visible; }
+  23.5% { visibility: hidden; }
+  34.065%, 100% { visibility: visible; }
+}
+@keyframes badge-back-turn {
+  0% { visibility: hidden; }
+  8% { visibility: visible; }
+  13% { visibility: hidden; }
+  23.5% { visibility: visible; }
+  34.065%, 100% { visibility: hidden; }
+}
+@keyframes badge-edge-turn {
+  0% { visibility: hidden; }
+  8%, 100% { visibility: visible; }
 }
 @keyframes badge-charge-arrive {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
@@ -331,6 +355,8 @@
 .badge-reveal.is-settled *::before,
 .badge-reveal.is-settled *::after { animation: none !important; }
 .badge-reveal.is-settled .badge-coin { opacity: 1; transform: translateY(0) rotateZ(0) rotateY(0) scale(1) !important; }
+.badge-reveal.is-settled .badge-front { visibility: visible !important; }
+.badge-reveal.is-settled .badge-back { visibility: hidden !important; }
 .badge-reveal.is-settled .badge-charge,
 .badge-reveal.is-settled .badge-shockwave,
 .badge-reveal.is-settled .badge-front::after { opacity: 0 !important; }
@@ -342,7 +368,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .badge-coin, .badge-aura, .badge-beams, .badge-orbits, .badge-floor,
-  .badge-stars > span, .badge-front::after, .badge-charge, .badge-shockwave { animation: none !important; }
+  .badge-stars > span, .badge-front, .badge-back, .badge-edge, .badge-front::after, .badge-charge, .badge-shockwave { animation: none !important; }
+  .badge-front { visibility: visible !important; }
+  .badge-back { visibility: hidden !important; }
   .badge-coin { opacity: 1; transform: translateY(0) rotateZ(0) rotateY(0) scale(1) !important; }
   .badge-charge, .badge-shockwave, .badge-front::after { opacity: 0 !important; }
   .badge-aura { opacity: .9; transform: none; }
