@@ -1,7 +1,7 @@
 /* Number Forest: project-scoped offline shell, illustrations and played voices. */
 'use strict';
 
-const VERSION = '0.6.1';
+const VERSION = '0.7.0';
 const SCOPE = new URL(self.registration.scope);
 const PREFIX = 'number-forest:' + SCOPE.pathname + ':';
 const CACHES = Object.freeze({
@@ -11,8 +11,8 @@ const CACHES = Object.freeze({
 });
 const SHELL = [
   'index.html',
-  'styles/main.css', 'styles/playful.css', 'styles/badges.css', 'styles/formulas.css',
-  'src/core.js', 'src/formulas.js', 'src/views.js', 'src/feedback.js', 'src/audio.js',
+  'styles/main.css', 'styles/playful.css', 'styles/badges.css', 'styles/formulas.css', 'styles/assessment.css',
+  'src/core.js', 'src/assessment.js', 'src/formulas.js', 'src/views.js', 'src/feedback.js', 'src/audio.js',
   'src/effects.js', 'src/badge-art.js', 'src/speech.js',
   'src/home-motion.js', 'src/cache.js', 'src/app.js',
   'assets/voice/manifest.js'
