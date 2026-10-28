@@ -1,6 +1,6 @@
 # 数感森林
 
-[在线体验](https://stanatny.github.io/number-forest/) · [源代码](https://github.com/stanatny/number-forest)
+**[🌳 在线试玩：数感森林](https://stanatny.github.io/number-forest/)** · [源代码](https://github.com/stanatny/number-forest)
 
 一个无需安装的中文亲子数学游戏。孩子可以补齐松果、比较多少、找数字规律、合并果篮、沿数线跳跃、成组分装和观察时钟，再从这些操作中发现数量关系。每次探索 10 个小任务，不限时、不排名，可以中途返回地图，之后继续。
 
@@ -25,6 +25,8 @@
 题目的数量在各题型的合法范围内随机产生，题型按每章的 10 个任务安排交替出现。种子花园的第一题固定为 `3 × 3 → 3 × 4`，野餐草地的第一题固定为 `12 ÷ 4`；时钟先有三道整点、三道半点，再加入混合读时和时间推进。随机不保证去重，也不代表所有数字组合出现概率相同。继续未完成的探索会恢复原题，不重新抽题。
 
 ## 打开游戏
+
+直接在电脑或 iPad 浏览器中打开 **[数感森林在线试玩](https://stanatny.github.io/number-forest/)**，无需下载或安装。固定地址为 `https://stanatny.github.io/number-forest/`，可收藏后继续玩。
 
 下载整个仓库并解压，保留 `index.html`、`src/`、`styles/`、`assets/` 的相对位置，在电脑浏览器中打开 `index.html` 即可。游戏不需要安装依赖、构建或启动后端，页面和图形均为本地文件。
 
