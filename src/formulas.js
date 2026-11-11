@@ -52,6 +52,18 @@
     var m = task.model;
     var solved = !!options && options.solved === true;
     var selected = options && options.selected;
+    if (task.practice) {
+      var display = globalThis.NumberForestCore.answerText(task, solved ? task.answer : selected);
+      var preview = !solved && display !== undefined;
+      return {
+        title: task.practice.title,
+        rows: [row(task.practice.tokens.map(function (part) {
+          var item = token(part.target ? display ?? '?' : part.text, part.role || 'neutral', part.label);
+          if (part.target) { item.unknown = !solved; item.preview = preview; }
+          return item;
+        }))]
+      };
+    }
     var canPreview = !solved && Number.isSafeInteger(selected) && selected >= 0 && selected <= selectionLimit(task);
     var clock = task.kind === 'clock' || task.kind === 'clock-forward';
     if (clock && canPreview) {

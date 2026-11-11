@@ -7,10 +7,11 @@
   const SESSION_KEY = 'number-forest-session-v1';
   const RESET_KEY = 'number-forest-reset-v1';
   const ROUND_COUNT = 10;
-  const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光' };
+  const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光', decimal: '十分花朵', negative: '零点雪峰', parity: '森林密钥' };
+  const practiceChapters = new Set(['decimal', 'negative', 'parity']);
   function badgeName(id) { return badges[id] || '森林发现'; }
-  function chapterPicture(id) { return 'assets/playful/' + (badges[id] ? id : 'hero') + '.svg'; }
-  function badgeImage(id) { return globalThis.NumberForestBadgeArt?.sources[id] || (badges[id] || id === 'reverse' ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'); }
+  function chapterPicture(id) { return practiceChapters.has(id) ? 'assets/badges/' + id + '.png' : 'assets/playful/' + (badges[id] ? id : 'hero') + '.svg'; }
+  function badgeImage(id) { return globalThis.NumberForestBadgeArt?.sources[id] || (practiceChapters.has(id) ? 'assets/badges/' + id + '.png' : badges[id] || id === 'reverse' ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'); }
   const state = { screen: 'home', chapter: null, round: 0, task: null, selected: null, hints: false, attempts: 0, solved: false, completed: 0, independent: 0, outcomes: Assessment.create(ROUND_COUNT), timingMode: 'first-answer', manip: 0, bowls: [], changed: false, feedback: '', feedbackSelected: null, sound: false };
   function currentOutcome() { return state.outcomes[state.round] || null; }
   let storageAvailable = true;
@@ -80,10 +81,12 @@
   };
   function hintSpeech() { return voiceHints[state.task.kind === 'bonds' && state.task.model.equation ? 'missing-addend' : state.task.kind] || '一起看看提示，动手摆一摆吧。'; }
   function speak(text) {
-    if (!state.sound) return;
+    if (!state.sound || !text) return;
     globalThis.NumberForestSpeech?.speak(text);
   }
-  function speakFeedback() { speak(state.solved ? '答对啦！你发现了数的秘密。' : hintSpeech()); }
+  function feedbackSpeech() { return state.solved ? '答对啦！你发现了数的秘密。' : state.task.practice ? null : hintSpeech(); }
+  function speakFeedback() { speak(feedbackSpeech()); }
+  function canReadTask(task) { return !task.practice || globalThis.NumberForestSpeech?.has(task.prompt); }
   function focusMain() { main.focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'instant' }); }
   function stopVoice() { globalThis.NumberForestSpeech?.stop(); }
   function formatTime(ms) { const sec = Math.max(1, Math.round(ms / 1000)); return Math.floor(sec / 60) + ' 分 ' + String(sec % 60).padStart(2, '0') + ' 秒'; }
@@ -95,7 +98,7 @@
     if (state.screen !== 'game') return;
     tickTime();
     try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ version: 3, chapterId: state.chapter.id, round: state.round, seed: state.seed, selected: state.selected, hints: state.hints, attempts: state.attempts, solved: state.solved, completed: state.completed, independent: state.independent, outcomes: state.outcomes, timingMode: state.timingMode, manip: state.manip, bowls: state.bowls, changed: state.changed, feedbackSelected: state.feedbackSelected, elapsedMs }));
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ version: 3, chapterId: state.chapter.id, round: state.round, seed: state.seed, selected: state.selected, hints: state.hints, attempts: state.attempts, solved: state.solved, completed: state.completed, independent: state.independent, outcomes: state.outcomes, timingMode: state.timingMode, manip: state.manip, bowls: state.bowls, changed: state.changed, feedbackSelected: state.feedbackSelected, codeDraft: state.task.codeLength ? state.codeDraft : undefined, elapsedMs }));
     } catch (_) { storageAvailable = false; }
   }
   function readSession() {
@@ -105,12 +108,14 @@
       const outcomes = Assessment.restore(s, ROUND_COUNT);
       if (!outcomes) return null;
       const task = Core.createTask(s.chapterId, { round: s.round, random: seeded(s.seed) });
-      if (s.selected !== null && (!Number.isInteger(s.selected) || s.selected < 0 || s.selected > task.maxAnswer)) return null;
+      if (s.selected !== null && Core.answerText(task, s.selected) === undefined) return null;
+      if (task.codeLength && (typeof s.codeDraft !== 'string' || /[^0-9]/.test(s.codeDraft) || s.codeDraft.length > task.codeLength ||
+          s.selected !== (s.codeDraft.length === task.codeLength ? Number(s.codeDraft) : null))) return null;
       if (![s.attempts, s.completed, s.independent, s.manip].every(n => Number.isInteger(n) && n >= 0) || s.completed > ROUND_COUNT || s.independent > s.completed) return null;
       if (!Array.isArray(s.bowls) || !s.bowls.every(n => Number.isInteger(n) && n >= 0 && n <= (task.kind === 'sharing' ? task.model.total : 20))) return null;
       if (task.kind === 'sharing' && (s.bowls.length !== task.model.groups || s.bowls.reduce((a, b) => a + b, 0) > task.model.total)) return null;
       if (s.solved && !Core.checkAnswer(task, s.selected)) return null;
-      if (s.feedbackSelected != null && (!Number.isInteger(s.feedbackSelected) || s.feedbackSelected < 0 || s.feedbackSelected > task.maxAnswer)) return null;
+      if (s.feedbackSelected != null && Core.answerText(task, s.feedbackSelected) === undefined) return null;
       return { ...s, task, outcomes, completed: Assessment.summarize(outcomes).answered, timingMode: s.version === 2 ? 'legacy-practice' : s.timingMode === 'first-answer' ? 'first-answer' : 'legacy-practice' };
     } catch (_) { return null; }
   }
@@ -118,7 +123,7 @@
     stopVoice();
     const s = readSession(); if (!s) { home(); return; }
     pauseTime(); elapsedMs = s.elapsedMs;
-    Object.assign(state, s, { screen: 'game', chapter: Core.getChapter(s.chapterId), custom: {}, feedback: s.solved ? s.task.success : '' });
+    Object.assign(state, s, { screen: 'game', chapter: Core.getChapter(s.chapterId), custom: {}, codeDraft: s.codeDraft || '', feedback: s.solved ? s.task.success : '' });
     // Old completed questions already contributed to records. Only an unfinished
     // old wrong question has a known outcome that was never counted before.
     if (s.version === 2 && !s.solved && currentOutcome() === 'incorrect') { const r = chapterRecord(); r.completed++; r.incorrect++; saveRecords(); }
@@ -146,9 +151,10 @@
   function start(id) { stopVoice(); pauseTime(); elapsedMs = 0; state.chapter = Core.getChapter(id); state.round = 0; state.completed = 0; state.independent = 0; state.outcomes = Assessment.create(ROUND_COUNT); state.timingMode = 'first-answer'; nextTask(); focusMain(); }
   function nextTask() {
     state.screen = 'game'; state.seed = Math.floor(Math.random() * 4294967296); state.task = Core.createTask(state.chapter.id, { round: state.round, random: seeded(state.seed) });
-    Object.assign(state, { selected: null, hints: false, attempts: 0, solved: false, manip: 0, changed: false, feedback: '', feedbackSelected: null, custom: {} });
+    Object.assign(state, { selected: null, hints: false, attempts: 0, solved: false, manip: 0, changed: false, feedback: '', feedbackSelected: null, custom: {}, codeDraft: '' });
     state.bowls = Array(state.task.model.groups || 0).fill(0);
-    renderGame(true); speak(state.task.prompt);
+    renderGame(true);
+    if (canReadTask(state.task)) speak(state.task.prompt);
   }
   function acorns(n, cls = '') { return Array.from({ length: Math.max(0, n) }, (_, i) => '<span class="acorn ' + cls + '" aria-hidden="true" style="--i:' + i + '"></span>').join(''); }
   function basket(count, label, cls = '') { return '<div class="basket ' + cls + '"><div class="group-label">' + esc(label) + '</div><div class="basket-fruit" role="img" aria-label="' + count + ' 颗松果">' + (count ? acorns(count) : '<span class="zero-mark">空空的</span>') + '</div></div>'; }
@@ -207,11 +213,29 @@
     return '<svg class="numberline-svg" viewBox="0 0 660 145" role="img" aria-label="数轴从 ' + start + ' 开始，' + (step > 0 ? '向右' : '向左') + '跳 ' + Math.abs(step) + ' 格"><defs><marker id="jump-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ca7655"/></marker></defs><line x1="30" y1="90" x2="630" y2="90" stroke="#597c66" stroke-width="3"/>' + ticks + jumps + (selected !== null ? '<circle cx="' + x(selected) + '" cy="90" r="11" fill="none" stroke="#ca7655" stroke-width="3"/><text x="' + x(selected) + '" y="53" text-anchor="middle" fill="#a75c3e" font-size="16">你选的 ' + selected + '</text>' : '') + '<circle cx="' + x(start) + '" cy="90" r="7" fill="#315d49"/><text x="' + x(start) + '" y="24" text-anchor="middle" fill="#315d49" font-size="17">起点</text></svg>';
   }
   function timeLabel(value) { const h = Math.floor(value / 60), m = value % 60; return h + ':' + String(m).padStart(2, '0'); }
+  function displayedAnswer(task) {
+    return task.kind.startsWith('clock') ? timeLabel(task.answer) : Core.answerText(task, task.answer);
+  }
+  function codeAnswerHtml(task) {
+    const digitButtons = Array.from({ length: 10 }, (_, digit) => '<button type="button" data-code-digit="' + digit + '">' + digit + '</button>').join('');
+    return '<div class="answer-panel code-answer"><label class="answer-label" for="code-input">' + esc(task.answerLabel) + '</label>' +
+      '<div class="code-entry"><input id="code-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="' + task.codeLength + '" aria-describedby="code-help" value="' + esc(state.codeDraft) + '">' +
+      '<span id="code-help">按顺序填 ' + task.codeLength + ' 位，开头是 0 也要写。</span></div>' +
+      '<div class="number-pad code-pad" aria-label="密码数字键盘">' + digitButtons + '<button type="button" id="code-delete" aria-label="删除最后一位">⌫</button></div>' + answerActions() + '</div>';
+  }
   function answerHtml() {
     if (state.solved) return '';
     const t = state.task;
     const custom = globalThis.NumberForestViews.get(t.kind);
     if (custom?.answer) return custom.answer(viewContext()) + answerActions();
+    if (t.codeLength) return codeAnswerHtml(t);
+    if (t.choices) {
+      const choices = t.choices.map(({ value, label }) => {
+        const selected = state.selected === value;
+        return '<button class="time-choice' + (selected ? ' selected' : '') + '" data-answer="' + value + '" aria-pressed="' + selected + '">' + esc(label) + '</button>';
+      }).join('');
+      return '<div class="answer-panel"><div class="answer-label">' + esc(t.answerLabel) + '</div><div class="choice-grid practice-choices">' + choices + '</div>' + answerActions() + '</div>';
+    }
     if (t.kind === 'compare') return '<div class="answer-panel"><div class="answer-label">' + esc(t.answerLabel) + '</div>' + answerActions() + '</div>';
     if (t.kind.startsWith('clock')) {
       const m = t.kind === 'clock-forward' ? { hour: t.model.targetHour, minute: t.model.targetMinute } : t.model;
@@ -235,9 +259,9 @@
   function feedbackHtml() {
     if (!state.feedback) return '';
     const t = state.task;
-    const listen = globalThis.NumberForestSpeech ? '<button class="text-button listen-feedback" id="listen-feedback" aria-label="听小松鼠的鼓励和方法提示">♫ 听小松鼠</button>' : '';
+    const listen = globalThis.NumberForestSpeech?.has(feedbackSpeech()) ? '<button class="text-button listen-feedback" id="listen-feedback" aria-label="听小松鼠的鼓励和方法提示">♫ 听小松鼠</button>' : '';
     if (state.solved) {
-      const displayAnswer = t.kind.startsWith('clock') ? timeLabel(t.answer) : t.answer;
+      const displayAnswer = displayedAnswer(t);
       const title = currentOutcome() === 'incorrect' ? '订正好啦！' : '答对啦！';
       return '<section class="feedback answer-feedback success" tabindex="-1" aria-label="' + title + '"><div class="celebration-scene" aria-hidden="true"><div class="celebration-rays"></div><div class="celebration-stars">' + Array.from({ length: 8 }, (_, i) => '<span style="--i:' + i + '">✦</span>').join('') + '</div><div class="celebration-mascot"><img class="buddy-celebrate" src="assets/playful/buddy-happy.svg" alt=""></div><span class="celebration-check">✓</span></div><div class="celebration-copy"><h2>' + title + '</h2><div class="answer-reveal"><strong>' + esc(displayAnswer) + '</strong><span>' + esc(t.unit ?? (t.kind.startsWith('clock') ? '' : '颗')) + '</span></div><p>' + esc(state.feedback) + '</p></div><div class="feedback-actions">' + nextButtonHtml() + listen + '</div></section>';
     }
@@ -260,7 +284,7 @@
     } else if (d.kind === 'compare') {
       visual = '<div class="feedback-visual quantity-compare"><div class="compare-row"><span class="compare-label">左边</span><div class="compare-dots">' + acorns(t.model.a) + '</div><strong class="compare-number">' + t.model.a + '</strong></div><div class="compare-row"><span class="compare-label">右边</span><div class="compare-dots">' + acorns(t.model.b) + '</div><strong class="compare-number">' + t.model.b + '</strong></div></div>';
     }
-    const answer = t.kind.startsWith('clock') ? timeLabel(t.answer) : t.answer + (t.unit || '');
+    const answer = displayedAnswer(t) + (t.unit || '');
     const explanation = d.kind === 'sharing' && d.direction === 'equal' ? '数字选对了，摆放还没完成。' : '这次没有选对。正确答案是 ' + answer + '。';
     return '<section class="feedback answer-feedback retry" tabindex="-1" aria-label="本题已记为错题，一起看看原因"><div class="feedback-heading"><span aria-hidden="true"><img src="assets/playful/buddy-thinking.svg" alt=""></span><h2>' + esc(d.title) + '</h2></div><p class="feedback-verdict">' + esc(explanation) + '</p>' + visual + '<p class="feedback-message">' + esc(d.message) + '</p><p class="feedback-record-note">首次结果已记录。可以继续下一题，或在下面换答案订正。</p><div class="feedback-actions">' + nextButtonHtml(true) + listen + '</div></section>';
   }
@@ -319,7 +343,7 @@
       return '<div class="formula-row ' + (index ? 'formula-secondary' : 'formula-primary') + '">' + (row.caption ? '<p class="formula-caption">' + esc(row.caption) + '</p>' : '') + '<div class="formula-tokens">' + tokens + '</div></div>';
     });
     const more = rows.length > 1 ? '<details class="formula-more"><summary>换个写法，看看联系</summary>' + rows.slice(1).join('') + '</details>' : '';
-    return '<section class="formula-card' + (solved && !reference ? ' is-solved' : '') + (final ? ' formula-finale' : '') + '" data-kind="' + esc(task.kind) + '" data-state="' + status + '" aria-label="' + esc((final ? '最后一题的数学关系' : formula.title) + (preview ? '，' + heading : '')) + '"><h2><span class="formula-mark" aria-hidden="true">' + (reference ? '▤' : solved ? '✓' : retry ? '↺' : preview ? '?' : '✦') + '</span>' + esc(heading) + '</h2>' + rows[0] + (task.kind === 'compare' ? '<p class="formula-note">选松果更' + (task.model.ask === 'less' ? '少' : '多') + '的一篮</p>' : '') + more + '</section>';
+    return '<section class="formula-card' + (task.practice ? ' formula-practice' : '') + (solved && !reference ? ' is-solved' : '') + (final ? ' formula-finale' : '') + '" data-kind="' + esc(task.kind) + '" data-state="' + status + '" aria-label="' + esc((final ? '最后一题的数学关系' : formula.title) + (preview ? '，' + heading : '')) + '"><h2><span class="formula-mark" aria-hidden="true">' + (reference ? '▤' : solved ? '✓' : retry ? '↺' : preview ? '?' : '✦') + '</span>' + esc(heading) + '</h2>' + rows[0] + (task.kind === 'compare' ? '<p class="formula-note">选松果更' + (task.model.ask === 'less' ? '少' : '多') + '的一篮</p>' : '') + more + '</section>';
   }
   function refreshFormula() {
     const previous = main.querySelector('.mission-bridge .formula-card');
@@ -337,19 +361,24 @@
     globalThis.NumberForestEffects?.clear();
     const t = state.task, c = state.chapter;
     main.innerHTML = '<div class="game-topbar"><button class="back-button" id="back-button">← 森林地图</button><div class="chapter-label">' + esc(c.title) + '</div><div class="round-dots" aria-label="第 ' + (state.round + 1) + ' 个任务，共 ' + ROUND_COUNT + ' 个">' + state.outcomes.map((outcome, i) => '<span class="' + (outcome === 'correct' ? 'done' : outcome === 'incorrect' ? 'incorrect' : outcome === 'legacy' ? 'legacy' : i === state.round ? 'current' : '') + '" aria-label="第 ' + (i + 1) + ' 题：' + (outcome === 'correct' ? '首答正确' : outcome === 'incorrect' ? '首答错误' : outcome === 'legacy' ? '旧版已完成，未评分' : '未作答') + '"' + (i === state.round ? ' aria-current="step"' : '') + '>' + (outcome === 'correct' ? '✓' : outcome === 'incorrect' ? '×' : i + 1) + '</span>').join('') + '</div></div>' +
-      '<div class="game-layout"><section class="play-panel"><div class="mission-bridge"><div class="mission-heading"><div class="eyebrow mission-kicker">小发现 ' + String(state.round + 1).padStart(2, '0') + ' / 10 <button class="read-button" id="read-button" aria-label="朗读题目">♫ 听题目</button></div><h1>' + esc(t.prompt) + '</h1><p>' + esc(t.instruction || '可以先摆一摆，再选出你的答案。') + '</p></div>' + formulaHtml(t, state.solved) + '</div>' + assessmentNote() + (state.solved ? feedbackHtml() : '') + sceneHtml() + (!state.solved ? feedbackHtml() : '') + (state.solved ? '<div class="relationship-card"><div class="eyebrow">原来它们是一家人</div><div class="equation-strip">' + t.relations.map(r => '<span class="equation">' + esc(r) + '</span>').join('') + '</div></div>' : answerHtml()) + '</section><aside class="guide-panel" aria-label="小松鼠陪你探索">' + buddyHtml() + (state.hints && !state.solved ? '<div class="hint-box"><strong>一起想一想</strong><p>' + esc(t.hint) + '</p></div>' : '') + '<details class="guide-tip"><summary class="guide-heading">给爸爸妈妈的小提示</summary><p class="tip-copy">' + chapterTip(c.id) + '</p></details><div class="guide-footnote">可以数，可以摆，<br>慢慢来，我陪你！</div></aside></div>';
+      '<div class="game-layout"><section class="play-panel"><div class="mission-bridge"><div class="mission-heading"><div class="eyebrow mission-kicker">小发现 ' + String(state.round + 1).padStart(2, '0') + ' / 10' + (canReadTask(t) ? ' <button class="read-button" id="read-button" aria-label="朗读题目">♫ 听题目</button>' : '') + '</div><h1>' + esc(t.prompt) + '</h1><p>' + esc(t.instruction || '可以先摆一摆，再选出你的答案。') + '</p></div>' + formulaHtml(t, state.solved) + '</div>' + assessmentNote() + (state.solved ? feedbackHtml() : '') + sceneHtml() + (!state.solved ? feedbackHtml() : '') + (state.solved ? '<div class="relationship-card"><div class="eyebrow">原来它们是一家人</div><div class="equation-strip">' + t.relations.map(r => '<span class="equation">' + esc(r) + '</span>').join('') + '</div></div>' : answerHtml()) + '</section><aside class="guide-panel" aria-label="小松鼠陪你探索">' + buddyHtml() + (state.hints && !state.solved ? '<div class="hint-box"><strong>一起想一想</strong><p>' + esc(t.hint) + '</p></div>' : '') + '<details class="guide-tip"><summary class="guide-heading">给爸爸妈妈的小提示</summary><p class="tip-copy">' + chapterTip(c.id) + '</p></details><div class="guide-footnote">可以数，可以摆，<br>慢慢来，我陪你！</div></aside></div>';
     if (tipOpen) main.querySelector('.guide-tip').open = true;
     if (formulaOpen && main.querySelector('.formula-more')) main.querySelector('.formula-more').open = true;
     bindGame();
     resumeTime(); persistSession();
-    if (state.sound) { globalThis.NumberForestSpeech?.prepare(t.prompt); globalThis.NumberForestSpeech?.prepare(hintSpeech()); }
+    if (state.sound) {
+      if (canReadTask(t)) globalThis.NumberForestSpeech?.prepare(t.prompt);
+      if (!t.practice) globalThis.NumberForestSpeech?.prepare(hintSpeech());
+    }
   }
   function chapterTip(id) {
-    return ({ bonds: '一个数可以分成两部分。知道全部和一部分，就能找出另一部分。', arithmetic: '加法把两部分合起来；减法看拿走后还剩多少。同一篮松果，能帮我们发现加法和减法的联系。', groups: '每一篮都一样多。再添一篮，增加的就是这一篮的数量。', sharing: '平均分，就是每个小伙伴分到的一样多。分完以后，再合起来看看。', clock: '短短的时针告诉我们几点，长长的分针告诉我们过了多少分钟。时针也会慢慢往前走。' })[id] || '试试看，你能发现什么？';
+    return ({ bonds: '一个数可以分成两部分。知道全部和一部分，就能找出另一部分。', arithmetic: '加法把两部分合起来；减法看拿走后还剩多少。同一篮松果，能帮我们发现加法和减法的联系。', groups: '每一篮都一样多。再添一篮，增加的就是这一篮的数量。', sharing: '平均分，就是每个小伙伴分到的一样多。分完以后，再合起来看看。', clock: '短短的时针告诉我们几点，长长的分针告诉我们过了多少分钟。时针也会慢慢往前走。', decimal: '先把同样大的一整条分成十等份。数数涂了几份，再读成零点几。', negative: '让孩子在数轴上先找到零。往左越走越小，往右越走越大。', parity: '用两两配对解释单数和双数。做密码时，每一位都先看原来的数字。' })[id] || '试试看，你能发现什么？';
   }
   function bindGame() {
     document.getElementById('back-button').onclick = home;
-    document.getElementById('read-button').onclick = () => { state.sound = true; updateSound(); speak(state.task.prompt); };
+    const read = document.getElementById('read-button');
+    if (read) read.onclick = () => { state.sound = true; updateSound(); speak(state.task.prompt); };
+    bindCodeInput();
     main.querySelectorAll('[data-answer]').forEach(b => b.onclick = () => {
       state.selected = Number(b.dataset.answer); clearFeedback(); main.querySelector('.answer-feedback')?.remove();
       main.querySelectorAll('[data-answer]').forEach(el => { const on = el === b; el.classList.toggle('selected', on); el.setAttribute('aria-pressed', String(on)); });
@@ -386,11 +415,45 @@
       renderAfterPlay('[data-return="' + i + '"]', null, '拿回来再分分，让每个朋友都一样多。');
     });
     const hint = document.getElementById('hint-button');
-    if (hint) hint.onclick = () => { state.hints = true; renderGame(); announce(state.task.hint); speak(hintSpeech()); const box = main.querySelector('.hint-box'); if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+    if (hint) hint.onclick = () => { state.hints = true; renderGame(); announce(state.task.hint); if (!state.task.practice) speak(hintSpeech()); const box = main.querySelector('.hint-box'); if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
     const listen = document.getElementById('listen-feedback'); if (listen) listen.onclick = () => { state.sound = true; updateSound(); speakFeedback(); };
     const check = document.getElementById('check-button'); if (check) check.onclick = checkAnswer;
     main.querySelectorAll('[data-next]').forEach(button => button.onclick = advanceTask);
     globalThis.NumberForestViews.get(state.task.kind)?.bind?.(main, viewContext());
+  }
+  function bindCodeInput() {
+    const input = document.getElementById('code-input');
+    if (!input) return;
+    const length = state.task.codeLength;
+    const check = document.getElementById('check-button');
+    function setDraft(draft) {
+      const next = draft.normalize('NFKC').replace(/[^0-9]/g, '').slice(0, length);
+      if (input.value !== next) input.value = next;
+      if (next === state.codeDraft) return;
+      state.codeDraft = next;
+      state.selected = next.length === length ? Number(next) : null;
+      clearFeedback();
+      main.querySelector('.answer-feedback')?.remove();
+      check.disabled = state.selected === null;
+      refreshFormula();
+      if (!check.disabled) {
+        buddyResponse('密码填好啦，点检查答案一起核对。');
+        announce('密码已填满，还没检查。');
+      }
+      persistSession();
+    }
+    input.addEventListener('input', event => { if (!event.isComposing) setDraft(input.value); });
+    input.addEventListener('compositionend', () => setDraft(input.value));
+    input.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' || event.isComposing) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (!event.repeat && !check.disabled) check.click();
+    });
+    main.querySelectorAll('[data-code-digit]').forEach(button => {
+      button.onclick = () => setDraft(state.codeDraft + button.dataset.codeDigit);
+    });
+    document.getElementById('code-delete').onclick = () => setDraft(state.codeDraft.slice(0, -1));
   }
   function viewContext() {
     return { task: state.task, solved: state.solved, hinted: state.hints, local: state.custom,
@@ -429,7 +492,7 @@
     saveRecords(); persistSession();
     if (state.round === ROUND_COUNT - 1) {
       finish(); focusMain(); announce('完成十个任务，首次作答结果已经保留，获得' + badgeName(state.chapter.id) + '徽章。');
-      speak('答对啦！这趟探索完成了。看看你的' + badgeName(state.chapter.id) + '徽章！'); return;
+      speak(state.task.practice ? feedbackSpeech() : '答对啦！这趟探索完成了。看看你的' + badgeName(state.chapter.id) + '徽章！'); return;
     }
     renderGame(); revealFeedback(); globalThis.NumberForestEffects?.celebrate(main.querySelector('.answer-feedback.success')); announce((assessment.outcome === 'incorrect' ? '订正好啦，首次错误记录保留。' : '答对啦！') + state.feedback); speakFeedback();
   }
@@ -482,7 +545,7 @@
     });
   }
   function offlineIdea(id) {
-    return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
+    return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。', decimal: '画一条分成 10 格的纸带，涂几格，再说说涂了零点几。', negative: '在纸上标出 0，左右各走几步，给每一个位置写上数。', parity: '摆两排纽扣，先看看能不能配成对。再给家人出一道逐位变数字的密码。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
   }
   function parent() {
     globalThis.NumberForestHomeMotion?.stop();
