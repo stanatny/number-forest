@@ -236,6 +236,13 @@
       throw new TypeError('Feedback needs a task with a nonnegative integer answer and a model.');
     }
     if (!Number.isSafeInteger(selected) || selected < 0) return inputResult(task, selected);
+    if (task.practice) {
+      var display = globalThis.NumberForestCore.answerText(task, selected);
+      if (display === undefined) return inputResult(task, selected);
+      var correct = selected === task.answer;
+      return result(task, selected, 'practice', correct, { direction: null, difference: null },
+        correct ? '找对啦！' : '一起来看怎么想', correct ? task.success : '你填了 ' + display + '。\n' + task.practice.explanation, task.model);
+    }
     if (task.kind === 'clock' || task.kind === 'clock-forward') return clockFeedback(task, selected);
     if (task.kind === 'compare') return compareFeedback(task, selected);
     if (task.kind === 'sequence') return sequenceFeedback(task, selected);

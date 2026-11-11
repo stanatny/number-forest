@@ -1,0 +1,75 @@
+/* The zero point stays visible; negative values keep their minus signs at every size. */
+main[data-screen="game"] .scene.negative-scene {
+  --negative-ink: #345c70;
+  --negative-teal: #347b72;
+  --negative-ochre: #9a6131;
+  width: 100%;
+  min-width: 0;
+  color: var(--negative-ink);
+  border-color: #b8d5dc;
+  background: radial-gradient(ellipse at 50% 0, #fffdf5, #f1f9fa 65%, #e2f0f2);
+  box-shadow: inset 0 3px 0 #fff, 0 3px 0 #d7e8e7;
+}
+.negative-scene .scene-note { margin: 0; }
+.negative-scene-title { width: 100%; text-align: center; font-size: 16px; font-weight: 750; line-height: 1.6; }
+.negative-numberline-scene { flex-direction: column; }
+.negative-axis { width: 100%; max-width: 660px; min-width: 0; padding: 0 5px; font-variant-numeric: tabular-nums; }
+.negative-axis-directions { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: #537889; }
+.negative-ticks { position: relative; display: grid; grid-template-columns: repeat(var(--negative-count, 7), minmax(0, 1fr)); padding-top: 32px; }
+.negative-ticks::before { content: ""; position: absolute; top: 45px; left: var(--negative-edge); right: var(--negative-edge); height: 3px; background: #829fac; border-radius: 3px; }
+.negative-tick { position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 8px; min-width: 0; }
+.negative-tick > i { position: relative; z-index: 1; display: block; width: 3px; height: 13px; background: #829fac; border-radius: 2px; }
+.negative-tick > strong { display: grid; place-items: center; width: 100%; min-height: 34px; margin-top: 6px; color: #4a6575; font-size: 20px; font-weight: 750; white-space: nowrap; }
+.negative-tick.is-zero > i { width: 5px; height: 17px; margin-top: -2px; margin-bottom: -2px; background: #345c70; }
+.negative-tick.is-zero > strong { color: #203e50; background: #dcebf0; border-radius: 9px; }
+.negative-tick.is-a > strong, .negative-tick.is-start > strong { color: var(--negative-teal); background: #e0f1e9; border-radius: 9px; box-shadow: inset 0 0 0 2px #93bfb1; }
+.negative-tick.is-b > strong { color: var(--negative-ochre); background: #fff0db; border-radius: 9px; box-shadow: inset 0 0 0 2px #dfbd8b; }
+.negative-tick.is-blank > strong, .negative-tick.is-destination > strong { color: #765328; background: #fff0be; border: 2px dashed #b48a4b; border-radius: 9px; }
+.negative-tick.is-solved > strong { color: #3f6b3e; background: #edf4da; border: 2px solid #89aa66; }
+.negative-position-label { position: absolute; top: -25px; z-index: 2; padding: 2px 5px; border-radius: 6px; color: #365e69; background: #fffdf7; border: 1px solid #c7dde1; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.negative-journey { position: absolute; top: 28px; height: 2px; background: #ad793c; }
+.negative-journey::after { content: ""; position: absolute; top: -4px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.negative-journey.go-right::after { right: -1px; border-left: 7px solid #ad793c; }
+.negative-journey.go-left::after { left: -1px; border-right: 7px solid #ad793c; }
+.negative-order-strip, .negative-pair { display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; }
+.negative-order-tile, .negative-pair > strong { display: grid; place-items: center; min-width: 48px; min-height: 46px; padding: 3px 8px; border: 2px solid #c4dbe0; border-radius: 13px; background: #fffdf6; color: #345c70; font-size: 27px; font-weight: 800; }
+.negative-order-tile.is-blank { border-style: dashed; border-color: #b5914e; background: #fff1c3; color: #79572c; }
+.negative-order-arrow { color: #849b9c; font-size: 19px; }
+.negative-pair > .negative-value-a { color: var(--negative-teal); border-color: #a7cbbb; background: #e3f3ed; }
+.negative-pair > .negative-value-b { color: var(--negative-ochre); border-color: #dfc19a; background: #fff0dc; }
+.negative-walk { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.negative-walk li { display: flex; align-items: center; gap: 7px; padding: 5px 8px; background: #fffcf1; border: 1px solid #dfcf9c; border-radius: 10px; }
+.negative-walk li > span { font-size: 11px; color: #7f7759; }
+.negative-walk li > strong { font-size: 19px; color: #765b32; }
+.negative-temperature-scene { column-gap: 30px; }
+.negative-thermometer { position: relative; width: 150px; height: 254px; flex: 0 0 150px; padding-top: 7px; }
+.negative-temperature-tube { position: absolute; left: 58px; top: 16px; bottom: 17px; width: 20px; overflow: hidden; background: #edf2ef; border: 2px solid #9ab7bf; border-radius: 14px; box-shadow: inset 3px 0 0 #fff8; }
+.negative-temperature-tube > span { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(90deg, #7ca6b6, #a2c5ce); border-top: 3px solid #34677d; }
+.negative-temperature-scale { position: relative; display: grid; grid-template-rows: repeat(11, 22px); }
+.negative-temperature-tick { position: relative; display: flex; align-items: center; min-width: 0; height: 22px; }
+.negative-temperature-number { display: grid; place-items: center; width: 43px; height: 22px; font-size: 16px; font-weight: 750; color: #466675; font-variant-numeric: tabular-nums; }
+.negative-temperature-tick > i { position: absolute; left: 50px; height: 2px; width: 13px; background: #708f9c; }
+.negative-temperature-tick.is-zero > i { width: 35px; height: 3px; background: #345c70; }
+.negative-temperature-tick.is-reading > .negative-temperature-number { border: 2px dashed #a17e40; border-radius: 7px; background: #fff0bd; color: #795426; }
+.negative-zero-label { position: absolute; left: 89px; color: #345c70; font-size: 11px; font-weight: 750; white-space: nowrap; }
+.negative-temperature-card { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 135px; max-width: 45%; padding: 17px 20px; border-radius: 23px; border: 2px solid #c8dfe3; background: #fffdf4; box-shadow: 0 3px 0 #e0ebdf; }
+.negative-snow { font-size: 28px; line-height: 1; color: #75a5ba; }
+.negative-weather-label { color: #577381; font-size: 13px; font-weight: 700; }
+.negative-temperature-reading { display: flex; align-items: baseline; gap: 4px; color: #7a582f; font-size: 43px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.negative-temperature-reading small { color: #557a8b; font-size: 17px; }
+.negative-temperature-reading.is-solved { color: #4c7547; }
+.negative-temperature-card p { margin: 0; color: #6b7b6c; font-size: 12px; text-align: center; }
+@media (max-width: 480px) {
+  main[data-screen="game"] .scene.negative-scene { padding-inline: 10px; }
+  .negative-axis { padding: 0; }
+  .negative-tick > strong { font-size: 16px; min-height: 31px; }
+  .negative-axis-directions { font-size: 11px; }
+  .negative-position-label { font-size: 10px; padding-inline: 3px; }
+  .negative-order-strip { gap: 7px; }
+  .negative-order-tile { min-width: 37px; min-height: 40px; padding-inline: 5px; font-size: 23px; }
+  .negative-order-arrow { font-size: 15px; }
+  .negative-temperature-scene { column-gap: 4px; }
+  .negative-thermometer { width: 125px; flex-basis: 125px; }
+  .negative-temperature-card { min-width: 105px; padding: 14px 8px; }
+  .negative-temperature-reading { font-size: 36px; }
+}

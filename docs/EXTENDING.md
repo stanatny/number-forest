@@ -70,6 +70,8 @@ NumberForestCore.registerChapter({
 
 生成器可读取 `round`（从 0 开始）、`integer(min, max)`（含两端）、`random()` 和 `challenge`。目前应用每轮传入题序，`challenge` 默认为 `false`；测试可注入随机函数以复现题目。继续探索依赖已保存的种子重新生成同一题，因此题目中的随机选择必须使用传入的 `integer()` 或 `random()`，不要直接调用 `Math.random()` 或按当前时间出题。生成器保持纯逻辑，不访问 DOM、本机存储或网络。
 
+小数、负数与奇偶章节采用独立脚本注册。提供 `choices: [{ value, label }]` 可在通用答题区显示文字或带符号的选项。`value` 仍为非负整数，`label` 是试填、反馈和结算中显示的数学答案。例如可把 `0.3` 存成十分之三（`value: 3`），把 `−2` 存成加偏移后的整数。设置 `codeLength` 的题目使用固定长度的逐位输入，`maxAnswer` 为 `10 ** codeLength - 1`，前导零按字符串恢复。`practice` 提供 `title`、`tokens` 和具体的 `explanation`。公式词元使用 `{ text, role, label }`，待填位置使用 `{ target: true, role: 'result', label }`。题干和反馈仍可用 `hint`、`success` 和 `relations` 补充讲解。
+
 v0.2 的内置生成器按 `round % 10` 安排题型，数量在合法范围内抽取，不做去重，也不保证所有组合等概率。松果小屋的分合仍在 10 以内，比较和数序到 20；森林补给包含和为 11–20 的加法、20 以内减法、补数和数线任务；成组与平均分的总数不超过 20，每组至多 5 颗。成组和平均分的第一个任务保留固定引导题。时钟题序 0–2 是整点、3–5 是半点、6 和 8 是随机整点或半点，7 和 9 分别推进 30 和 60 分钟。
 
 ## 解释正确与错误答案

@@ -1,0 +1,52 @@
+/* The parity workshop uses CSS objects; decorative shapes never add to counts. */
+.scene.parity-scene { display: block; }
+.parity-scene { padding: 20px; background: #faf6ff; border: 1px solid #e5dbee; border-radius: 22px; }
+main[data-screen="game"] .scene.parity-scene { background: #faf6ff; border-color: #e5dbee; }
+.parity-scene-title { margin: 12px 0 8px; font-size: 21px; color: #5f4d7a; text-align: center; }
+.parity-scene-note { margin: 12px 0 0; color: #685d75; font-size: 14px; line-height: 1.6; text-align: center; }
+.parity-object-field { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; min-height: 108px; max-width: 470px; margin: auto; }
+.parity-dot { display: block; width: 28px; height: 34px; flex: 0 0 auto; border: 2px solid #80532e; border-radius: 45% 45% 48% 48%; background: linear-gradient(#b98553 0 28%, #dba66e 29%); box-shadow: inset 3px 0 0 #f2cb98; }
+.parity-pair { display: inline-flex; align-items: center; gap: 10px; padding: 10px 12px; border: 2px solid #b0b8d5; border-radius: 18px; background: #f0f2ff; }
+.parity-single { border-style: dashed; border-color: #bf884c; background: #fff1d6; }
+.parity-empty { display: grid; gap: 5px; place-items: center; color: #6a5488; font-size: 58px; font-weight: 850; }
+.parity-empty span { font-size: 14px; font-weight: 600; }
+.parity-mystery { display: grid; place-items: center; width: 65px; height: 65px; margin: auto; color: #8263a2; border: 2px dashed #b4a1c5; border-radius: 22px; font-size: 42px; font-weight: 800; background: #f2eafa; }
+.parity-trail, .parity-code-worked { display: grid; gap: 11px; margin: 0; padding: 0; list-style: none; }
+.parity-trail li, .parity-code-worked li { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 14px; background: #fff; border: 1px solid #e2d9ec; border-radius: 16px; }
+.parity-step-number { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; background: #e9def5; color: #694987; font-size: 16px; font-weight: 800; }
+.parity-trail strong { font-size: 19px; color: #5d4c74; line-height: 1.5; }
+.parity-trail p { margin: 4px 0 0; font-size: 14px; color: #746b7b; }
+.parity-code-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 480px; margin: 0 auto 18px; }
+.parity-code-rules > div { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; border-radius: 14px; border: 2px solid #d0bfdf; background: #fff; color: #69517f; }
+.parity-code-rules > div:nth-child(2) { color: #386f6b; border-color: #aecfc6; background: #f5fffb; }
+.parity-code-rules span { font-size: 14px; font-weight: 700; }
+.parity-code-rules strong { font-size: 29px; white-space: nowrap; }
+.parity-code-digits { display: flex; justify-content: center; flex-wrap: nowrap; gap: 9px; max-width: 500px; margin: auto; }
+.parity-digit { display: grid; justify-items: center; gap: 7px; min-width: 0; flex: 0 1 65px; }
+.parity-digit > span { color: #766780; font-size: 12px; white-space: nowrap; }
+.parity-digit > strong { display: grid; place-items: center; box-sizing: border-box; width: 100%; min-height: 65px; border: 2px solid #c9b6db; border-radius: 14px; background: #fff; color: #654681; box-shadow: 0 3px 0 #e3d7ee; font-size: 37px; font-weight: 850; }
+.parity-code-worked { margin-top: 16px; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); }
+.parity-code-worked li { gap: 8px; padding: 10px; }
+.parity-code-worked li > div { display: grid; gap: 4px; }
+.parity-code-worked li > div > span { color: #776784; font-size: 12px; }
+.parity-code-worked strong { color: #5b4773; font-size: 21px; white-space: nowrap; }
+@media (max-width: 500px) {
+  .parity-scene { padding: 16px 12px; }
+  .parity-code-rules { gap: 8px; }
+  .parity-code-rules > div { flex-direction: column; gap: 2px; padding: 8px; }
+  .parity-code-rules span { font-size: 12px; }
+  .parity-code-digits { gap: 6px; }
+  .parity-digit > strong { min-height: 54px; border-radius: 11px; font-size: 30px; }
+  .parity-digit > span { font-size: 10px; }
+  .parity-trail strong { font-size: 17px; }
+  .parity-code-worked { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .parity-code-worked strong { font-size: 18px; }
+}
+@media (min-width: 801px) and (max-height: 900px) {
+  .parity-scene { padding: 14px; }
+  .parity-object-field { min-height: 85px; }
+  .parity-code-rules { margin-bottom: 12px; }
+  .parity-code-rules > div { padding: 8px 12px; }
+  .parity-digit > strong { min-height: 54px; font-size: 32px; }
+  .parity-scene-note { margin-top: 9px; font-size: 13px; }
+}

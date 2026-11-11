@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const { enumerateCorpus, normalizeText } = require('../scripts/voice-corpus.cjs');
 const root = path.resolve(__dirname, '..');
 
-test('every possible lesson prompt and recorded guide resolves to a local audio file', () => {
+test('every original lesson prompt and recorded guide resolves to a local audio file', () => {
   const context = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'assets/voice/manifest.js'), 'utf8'), context);
   const clips = context.window.NumberForestVoiceClips;
@@ -22,14 +22,17 @@ test('every possible lesson prompt and recorded guide resolves to a local audio 
   }
 });
 
-test('all five award faces and the reverse are embedded without stale artwork', () => {
+test('all award faces and the reverse are embedded without stale artwork', () => {
   class Image { decode() { return Promise.resolve(); } }
   const context = { Image };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'src/badge-art.js'), 'utf8'), context);
-  for (const id of ['bonds', 'arithmetic', 'groups', 'sharing', 'clock', 'reverse']) {
+  const svgIds = ['bonds', 'arithmetic', 'groups', 'sharing', 'clock', 'reverse'];
+  const pngIds = ['decimal', 'negative', 'parity'];
+  for (const id of [...svgIds, ...pngIds]) {
     const source = context.NumberForestBadgeArt.sources[id];
-    assert.match(source, /^data:image\/svg\+xml;base64,/);
+    const svg = svgIds.includes(id);
+    assert.ok(source.startsWith(svg ? 'data:image/svg+xml;base64,' : 'data:image/png;base64,'));
     const decoded = Buffer.from(source.split(',')[1], 'base64');
-    assert.deepEqual(decoded, fs.readFileSync(path.join(root, 'assets/badges', id + '.svg')), 'Regenerate embedded badge art after editing ' + id);
+    assert.deepEqual(decoded, fs.readFileSync(path.join(root, 'assets/badges', id + (svg ? '.svg' : '.png'))), 'Regenerate embedded badge art after editing ' + id);
   }
 });

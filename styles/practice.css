@@ -1,0 +1,67 @@
+main[data-screen="home"] .chapter-card[data-chapter="decimal"] {
+  --card-tint: #e4f5d6;
+  --card-edge: #a9cf83;
+  --card-ink: #49703e;
+}
+main[data-screen="home"] .chapter-card[data-chapter="negative"] {
+  --card-tint: #e2f3fc;
+  --card-edge: #a5cce4;
+  --card-ink: #3e698b;
+}
+main[data-screen="home"] .chapter-card[data-chapter="parity"] {
+  --card-tint: #f0e6fa;
+  --card-edge: #d5bde9;
+  --card-ink: #77568d;
+}
+main[data-screen="home"] .chapter-card:is([data-chapter="decimal"], [data-chapter="negative"], [data-chapter="parity"]) .chapter-picture {
+  filter: drop-shadow(0 4px 0 #58492c25);
+}
+main[data-screen="game"][data-chapter="decimal"] { --chapter-soft: #eaf6df; --chapter-edge: #bcd89f; --chapter-strong: #50763c; }
+main[data-screen="game"][data-chapter="negative"] { --chapter-soft: #e9f5fc; --chapter-edge: #b8d9eb; --chapter-strong: #3d6c8b; }
+main[data-screen="game"][data-chapter="parity"] { --chapter-soft: #f3eafa; --chapter-edge: #d9c4ea; --chapter-strong: #755187; }
+
+.formula-practice .formula-tokens { flex-wrap: wrap; row-gap: 2px; }
+.formula-practice .formula-primary .formula-token strong { min-width: 0; font-size: clamp(20px, 2.4vw, 28px); }
+.formula-practice .formula-primary .formula-operator strong { min-width: 12px; font-size: 21px; }
+.formula-practice .formula-primary .formula-token.is-preview strong { padding-inline: 5px; }
+.formula-practice .formula-label { font-size: 10px; max-width: 6em; white-space: normal; }
+
+main[data-screen="game"] .practice-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, 115px), 1fr)); }
+main[data-screen="game"] .practice-choices .time-choice { padding: 7px 5px; min-height: 51px; }
+main[data-screen="game"]:has(.formula-practice) .answer-feedback.retry .feedback-message {
+  color: #704c2b;
+  font-size: 14px;
+  white-space: pre-line;
+}
+main[data-screen="game"]:has(.formula-practice) .celebration-copy p { white-space: pre-line; }
+.code-entry { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+#code-input {
+  width: min(100%, 225px);
+  min-height: 50px;
+  padding: 6px 14px;
+  border: 2px solid #ab8cbe;
+  border-radius: 12px;
+  background: #fcf6ff;
+  color: #442957;
+  font: inherit;
+  font-size: 28px;
+  font-weight: 850;
+  letter-spacing: .25em;
+  font-variant-numeric: tabular-nums;
+}
+#code-input:focus-visible { outline: 3px solid #7b5795; outline-offset: 2px; }
+#code-help { color: #665873; font-size: 13px; }
+main[data-screen="game"] .code-pad { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+main[data-screen="game"] .code-pad button { min-height: 44px; }
+main[data-screen="game"] #code-delete { background: #f1e7fa; border-color: #d6bee7; color: #654580; box-shadow: 0 4px 0 #ddc9ec; }
+
+@media (min-width: 1001px) {
+  main[data-screen="home"] .chapter-grid, main[data-screen="home"] .badge-collection { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  main[data-screen="game"] .code-pad { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  main[data-screen="home"] .badge-collection { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  main[data-screen="home"] .badge-collection { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

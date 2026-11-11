@@ -50,11 +50,32 @@
       integer: integer,
       challenge: options.challenge === true
     });
-    if (!task || !Number.isInteger(task.answer) || !Number.isInteger(task.maxAnswer) ||
+    if (!task || !Number.isSafeInteger(task.answer) || !Number.isSafeInteger(task.maxAnswer) ||
         task.answer < 0 || task.answer > task.maxAnswer) {
       throw new TypeError('A generated task must have an integer answer within its bounds.');
     }
+    if (task.codeLength !== undefined && (!Number.isInteger(task.codeLength) || task.codeLength < 1 ||
+        task.maxAnswer !== 10 ** task.codeLength - 1)) {
+      throw new TypeError('A code task needs a valid digit length and matching answer bounds.');
+    }
+    if (task.choices !== undefined) {
+      if (!Array.isArray(task.choices) || !task.choices.every(function (choice) {
+        return choice && Number.isSafeInteger(choice.value) && choice.value >= 0 &&
+          choice.value <= task.maxAnswer && typeof choice.label === 'string' && choice.label.trim();
+      })) throw new TypeError('Choices need integer values in range and nonempty labels.');
+      var values = new Set(task.choices.map(function (choice) { return choice.value; }));
+      if (values.size !== task.choices.length || !values.has(task.answer)) {
+        throw new TypeError('Choice values must be unique and include the answer.');
+      }
+    }
     return Object.assign({}, task, { chapterId: chapterId });
+  }
+
+  function answerText(task, value) {
+    if (!Number.isSafeInteger(value) || value < 0 || value > task.maxAnswer) return undefined;
+    if (task.codeLength) return String(value).padStart(task.codeLength, '0');
+    if (task.choices) return task.choices.find(function (choice) { return choice.value === value; })?.label;
+    return String(value);
   }
 
   function checkAnswer(task, value) {
@@ -305,6 +326,7 @@
     registerChapter: registerChapter,
     getChapter: getChapter,
     createTask: createTask,
+    answerText: answerText,
     checkAnswer: checkAnswer
   });
 });
