@@ -7,8 +7,8 @@
   const SESSION_KEY = 'number-forest-session-v1';
   const RESET_KEY = 'number-forest-reset-v1';
   const ROUND_COUNT = 10;
-  const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光', decimal: '十分花朵', negative: '零点雪峰', parity: '森林密钥' };
-  const practiceChapters = new Set(['decimal', 'negative', 'parity']);
+  const badges = { bonds: '松果小屋', arithmetic: '丰收果篮', groups: '阳光花园', sharing: '分享之星', clock: '滴答时光', decimal: '十分花朵', negative: '零点雪峰', parity: '森林密钥', 'negative-operations': '雪地加减' };
+  const practiceChapters = new Set(['decimal', 'negative', 'parity', 'negative-operations']);
   function badgeName(id) { return badges[id] || '森林发现'; }
   function chapterPicture(id) { return practiceChapters.has(id) ? 'assets/badges/' + id + '.png' : 'assets/playful/' + (badges[id] ? id : 'hero') + '.svg'; }
   function badgeImage(id) { return globalThis.NumberForestBadgeArt?.sources[id] || (practiceChapters.has(id) ? 'assets/badges/' + id + '.png' : badges[id] || id === 'reverse' ? 'assets/badges/' + id + '.svg' : 'assets/acorn.svg'); }
@@ -98,7 +98,7 @@
     if (state.screen !== 'game') return;
     tickTime();
     try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ version: 3, chapterId: state.chapter.id, round: state.round, seed: state.seed, selected: state.selected, hints: state.hints, attempts: state.attempts, solved: state.solved, completed: state.completed, independent: state.independent, outcomes: state.outcomes, timingMode: state.timingMode, manip: state.manip, bowls: state.bowls, changed: state.changed, feedbackSelected: state.feedbackSelected, codeDraft: state.task.codeLength ? state.codeDraft : undefined, elapsedMs }));
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ version: 3, chapterId: state.chapter.id, round: state.round, seed: state.seed, selected: state.selected, hints: state.hints, attempts: state.attempts, solved: state.solved, completed: state.completed, independent: state.independent, outcomes: state.outcomes, timingMode: state.timingMode, manip: state.manip, bowls: state.bowls, changed: state.changed, feedbackSelected: state.feedbackSelected, codeDraft: state.task.codeLength ? state.codeDraft : undefined, operationStage: state.task.kind === 'negative-operation' ? state.custom.stage : undefined, elapsedMs }));
     } catch (_) { storageAvailable = false; }
   }
   function readSession() {
@@ -111,6 +111,10 @@
       if (s.selected !== null && Core.answerText(task, s.selected) === undefined) return null;
       if (task.codeLength && (typeof s.codeDraft !== 'string' || /[^0-9]/.test(s.codeDraft) || s.codeDraft.length > task.codeLength ||
           s.selected !== (s.codeDraft.length === task.codeLength ? Number(s.codeDraft) : null))) return null;
+      if (task.kind === 'negative-operation' && s.operationStage !== undefined) {
+        const maxStage = globalThis.NumberForestViews.get(task.kind).maxStage;
+        if (!Number.isInteger(s.operationStage) || s.operationStage < 0 || s.operationStage > maxStage) return null;
+      }
       if (![s.attempts, s.completed, s.independent, s.manip].every(n => Number.isInteger(n) && n >= 0) || s.completed > ROUND_COUNT || s.independent > s.completed) return null;
       if (!Array.isArray(s.bowls) || !s.bowls.every(n => Number.isInteger(n) && n >= 0 && n <= (task.kind === 'sharing' ? task.model.total : 20))) return null;
       if (task.kind === 'sharing' && (s.bowls.length !== task.model.groups || s.bowls.reduce((a, b) => a + b, 0) > task.model.total)) return null;
@@ -123,7 +127,8 @@
     stopVoice();
     const s = readSession(); if (!s) { home(); return; }
     pauseTime(); elapsedMs = s.elapsedMs;
-    Object.assign(state, s, { screen: 'game', chapter: Core.getChapter(s.chapterId), custom: {}, codeDraft: s.codeDraft || '', feedback: s.solved ? s.task.success : '' });
+    const custom = s.task.kind === 'negative-operation' && s.operationStage !== undefined ? { stage: s.operationStage } : {};
+    Object.assign(state, s, { screen: 'game', chapter: Core.getChapter(s.chapterId), custom, codeDraft: s.codeDraft || '', feedback: s.solved ? s.task.success : '' });
     // Old completed questions already contributed to records. Only an unfinished
     // old wrong question has a known outcome that was never counted before.
     if (s.version === 2 && !s.solved && currentOutcome() === 'incorrect') { const r = chapterRecord(); r.completed++; r.incorrect++; saveRecords(); }
@@ -372,7 +377,7 @@
     }
   }
   function chapterTip(id) {
-    return ({ bonds: '一个数可以分成两部分。知道全部和一部分，就能找出另一部分。', arithmetic: '加法把两部分合起来；减法看拿走后还剩多少。同一篮松果，能帮我们发现加法和减法的联系。', groups: '每一篮都一样多。再添一篮，增加的就是这一篮的数量。', sharing: '平均分，就是每个小伙伴分到的一样多。分完以后，再合起来看看。', clock: '短短的时针告诉我们几点，长长的分针告诉我们过了多少分钟。时针也会慢慢往前走。', decimal: '先把同样大的一整条分成十等份。数数涂了几份，再读成零点几。', negative: '让孩子在数轴上先找到零。往左越走越小，往右越走越大。', parity: '用两两配对解释单数和双数。做密码时，每一位都先看原来的数字。' })[id] || '试试看，你能发现什么？';
+    return ({ bonds: '一个数可以分成两部分。知道全部和一部分，就能找出另一部分。', arithmetic: '加法把两部分合起来；减法看拿走后还剩多少。同一篮松果，能帮我们发现加法和减法的联系。', groups: '每一篮都一样多。再添一篮，增加的就是这一篮的数量。', sharing: '平均分，就是每个小伙伴分到的一样多。分完以后，再合起来看看。', clock: '短短的时针告诉我们几点，长长的分针告诉我们过了多少分钟。时针也会慢慢往前走。', decimal: '先把同样大的一整条分成十等份。数数涂了几份，再读成零点几。', negative: '让孩子在数轴上先找到零。往左越走越小，往右越走越大。', parity: '用两两配对解释单数和双数。做密码时，每一位都先看原来的数字。', 'negative-operations': '先分清运算符和负号。加负数是添入负卡。减负数是取走负卡，不够取时先补零对，每对一正一负代表零。' })[id] || '试试看，你能发现什么？';
   }
   function bindGame() {
     document.getElementById('back-button').onclick = home;
@@ -415,7 +420,14 @@
       renderAfterPlay('[data-return="' + i + '"]', null, '拿回来再分分，让每个朋友都一样多。');
     });
     const hint = document.getElementById('hint-button');
-    if (hint) hint.onclick = () => { state.hints = true; renderGame(); announce(state.task.hint); if (!state.task.practice) speak(hintSpeech()); const box = main.querySelector('.hint-box'); if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+    if (hint) hint.onclick = () => {
+      state.hints = true;
+      if (state.task.kind === 'negative-operation') delete state.custom.stage;
+      renderGame(); announce(state.task.hint);
+      if (!state.task.practice) speak(hintSpeech());
+      const box = main.querySelector('.hint-box');
+      if (window.innerWidth < 800) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    };
     const listen = document.getElementById('listen-feedback'); if (listen) listen.onclick = () => { state.sound = true; updateSound(); speakFeedback(); };
     const check = document.getElementById('check-button'); if (check) check.onclick = checkAnswer;
     main.querySelectorAll('[data-next]').forEach(button => button.onclick = advanceTask);
@@ -458,6 +470,7 @@
   function viewContext() {
     return { task: state.task, solved: state.solved, hinted: state.hints, local: state.custom,
       escape: esc, acorns, update(patch) { Object.assign(state.custom, patch); renderGame(); },
+      explain(patch) { state.hints = true; Object.assign(state.custom, patch); renderGame(); announce('一步一步看看，这些卡代表的数怎么变。'); },
       announce };
   }
   function advanceTask() {
@@ -471,6 +484,9 @@
     if (state.selected === null || state.solved || state.screen !== 'game') return;
     const diagnosis = globalThis.NumberForestFeedback.describe(state.task, state.selected, state);
     if (diagnosis.kind === 'input') return;
+    if (state.task.kind === 'negative-operation') {
+      state.custom.stage = globalThis.NumberForestViews.get(state.task.kind).maxStage;
+    }
     state.attempts++;
     state.feedbackSelected = state.selected;
     const assessment = Assessment.submit(state.outcomes, state.round, diagnosis.correct);
@@ -545,7 +561,7 @@
     });
   }
   function offlineIdea(id) {
-    return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。', decimal: '画一条分成 10 格的纸带，涂几格，再说说涂了零点几。', negative: '在纸上标出 0，左右各走几步，给每一个位置写上数。', parity: '摆两排纽扣，先看看能不能配成对。再给家人出一道逐位变数字的密码。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
+    return ({ bonds: '拿出 7 块积木，藏起一部分。看看外面的，猜猜里面有多少。', arithmetic: '用餐时摆好几只勺子，再拿走两只，一起想想还剩几只。', groups: '摆 3 排积木，每排 3 块。再添一排，多了几块？总共呢？', sharing: '把 6 块积木平均分给 3 个玩偶，再把它们合起来。', clock: '找一面家里的钟，看看现在的时针在两个数字之间的哪里。', decimal: '画一条分成 10 格的纸带，涂几格，再说说涂了零点几。', negative: '在纸上标出 0，左右各走几步，给每一个位置写上数。', parity: '摆两排纽扣，先看看能不能配成对。再给家人出一道逐位变数字的密码。', 'negative-operations': '用两种颜色的纸片写 +1 和 −1，一正一负配成零对，再试试添入或拿走负卡。' })[id] || '找一些身边的物品，把今天发现的数量关系再摆一遍。';
   }
   function parent() {
     globalThis.NumberForestHomeMotion?.stop();

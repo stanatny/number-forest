@@ -27,7 +27,7 @@ test('all award faces and the reverse are embedded without stale artwork', () =>
   const context = { Image };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'src/badge-art.js'), 'utf8'), context);
   const svgIds = ['bonds', 'arithmetic', 'groups', 'sharing', 'clock', 'reverse'];
-  const pngIds = ['decimal', 'negative', 'parity'];
+  const pngIds = ['decimal', 'negative', 'parity', 'negative-operations'];
   for (const id of [...svgIds, ...pngIds]) {
     const source = context.NumberForestBadgeArt.sources[id];
     const svg = svgIds.includes(id);

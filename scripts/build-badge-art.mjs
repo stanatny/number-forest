@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const svgIds = ['bonds', 'arithmetic', 'groups', 'sharing', 'clock', 'reverse'];
-const pngIds = ['decimal', 'negative', 'parity'];
+const pngIds = ['decimal', 'negative', 'parity', 'negative-operations'];
 const sources = {};
 for (const id of svgIds) sources[id] = 'data:image/svg+xml;base64,' + (await readFile(path.join(root, 'assets/badges', id + '.svg'))).toString('base64');
 for (const id of pngIds) sources[id] = 'data:image/png;base64,' + (await readFile(path.join(root, 'assets/badges', id + '.png'))).toString('base64');
