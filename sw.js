@@ -1,7 +1,7 @@
 /* Number Forest: project-scoped offline shell, illustrations and played voices. */
 'use strict';
 
-const VERSION = '0.8.0';
+const VERSION = '0.9.0';
 const SCOPE = new URL(self.registration.scope);
 const PREFIX = 'number-forest:' + SCOPE.pathname + ':';
 const CACHES = Object.freeze({
@@ -12,11 +12,12 @@ const CACHES = Object.freeze({
 const SHELL = [
   'index.html',
   'styles/main.css', 'styles/playful.css', 'styles/badges.css', 'styles/formulas.css', 'styles/assessment.css', 'styles/practice.css',
-  'styles/decimal.css', 'styles/negative.css', 'styles/parity.css',
+  'styles/decimal.css', 'styles/negative.css', 'styles/parity.css', 'styles/negative-operations.css',
   'src/core.js', 'src/assessment.js', 'src/formulas.js', 'src/views.js', 'src/feedback.js', 'src/audio.js',
   'src/effects.js', 'src/badge-art.js', 'src/speech.js',
   'src/home-motion.js', 'src/cache.js', 'src/app.js',
   'src/chapters/decimal.js', 'src/chapters/negative.js', 'src/chapters/parity.js',
+  'src/chapters/negative-operations.js', 'src/negative-operation-view.js',
   'assets/voice/manifest.js'
 ];
 const ART = [
@@ -25,6 +26,7 @@ const ART = [
   'assets/badges/groups.svg', 'assets/badges/sharing.svg',
   'assets/badges/clock.svg', 'assets/badges/reverse.svg',
   'assets/badges/decimal.png', 'assets/badges/negative.png', 'assets/badges/parity.png',
+  'assets/badges/negative-operations.png',
   'assets/playful/hero.svg', 'assets/playful/bonds.svg',
   'assets/playful/arithmetic.svg', 'assets/playful/groups.svg',
   'assets/playful/sharing.svg', 'assets/playful/clock.svg',

@@ -56,11 +56,11 @@ main[data-screen="game"] .code-pad button { min-height: 44px; }
 main[data-screen="game"] #code-delete { background: #f1e7fa; border-color: #d6bee7; color: #654580; box-shadow: 0 4px 0 #ddc9ec; }
 
 @media (min-width: 1001px) {
-  main[data-screen="home"] .chapter-grid, main[data-screen="home"] .badge-collection { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  main[data-screen="home"] .chapter-grid, main[data-screen="home"] .badge-collection { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   main[data-screen="game"] .code-pad { grid-template-columns: repeat(11, minmax(0, 1fr)); }
 }
 @media (min-width: 701px) and (max-width: 1000px) {
-  main[data-screen="home"] .badge-collection { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  main[data-screen="home"] .badge-collection { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
   main[data-screen="home"] .badge-collection { grid-template-columns: repeat(2, minmax(0, 1fr)); }
